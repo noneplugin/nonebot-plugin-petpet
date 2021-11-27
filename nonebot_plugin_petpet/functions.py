@@ -12,8 +12,8 @@ def resize(img: IMG, size: Tuple[int, int]) -> IMG:
     return img.resize(size, Image.ANTIALIAS)
 
 
-def rotate(img: IMG, angle: int) -> IMG:
-    return img.rotate(angle, Image.BICUBIC, expand=True)
+def rotate(img: IMG, angle: int, expand: bool = True) -> IMG:
+    return img.rotate(angle, Image.BICUBIC, expand=expand)
 
 
 def circle(img: IMG) -> IMG:
@@ -126,7 +126,7 @@ async def rip(img: IMG) -> io.BytesIO:
 
 
 async def throw(img: IMG) -> io.BytesIO:
-    img = resize(rotate(circle(img), random.randint(1, 360)), (143, 143))
+    img = resize(rotate(circle(img), random.randint(1, 360), expand=False), (143, 143))
     frame = await get_resource('throw', '0.png')
     frame.paste(img, (15, 178), mask=img)
     return to_jpg(frame)
@@ -134,7 +134,7 @@ async def throw(img: IMG) -> io.BytesIO:
 
 async def crawl(img: IMG) -> io.BytesIO:
     img = resize(circle(img), (100, 100))
-    frame = await get_resource('crawl', '{:02d}.png'.format(random.randint(1, 91)))
+    frame = await get_resource('crawl', '{:02d}.jpg'.format(random.randint(1, 91)))
     frame.paste(img, (0, 400), mask=img)
     return to_jpg(frame)
 
