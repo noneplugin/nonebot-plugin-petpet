@@ -8,35 +8,35 @@ from .functions import petpet, kiss, rub, play, rip, throw, crawl, support
 
 commands = {
     'petpet': {
-        'aliases': ('摸', '摸摸', 'rua'),
+        'aliases': {'摸', '摸摸', 'rua'},
         'func': petpet
     },
     'kiss': {
-        'aliases': ('亲', '亲亲'),
+        'aliases': {'亲', '亲亲'},
         'func': kiss
     },
     'rub': {
-        'aliases': ('贴', '贴贴', '蹭', '蹭蹭'),
+        'aliases': {'贴', '贴贴', '蹭', '蹭蹭'},
         'func': rub
     },
     'play': {
-        'aliases': ('顶', '玩'),
+        'aliases': {'顶', '玩'},
         'func': play
     },
     'rip': {
-        'aliases': ('撕',),
+        'aliases': {'撕'},
         'func': rip
     },
     'throw': {
-        'aliases': ('丢', '扔'),
+        'aliases': {'丢', '扔'},
         'func': throw
     },
     'crawl': {
-        'aliases': ('爬',),
+        'aliases': {'爬'},
         'func': crawl
     },
     'support': {
-        'aliases': ('精神支柱',),
+        'aliases': {'精神支柱'},
         'func': support
     }
 }
@@ -54,7 +54,7 @@ async def make_image(type: str, self_id: str, user_id: str = '', img_url: str = 
         else:
             return None
 
-        func = commands['func']
+        func = commands[type]['func']
 
         if type in ['kiss', 'rub']:
             self_img = await get_avatar(self_id)

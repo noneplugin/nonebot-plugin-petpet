@@ -18,8 +18,9 @@ async def download(url: str) -> bytes:
         for i in range(3):
             try:
                 resp = await client.get(url)
-                data = resp.read()
-                return data
+                if resp.status_code != 200:
+                    continue
+                return resp.content
             except:
                 pass
         return None
@@ -30,7 +31,7 @@ async def get_resource(path: str, name: str) -> IMG:
     file_path = dir_path / name
     if not file_path.exists():
         dir_path.mkdir(parents=True, exist_ok=True)
-        url = f'https://ghproxy.com/https://raw.githubusercontent.com/MeetWq/nonebot-plugin-petpet/main/resources/{path}/{name}'
+        url = f'https://cdn.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@main/resources/{path}/{name}'
         data = await download(url)
         if data:
             with file_path.open('wb') as f:

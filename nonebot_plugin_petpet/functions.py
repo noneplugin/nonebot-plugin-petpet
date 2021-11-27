@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from .download import get_resource
 
 
-def resize(img: IMG, size: Tuple(int, int)) -> IMG:
+def resize(img: IMG, size: Tuple[int, int]) -> IMG:
     return img.resize(size, Image.ANTIALIAS)
 
 
