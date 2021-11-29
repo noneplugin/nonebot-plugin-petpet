@@ -1,7 +1,7 @@
 from typing import Type
 from nonebot import on_command
-from nonebot.typing import T_State
 from nonebot.matcher import Matcher
+from nonebot.typing import T_Handler, T_State
 from nonebot.adapters.cqhttp import Bot, Event, MessageEvent
 
 from .data_source import commands, make_image
@@ -42,13 +42,16 @@ async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
         await matcher.finish(image)
 
 
-matcher_tpl = """
-{command} = on_command('{command}', aliases={aliases}, priority=7)
+def create_matchers():
 
-@{command}.handle()
-async def _(bot: Bot, event: Event, state: T_State):
-    await handle({command}, event, '{command}')
-"""
+    def create_handler(type: str) -> T_Handler:
+        async def handler(bot: Bot, event: Event, state: T_State):
+            await handle(matcher, event, type)
+        return handler
 
-for command, params in commands.items():
-    exec(matcher_tpl.format(command=command, aliases=params['aliases']))
+    for command, params in commands.items():
+        matcher = on_command(command, aliases=params['aliases'], priority=7)
+        matcher.append_handler(create_handler(command))
+
+
+create_matchers()
