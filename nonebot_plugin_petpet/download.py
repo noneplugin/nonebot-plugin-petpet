@@ -2,8 +2,6 @@ import io
 import httpx
 import hashlib
 from pathlib import Path
-from PIL.Image import Image as IMG
-from PIL import Image
 
 
 data_path = Path() / 'data' / 'petpet'
@@ -26,7 +24,7 @@ async def download(url: str) -> bytes:
         return None
 
 
-async def get_resource(path: str, name: str) -> IMG:
+async def get_resource(path: str, name: str) -> io.BytesIO:
     dir_path = data_path / 'resources' / path
     file_path = dir_path / name
     if not file_path.exists():
@@ -38,10 +36,11 @@ async def get_resource(path: str, name: str) -> IMG:
                 f.write(data)
     if not file_path.exists():
         raise DownloadError
-    return Image.open(file_path).convert('RGBA')
+    with open(file_path, 'rb') as f:
+        return io.BytesIO(f.read())
 
 
-async def get_avatar(user_id: str) -> IMG:
+async def get_avatar(user_id: str) -> io.BytesIO:
     url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
     data = await download(url)
     if not data or hashlib.md5(data).hexdigest() == 'acef72340ac0e914090bd35799f5594e':
@@ -49,18 +48,11 @@ async def get_avatar(user_id: str) -> IMG:
         data = await download(url)
         if not data:
             raise DownloadError
-    return Image.open(io.BytesIO(data)).convert('RGBA')
+    return io.BytesIO(data)
 
 
-async def get_image(url: str) -> IMG:
+async def get_image(url: str) -> io.BytesIO:
     data = await download(url)
     if not data:
         raise DownloadError
-    return crop_square(Image.open(io.BytesIO(data))).convert('RGBA')
-
-
-def crop_square(img: IMG) -> IMG:
-    width, height = img.size
-    length = min(width, height)
-    return img.crop(((width - length) / 2, (height - length) / 2,
-                     (width + length) / 2, (height + length) / 2))
+    return io.BytesIO(data)

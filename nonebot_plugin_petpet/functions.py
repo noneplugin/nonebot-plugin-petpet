@@ -25,6 +25,13 @@ def circle(img: IMG) -> IMG:
     return img
 
 
+def square(img: IMG) -> IMG:
+    width, height = img.size
+    length = min(width, height)
+    return img.crop(((width - length) / 2, (height - length) / 2,
+                     (width + length) / 2, (height + length) / 2))
+
+
 def to_gif(frames: List[IMG], duration: float) -> io.BytesIO:
     output = io.BytesIO()
     imageio.mimsave(output, frames, format='gif', duration=duration)
@@ -38,6 +45,11 @@ def to_jpg(frame: IMG) -> io.BytesIO:
     return output
 
 
+async def load_image(path: str, name: str) -> IMG:
+    image = await get_resource(path, name)
+    return Image.open(image).convert('RGBA')
+
+
 async def petpet(img: IMG) -> io.BytesIO:
     frames = []
     locs = [(14, 20, 98, 98), (12, 33, 101, 85), (8, 40, 110, 76),
@@ -46,7 +58,7 @@ async def petpet(img: IMG) -> io.BytesIO:
         frame = Image.new('RGBA', (112, 112), (255, 255, 255, 0))
         x, y, l, w = locs[i]
         frame.paste(img.resize((l, w), Image.ANTIALIAS), (x, y))
-        hand = await get_resource('petpet', f'{i}.png')
+        hand = await load_image('petpet', f'{i}.png')
         frame.paste(hand, mask=hand)
         frames.append(frame)
     return to_gif(frames, 0.06)
@@ -59,7 +71,7 @@ async def kiss(self_img: IMG, user_img: IMG) -> io.BytesIO:
                  (98, 55), (35, 65), (38, 100), (70, 80), (84, 65), (75, 65)]
     frames = []
     for i in range(13):
-        frame = await get_resource('kiss', f'{i}.png')
+        frame = await load_image('kiss', f'{i}.png')
         user_head = resize(circle(user_img), (50, 50))
         frame.paste(user_head, user_locs[i], mask=user_head)
         self_head = resize(circle(self_img), (40, 40))
@@ -75,7 +87,7 @@ async def rub(self_img: IMG, user_img: IMG) -> io.BytesIO:
                  (65, 5, 75, 75, -20), (95, 57, 100, 55, -70), (109, 107, 65, 75, 0)]
     frames = []
     for i in range(6):
-        frame = await get_resource('rub', f'{i}.png')
+        frame = await load_image('rub', f'{i}.png')
         x, y, w, h = user_locs[i]
         user_head = resize(circle(user_img), (w, h))
         frame.paste(user_head, (x, y), mask=user_head)
@@ -95,7 +107,7 @@ async def play(img: IMG) -> io.BytesIO:
             (182, 59, 98, 92), (183, 71, 90, 96), (180, 131, 92, 101)]
     raw_frames = []
     for i in range(23):
-        raw_frame = await get_resource('play', f'{i}.png')
+        raw_frame = await load_image('play', f'{i}.png')
         raw_frames.append(raw_frame)
     img_frames = []
     for i in range(len(locs)):
@@ -115,7 +127,7 @@ async def play(img: IMG) -> io.BytesIO:
 
 
 async def rip(img: IMG) -> io.BytesIO:
-    rip = await get_resource('rip', '0.png')
+    rip = await load_image('rip', '0.png')
     frame = Image.new('RGBA', rip.size, (255, 255, 255, 0))
     left = rotate(resize(img, (385, 385)), 24)
     right = rotate(resize(img, (385, 385)), -11)
@@ -127,20 +139,20 @@ async def rip(img: IMG) -> io.BytesIO:
 
 async def throw(img: IMG) -> io.BytesIO:
     img = resize(rotate(circle(img), random.randint(1, 360), expand=False), (143, 143))
-    frame = await get_resource('throw', '0.png')
+    frame = await load_image('throw', '0.png')
     frame.paste(img, (15, 178), mask=img)
     return to_jpg(frame)
 
 
 async def crawl(img: IMG) -> io.BytesIO:
     img = resize(circle(img), (100, 100))
-    frame = await get_resource('crawl', '{:02d}.jpg'.format(random.randint(1, 91)))
+    frame = await load_image('crawl', '{:02d}.jpg'.format(random.randint(1, 91)))
     frame.paste(img, (0, 400), mask=img)
     return to_jpg(frame)
 
 
 async def support(img: IMG) -> io.BytesIO:
-    support = await get_resource('support', '0.png')
+    support = await load_image('support', '0.png')
     frame = Image.new('RGBA', support.size, (255, 255, 255, 0))
     img = rotate(resize(img, (815, 815)), 23)
     frame.paste(img, (-172, -17))
