@@ -45,9 +45,13 @@ def to_jpg(frame: IMG) -> io.BytesIO:
     return output
 
 
+def to_image(img: io.BytesIO) -> IMG:
+    return Image.open(img).convert('RGBA')
+
+
 async def load_image(path: str, name: str) -> IMG:
     image = await get_resource(path, name)
-    return Image.open(image).convert('RGBA')
+    return to_image(image)
 
 
 async def petpet(img: IMG) -> io.BytesIO:

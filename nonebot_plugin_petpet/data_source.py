@@ -3,7 +3,7 @@ from nonebot.log import logger
 from nonebot.adapters.cqhttp import MessageSegment
 
 from .download import get_avatar, get_image, DownloadError
-from .functions import square
+from .functions import square, to_image
 from .functions import petpet, kiss, rub, play, pat, rip, throw, crawl, support
 
 
@@ -54,9 +54,10 @@ async def make_image(type: str, self_id: str, user_id: str = '', img_url: str = 
 
         if user_id:
             user_img = await get_avatar(user_id)
+            user_img = to_image(user_img)
         elif img_url:
             user_img = await get_image(img_url)
-            user_img = square(user_img)
+            user_img = square(to_image(user_img))
         else:
             return None
 
