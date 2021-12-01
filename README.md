@@ -42,6 +42,13 @@
 </div>
 
 
+- 拍
+
+<div align="left">
+  <img src="./examples/pat.gif" width="200" />
+</div>
+
+
 - 撕
 
 <div align="left">

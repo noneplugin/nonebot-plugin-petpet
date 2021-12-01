@@ -4,7 +4,7 @@ from nonebot.adapters.cqhttp import MessageSegment
 
 from .download import get_avatar, get_image, DownloadError
 from .functions import square
-from .functions import petpet, kiss, rub, play, rip, throw, crawl, support
+from .functions import petpet, kiss, rub, play, pat, rip, throw, crawl, support
 
 
 commands = {
@@ -23,6 +23,10 @@ commands = {
     'play': {
         'aliases': {'顶', '玩'},
         'func': play
+    },
+    'pat': {
+        'aliases': {'拍'},
+        'func': pat
     },
     'rip': {
         'aliases': {'撕'},

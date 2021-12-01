@@ -8,7 +8,7 @@ from .data_source import commands, make_image
 
 __usage__ = """
 头像相关表情生成
-Usage:\n  摸/亲/贴/顶/撕/丢/爬/精神支柱 {qq/@user/自己/图片}
+Usage:\n  摸/亲/贴/顶/拍/撕/丢/爬/精神支柱 {qq/@user/自己/图片}
 """
 
 

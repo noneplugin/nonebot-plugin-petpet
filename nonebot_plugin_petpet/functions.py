@@ -56,8 +56,8 @@ async def petpet(img: IMG) -> io.BytesIO:
             (10, 33, 102, 84), (12, 20, 98, 98)]
     for i in range(5):
         frame = Image.new('RGBA', (112, 112), (255, 255, 255, 0))
-        x, y, l, w = locs[i]
-        frame.paste(img.resize((l, w), Image.ANTIALIAS), (x, y))
+        x, y, w, h = locs[i]
+        frame.paste(img.resize((w, h), Image.ANTIALIAS), (x, y))
         hand = await load_image('petpet', f'{i}.png')
         frame.paste(hand, mask=hand)
         frames.append(frame)
@@ -112,8 +112,8 @@ async def play(img: IMG) -> io.BytesIO:
     img_frames = []
     for i in range(len(locs)):
         frame = Image.new('RGBA', (480, 400), (255, 255, 255, 0))
-        x, y, l, w = locs[i]
-        frame.paste(resize(img, (l, w)), (x, y))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
         raw_frame = raw_frames[i]
         frame.paste(raw_frame, mask=raw_frame)
         img_frames.append(frame)
@@ -124,6 +124,22 @@ async def play(img: IMG) -> io.BytesIO:
     frames.extend(img_frames[12:18])
     frames.extend(raw_frames[18:23])
     return to_gif(frames, 0.06)
+
+
+async def pat(img: IMG) -> io.BytesIO:
+    locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
+    img_frames = []
+    for i in range(10):
+        frame = Image.new('RGBA', (235, 196), (255, 255, 255, 0))
+        x, y, w, h = locs[1] if i == 2 else locs[0]
+        frame.paste(resize(img, (w, h)), (x, y))
+        raw_frame = await load_image('pat', f'{i}.png')
+        frame.paste(raw_frame, mask=raw_frame)
+        img_frames.append(frame)
+    seq = [0, 1, 2, 3, 1, 2, 3, 0, 1, 2, 3, 0, 0, 1, 2, 3,
+           0, 0, 0, 0, 4, 5, 5, 5, 6, 7, 8, 9]
+    frames = [img_frames[n] for n in seq]
+    return to_gif(frames, 0.085)
 
 
 async def rip(img: IMG) -> io.BytesIO:
@@ -138,7 +154,8 @@ async def rip(img: IMG) -> io.BytesIO:
 
 
 async def throw(img: IMG) -> io.BytesIO:
-    img = resize(rotate(circle(img), random.randint(1, 360), expand=False), (143, 143))
+    img = resize(rotate(circle(img), random.randint(1, 360),
+                        expand=False), (143, 143))
     frame = await load_image('throw', '0.png')
     frame.paste(img, (15, 178), mask=img)
     return to_jpg(frame)
