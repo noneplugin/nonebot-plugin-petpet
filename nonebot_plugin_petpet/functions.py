@@ -1,6 +1,6 @@
-import io
 import random
 import imageio
+from io import BytesIO
 from typing import List, Tuple
 from PIL.Image import Image as IMG
 from PIL import Image, ImageDraw, ImageFilter
@@ -32,29 +32,32 @@ def square(img: IMG) -> IMG:
                      (width + length) / 2, (height + length) / 2))
 
 
-def to_gif(frames: List[IMG], duration: float) -> io.BytesIO:
-    output = io.BytesIO()
+def to_gif(frames: List[IMG], duration: float) -> BytesIO:
+    output = BytesIO()
     imageio.mimsave(output, frames, format='gif', duration=duration)
     return output
 
 
-def to_jpg(frame: IMG) -> io.BytesIO:
-    output = io.BytesIO()
+def to_jpg(frame: IMG) -> BytesIO:
+    output = BytesIO()
     frame = frame.convert('RGB')
     frame.save(output, format='jpeg')
     return output
 
 
-def to_image(img: io.BytesIO) -> IMG:
-    return Image.open(img).convert('RGBA')
+def open_image(file: BytesIO, allow_gif: bool = False) -> IMG:
+    image = Image.open(file)
+    if not allow_gif:
+        image = image.convert('RGBA')
+    return image
 
 
 async def load_image(path: str, name: str) -> IMG:
     image = await get_resource(path, name)
-    return to_image(image)
+    return open_image(image)
 
 
-async def petpet(img: IMG) -> io.BytesIO:
+async def petpet(img: IMG) -> BytesIO:
     frames = []
     locs = [(14, 20, 98, 98), (12, 33, 101, 85), (8, 40, 110, 76),
             (10, 33, 102, 84), (12, 20, 98, 98)]
@@ -68,7 +71,7 @@ async def petpet(img: IMG) -> io.BytesIO:
     return to_gif(frames, 0.06)
 
 
-async def kiss(self_img: IMG, user_img: IMG) -> io.BytesIO:
+async def kiss(self_img: IMG, user_img: IMG) -> BytesIO:
     user_locs = [(58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
                  (54, 100), (46, 100), (60, 100), (35, 115), (20, 120), (40, 96)]
     self_locs = [(92, 64), (135, 40), (84, 105), (80, 110), (155, 82), (60, 96), (50, 80),
@@ -84,7 +87,7 @@ async def kiss(self_img: IMG, user_img: IMG) -> io.BytesIO:
     return to_gif(frames, 0.05)
 
 
-async def rub(self_img: IMG, user_img: IMG) -> io.BytesIO:
+async def rub(self_img: IMG, user_img: IMG) -> BytesIO:
     user_locs = [(39, 91, 75, 75), (49, 101, 75, 75), (67, 98, 75, 75),
                  (55, 86, 75, 75), (61, 109, 75, 75), (65, 101, 75, 75)]
     self_locs = [(102, 95, 70, 80, 0), (108, 60, 50, 100, 0), (97, 18, 65, 95, 0),
@@ -102,7 +105,7 @@ async def rub(self_img: IMG, user_img: IMG) -> io.BytesIO:
     return to_gif(frames, 0.05)
 
 
-async def play(img: IMG) -> io.BytesIO:
+async def play(img: IMG) -> BytesIO:
     locs = [(180, 60, 100, 100), (184, 75, 100, 100), (183, 98, 100, 100),
             (179, 118, 110, 100), (156, 194, 150, 48), (178, 136, 122, 69),
             (175, 66, 122, 85), (170, 42, 130, 96), (175, 34, 118, 95),
@@ -130,7 +133,7 @@ async def play(img: IMG) -> io.BytesIO:
     return to_gif(frames, 0.06)
 
 
-async def pat(img: IMG) -> io.BytesIO:
+async def pat(img: IMG) -> BytesIO:
     locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
     img_frames = []
     for i in range(10):
@@ -146,7 +149,7 @@ async def pat(img: IMG) -> io.BytesIO:
     return to_gif(frames, 0.085)
 
 
-async def rip(img: IMG) -> io.BytesIO:
+async def rip(img: IMG) -> BytesIO:
     rip = await load_image('rip', '0.png')
     frame = Image.new('RGBA', rip.size, (255, 255, 255, 0))
     left = rotate(resize(img, (385, 385)), 24)
@@ -157,7 +160,7 @@ async def rip(img: IMG) -> io.BytesIO:
     return to_jpg(frame)
 
 
-async def throw(img: IMG) -> io.BytesIO:
+async def throw(img: IMG) -> BytesIO:
     img = resize(rotate(circle(img), random.randint(1, 360),
                         expand=False), (143, 143))
     frame = await load_image('throw', '0.png')
@@ -165,17 +168,37 @@ async def throw(img: IMG) -> io.BytesIO:
     return to_jpg(frame)
 
 
-async def crawl(img: IMG) -> io.BytesIO:
+async def crawl(img: IMG) -> BytesIO:
     img = resize(circle(img), (100, 100))
     frame = await load_image('crawl', '{:02d}.jpg'.format(random.randint(1, 91)))
     frame.paste(img, (0, 400), mask=img)
     return to_jpg(frame)
 
 
-async def support(img: IMG) -> io.BytesIO:
+async def support(img: IMG) -> BytesIO:
     support = await load_image('support', '0.png')
     frame = Image.new('RGBA', support.size, (255, 255, 255, 0))
     img = rotate(resize(img, (815, 815)), 23)
     frame.paste(img, (-172, -17))
     frame.paste(support, mask=support)
     return to_jpg(frame)
+
+
+async def always(img: IMG) -> BytesIO:
+    always = await load_image('always', '0.png')
+
+    def paste(img: IMG) -> IMG:
+        frame = always.copy()
+        img = img.copy().convert('RGBA')
+        frame.paste(resize(img, (249, 249)), (0, 0))
+        frame.paste(resize(img, (47, 47)), (140, 250))
+        return frame
+
+    if not getattr(img, 'is_animated', False):
+        return to_jpg(paste(img))
+    else:
+        frames = []
+        for i in range(img.n_frames):
+            img.seek(i)
+            frames.append(paste(img))
+        return to_gif(frames, img.info['duration'] / 1000)

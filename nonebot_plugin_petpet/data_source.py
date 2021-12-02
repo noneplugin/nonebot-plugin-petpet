@@ -3,8 +3,8 @@ from nonebot.log import logger
 from nonebot.adapters.cqhttp import MessageSegment
 
 from .download import get_avatar, get_image, DownloadError
-from .functions import square, to_image
-from .functions import petpet, kiss, rub, play, pat, rip, throw, crawl, support
+from .functions import square, open_image
+from .functions import petpet, kiss, rub, play, pat, rip, throw, crawl, support, always
 
 
 commands = {
@@ -43,6 +43,10 @@ commands = {
     'support': {
         'aliases': {'精神支柱'},
         'func': support
+    },
+    'always': {
+        'aliases': {'一直'},
+        'func': always
     }
 }
 
@@ -52,12 +56,14 @@ async def make_image(type: str, self_id: str, user_id: str = '', img_url: str = 
         if type not in commands:
             return None
 
+        allow_gif = True if type in ['always'] else False
+
         if user_id:
             user_img = await get_avatar(user_id)
-            user_img = to_image(user_img)
+            user_img = open_image(user_img, allow_gif)
         elif img_url:
             user_img = await get_image(img_url)
-            user_img = square(to_image(user_img))
+            user_img = square(open_image(user_img, allow_gif))
         else:
             return None
 
@@ -65,11 +71,11 @@ async def make_image(type: str, self_id: str, user_id: str = '', img_url: str = 
 
         if type in ['kiss', 'rub']:
             self_img = await get_avatar(self_id)
-            self_img = to_image(self_img)
+            self_img = open_image(self_img, allow_gif)
             result = await func(self_img, user_img)
         else:
             result = await func(user_img)
-        return MessageSegment.image(f'base64://{base64.b64encode(result.getvalue()).decode()}')
+        return MessageSegment.image(result)
 
     except DownloadError:
         return '下载出错，请稍后再试'

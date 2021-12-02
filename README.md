@@ -75,3 +75,10 @@
 <div align="left">
   <img src="./examples/support.jpg" width="200" />
 </div>
+
+
+- 一直
+
+<div align="left">
+  <img src="./examples/always.gif" width="200" />
+</div>
