@@ -186,12 +186,17 @@ async def support(img: IMG) -> BytesIO:
 
 async def always(img: IMG) -> BytesIO:
     always = await load_resource('always', '0.png')
+    w, h = img.size
+    h1 = int(h / w * 249)
+    h2 = int(h / w * 47)
+    height = h1 + h2 + 5
 
     def paste(img: IMG) -> IMG:
-        frame = always.copy()
-        img = square(img.copy().convert('RGBA'))
-        frame.paste(resize(img, (249, 249)), (0, 0))
-        frame.paste(resize(img, (47, 47)), (140, 250))
+        img = img.copy().convert('RGBA')
+        frame = Image.new('RGBA', (249, height), (255, 255, 255, 0))
+        frame.paste(always, (0, h1 - 249 + int((h2 - 47) / 2)))
+        frame.paste(resize(img, (249, h1)), (0, 0))
+        frame.paste(resize(img, (47, h2)), (140, h1 + 2))
         return frame
 
     if not getattr(img, 'is_animated', False):
