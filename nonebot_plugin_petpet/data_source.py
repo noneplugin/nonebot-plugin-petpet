@@ -65,6 +65,7 @@ async def make_image(type: str, self_id: str, user_id: str = '', img_url: str = 
 
         if type in ['kiss', 'rub']:
             self_img = await get_avatar(self_id)
+            self_img = to_image(self_img)
             result = await func(self_img, user_img)
         else:
             result = await func(user_img)
