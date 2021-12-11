@@ -6,38 +6,48 @@ from nonebot.adapters.cqhttp import Bot, Event, MessageEvent
 
 from .data_source import commands, make_image
 
-__usage__ = """
-头像相关表情生成
-Usage:\n  摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直 {qq/@user/自己/图片}
-"""
+__des__ = '摸头等头像相关表情生成'
+__cmd__ = '''
+摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直 {qq/@user/自己/图片}
+'''.strip()
+__example__ = '''
+摸 @小Q
+摸 114514
+摸 自己
+摸 [图片]
+'''.strip()
+__usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExample:\n{__example__}'
 
 
 async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
     msg = event.get_message()
-    msg_text = event.get_plaintext().strip()
-    self_id = event.user_id
-    user_id = ''
-    img_url = ''
-
+    images = []
     for msg_seg in msg:
         if msg_seg.type == 'at':
-            user_id = msg_seg.data['qq']
-            break
+            images.append(msg_seg.data['qq'])
         elif msg_seg.type == 'image':
-            img_url = msg_seg.data['url']
-            break
+            images.append(msg_seg.data['url'])
+        elif msg_seg.type == 'text':
+            for text in str(msg_seg.data['text']).split():
+                if text.isdigit():
+                    images.append(text)
+                elif text == '自己':
+                    images.append(str(event.user_id))
 
-    if not (user_id or img_url):
-        if msg_text.isdigit():
-            user_id = msg_text
-        elif msg_text == '自己':
-            user_id = event.user_id
-        else:
-            matcher.block = False
-            await matcher.finish()
+    if not images:
+        if event.is_tome():
+            images.append(str(event.self_id))
+
+    if not images:
+        matcher.block = False
+        await matcher.finish()
+
+    if type in ['kiss', 'rub']:
+        if len(images) < 2:
+            images.insert(0, str(event.user_id))
 
     matcher.block = True
-    image = await make_image(type, self_id, user_id=user_id, img_url=img_url)
+    image = await make_image(type, images)
     if image:
         await matcher.finish(image)
 
