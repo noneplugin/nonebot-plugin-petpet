@@ -179,7 +179,7 @@ async def throw(img: IMG, *args) -> BytesIO:
 
 async def crawl(img: IMG, *args) -> BytesIO:
     img = resize(circle(img), (100, 100))
-    frame = await load_resource('crawl', '{:02d}.jpg'.format(random.randint(1, 91)))
+    frame = await load_resource('crawl', '{:02d}.jpg'.format(random.randint(1, 92)))
     frame.paste(img, (0, 400), mask=img)
     return save_jpg(frame)
 

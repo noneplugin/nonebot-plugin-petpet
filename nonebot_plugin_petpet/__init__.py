@@ -6,6 +6,7 @@ from nonebot.adapters.cqhttp import Bot, Event, MessageEvent
 
 from .data_source import commands, make_image
 
+__help__plugin_name__ = 'petpet'
 __des__ = '摸头等头像相关表情生成'
 __cmd__ = '''
 摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直 {qq/@user/自己/图片}
