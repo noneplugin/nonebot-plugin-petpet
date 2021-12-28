@@ -3,8 +3,7 @@ from nonebot.log import logger
 from nonebot.adapters.cqhttp import MessageSegment
 
 from .download import download_image, DownloadError
-from .functions import load_image
-from .functions import petpet, kiss, rub, play, pat, rip, throw, crawl, support, always
+from .functions import *
 
 
 commands = {
@@ -46,7 +45,13 @@ commands = {
     },
     'always': {
         'aliases': {'一直'},
-        'func': always
+        'func': always,
+        'convert': False
+    },
+    'loading': {
+        'aliases': {'加载中'},
+        'func': loading,
+        'convert': False
     }
 }
 
@@ -56,7 +61,7 @@ async def make_image(type: str, images: List[str]):
         if type not in commands:
             return None
 
-        convert = False if type in ['always'] else True
+        convert = commands[type].get('convert', True)
         func = commands[type]['func']
         images = [load_image(await download_image(i), convert) for i in images]
         result = await func(*images)

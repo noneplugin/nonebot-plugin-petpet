@@ -216,3 +216,39 @@ async def always(img: IMG, *args) -> BytesIO:
             img.seek(i)
             frames.append(paste(img))
         return save_gif(frames, img.info['duration'] / 1000)
+
+
+async def loading(img: IMG, *args) -> BytesIO:
+    bg = await load_resource('loading', '0.png')
+    icon = await load_resource('loading', '1.png')
+    w, h = img.size
+    h1 = int(h / w * 300)
+    h2 = int(h / w * 60)
+    height = h1 + h2 + 10
+
+    def paste_large(img: IMG) -> IMG:
+        img = to_jpg(img)
+        frame = Image.new('RGBA', (300, height), (255, 255, 255, 0))
+        frame.paste(bg, (0, h1 - 300 + int((h2 - 60) / 2)))
+        img = resize(img, (300, h1))
+        img = img.filter(ImageFilter.GaussianBlur(radius=2))
+        frame.paste(img, (0, 0))
+        mask = Image.new('RGBA', (300, h1), (0, 0, 0, 128))
+        frame.paste(mask, (0, 0), mask=mask)
+        frame.paste(icon, (100, int(h1 / 2) - 50), mask=icon)
+        return frame
+
+    def paste_small(frame: IMG, img: IMG) -> IMG:
+        img = to_jpg(img)
+        frame.paste(resize(img, (60, h2)), (60, h1 + 5))
+        return frame
+
+    if not getattr(img, 'is_animated', False):
+        return save_jpg(paste_small(paste_large(img), img))
+    else:
+        frames = []
+        frame = paste_large(img)
+        for i in range(img.n_frames):
+            img.seek(i)
+            frames.append(paste_small(frame.copy(), img))
+        return save_gif(frames, img.info['duration'] / 1000)

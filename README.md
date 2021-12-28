@@ -82,3 +82,10 @@
 <div align="left">
   <img src="./examples/always.gif" width="200" />
 </div>
+
+
+- 加载中
+
+<div align="left">
+  <img src="./examples/loading.gif" width="200" />
+</div>
