@@ -2,7 +2,7 @@ from typing import Type
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler, T_State
-from nonebot.adapters.cqhttp import Bot, Event, MessageEvent
+from nonebot.adapters.cqhttp import Bot, Event, MessageEvent, GroupMessageEvent
 
 from .data_source import commands, make_image
 
@@ -22,35 +22,34 @@ __usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExample:\n{__example__}'
 
 async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
     msg = event.get_message()
-    images = []
+    segments = []
     for msg_seg in msg:
         if msg_seg.type == 'at':
-            images.append(msg_seg.data['qq'])
+            segments.append(msg_seg.data['qq'])
         elif msg_seg.type == 'image':
-            images.append(msg_seg.data['url'])
+            segments.append(msg_seg.data['url'])
         elif msg_seg.type == 'text':
             for text in str(msg_seg.data['text']).split():
-                if text.isdigit():
-                    images.append(text)
+                if text.isdigit() and len(text) >= 5:
+                    segments.append(text)
                 elif text == '自己':
-                    images.append(str(event.user_id))
+                    segments.append(str(event.user_id))
 
-    if not images:
-        if event.is_tome():
-            images.append(str(event.self_id))
+    arg_num = commands[type].get('arg_num', 1)
+    if not segments and isinstance(event, GroupMessageEvent) and event.is_tome():
+        segments.append(str(event.self_id))
+    if segments and len(segments) == arg_num - 1:
+        segments.insert(0, str(event.user_id))
 
-    if not images:
+    segments = segments[:arg_num]
+    if len(segments) == arg_num:
+        matcher.block = True
+        image = await make_image(type, segments)
+        if image:
+            await matcher.finish(image)
+    else:
         matcher.block = False
         await matcher.finish()
-
-    if type in ['kiss', 'rub']:
-        if len(images) < 2:
-            images.insert(0, str(event.user_id))
-
-    matcher.block = True
-    image = await make_image(type, images)
-    if image:
-        await matcher.finish(image)
 
 
 def create_matchers():

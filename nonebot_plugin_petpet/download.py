@@ -11,13 +11,6 @@ class DownloadError(Exception):
     pass
 
 
-async def download_image(s: str) -> bytes:
-    if s.isdigit():
-        return await download_avatar(s)
-    else:
-        return await download_url(s)
-
-
 async def download_url(url: str) -> bytes:
     async with httpx.AsyncClient() as client:
         for i in range(3):

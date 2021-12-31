@@ -2,7 +2,7 @@ from typing import List
 from nonebot.log import logger
 from nonebot.adapters.cqhttp import MessageSegment
 
-from .download import download_image, DownloadError
+from .download import download_url, download_avatar, DownloadError
 from .functions import *
 
 
@@ -13,11 +13,13 @@ commands = {
     },
     'kiss': {
         'aliases': {'亲', '亲亲'},
-        'func': kiss
+        'func': kiss,
+        'arg_num': 2
     },
     'rub': {
         'aliases': {'贴', '贴贴', '蹭', '蹭蹭'},
-        'func': rub
+        'func': rub,
+        'arg_num': 2
     },
     'play': {
         'aliases': {'顶', '玩'},
@@ -56,14 +58,22 @@ commands = {
 }
 
 
-async def make_image(type: str, images: List[str]):
+async def make_image(type: str, segments: List[str]):
     try:
         if type not in commands:
             return None
 
         convert = commands[type].get('convert', True)
         func = commands[type]['func']
-        images = [load_image(await download_image(i), convert) for i in images]
+
+        images = []
+        for s in segments:
+            if s.isdigit():
+                images.append(await download_avatar(s))
+            else:
+                images.append(await download_url(s))
+
+        images = [load_image(i, convert) for i in images]
         result = await func(*images)
         return MessageSegment.image(result)
 
@@ -71,5 +81,5 @@ async def make_image(type: str, images: List[str]):
         return '下载出错，请稍后再试'
     except Exception as e:
         logger.warning(
-            f"Error in make_image({type}, [{', '.join(images)}]): {e}")
+            f"Error in make_image({type}, [{', '.join(segments)}]): {e}")
         return '出错了，请稍后再试'
