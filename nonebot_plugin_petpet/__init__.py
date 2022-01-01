@@ -1,15 +1,25 @@
+import traceback
 from typing import Type
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler, T_State
-from nonebot.adapters.cqhttp import Bot, Event, MessageEvent, GroupMessageEvent
+from nonebot.adapters.cqhttp import Bot, MessageSegment, Event, MessageEvent, GroupMessageEvent
+from nonebot.log import logger
 
 from .data_source import commands, make_image
+from .download import DownloadError
+from .utils import text_to_pic
+
 
 __help__plugin_name__ = 'petpet'
-__des__ = '摸头等头像相关表情生成'
-__cmd__ = '''
-摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直/加载中/转 {qq/@user/自己/图片}
+__des__ = '摸头等头像相关表情制作'
+petpet_help = [f"{i}. {'/'.join(list(c['aliases']))}"
+               for i, c in enumerate(commands.values(), start=1)]
+petpet_help = '\n'.join(petpet_help)
+__cmd__ = f'''
+触发方式：指令 + @user/qq/自己/图片
+支持的指令：
+{petpet_help}
 '''.strip()
 __example__ = '''
 摸 @小Q
@@ -18,6 +28,16 @@ __example__ = '''
 摸 [图片]
 '''.strip()
 __usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExample:\n{__example__}'
+
+
+help_cmd = on_command('头像表情包', aliases={'头像相关表情包', '头像相关表情制作'}, priority=12)
+
+
+@help_cmd.handle()
+async def _(bot: Bot, event: Event, state: T_State):
+    img = await text_to_pic(__usage__)
+    if img:
+        await help_cmd.finish(MessageSegment.image(img))
 
 
 async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
@@ -42,14 +62,26 @@ async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
         segments.insert(0, str(event.user_id))
 
     segments = segments[:arg_num]
-    if len(segments) == arg_num:
-        matcher.block = True
-        image = await make_image(type, segments)
-        if image:
-            await matcher.finish(image)
-    else:
+    if len(segments) != arg_num:
         matcher.block = False
         await matcher.finish()
+
+    matcher.block = True
+
+    try:
+        msg = await make_image(type, segments)
+    except DownloadError:
+        return '资源下载出错，请稍后再试'
+    except:
+        logger.warning(traceback.format_exc())
+        return '出错了，请稍后再试'
+
+    if not msg:
+        await matcher.finish('出错了，请稍后再试')
+    if isinstance(msg, str):
+        await matcher.finish(msg)
+    else:
+        await matcher.finish(MessageSegment.image(msg))
 
 
 def create_matchers():

@@ -1,6 +1,7 @@
 import httpx
 import hashlib
 from pathlib import Path
+from aiocache import cached
 from nonebot.log import logger
 
 
@@ -25,11 +26,10 @@ async def download_url(url: str) -> bytes:
 
 
 async def get_resource(path: str, name: str) -> bytes:
-    dir_path = data_path / 'resources' / path
-    file_path = dir_path / name
+    file_path = data_path / path / name
     if not file_path.exists():
-        dir_path.mkdir(parents=True, exist_ok=True)
-        url = f'https://cdn.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@main/resources/{path}/{name}'
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        url = f'https://cdn.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@master/resources/{path}/{name}'
         data = await download_url(url)
         if data:
             with file_path.open('wb') as f:
@@ -37,6 +37,16 @@ async def get_resource(path: str, name: str) -> bytes:
     if not file_path.exists():
         raise DownloadError
     return file_path.read_bytes()
+
+
+@cached(ttl=600)
+async def get_image(name: str) -> bytes:
+    return await get_resource('images', name)
+
+
+@cached(ttl=600)
+async def get_font(name: str) -> bytes:
+    return await get_resource('fonts', name)
 
 
 async def download_avatar(user_id: str) -> bytes:

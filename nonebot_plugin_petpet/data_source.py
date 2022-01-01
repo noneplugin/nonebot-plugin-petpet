@@ -1,8 +1,7 @@
-from typing import List
-from nonebot.log import logger
-from nonebot.adapters.cqhttp import MessageSegment
+from typing import List, Union
 
-from .download import download_url, download_avatar, DownloadError
+from .download import download_url, download_avatar
+from .utils import to_image
 from .functions import *
 
 
@@ -62,41 +61,16 @@ commands = {
 }
 
 
-async def make_image(type: str, segments: List[str]):
-    try:
-        if type not in commands:
-            return None
+async def make_image(type: str, segments: List[str]) -> Union[str, BytesIO]:
+    convert = commands[type].get('convert', True)
+    func = commands[type]['func']
 
-        convert = commands[type].get('convert', True)
-        func = commands[type]['func']
+    images = []
+    for s in segments:
+        if s.isdigit():
+            images.append(await download_avatar(s))
+        else:
+            images.append(await download_url(s))
 
-        images = []
-        for s in segments:
-            if s.isdigit():
-                images.append(await download_avatar(s))
-            else:
-                images.append(await download_url(s))
-
-        images = [load_image(i, convert) for i in images]
-        result = await func(*images)
-        return MessageSegment.image(result)
-
-    except DownloadError:
-        return '下载出错，请稍后再试'
-    except Exception as e:
-        logger.warning(
-            f"Error in make_image({type}, [{', '.join(segments)}]): {e}")
-        return '出错了，请稍后再试'
-
-
-async def turn(img: IMG) -> BytesIO:
-    clockwise = random.randint(0,1)
-    every_turn = -10 if clockwise else 10
-    start = 360 if clockwise else 0
-    end = 0 if clockwise else 360
-    frames = []
-    for i in range(start, end, every_turn):
-        frame = Image.new('RGBA', (250, 250), (255, 255, 255, 0))
-        frame.paste(resize(circle(img.rotate(i), True), (250, 250)))
-        frames.append(frame)
-    return save_gif(frames, 0.05)
+    images = [to_image(i, convert) for i in images]
+    return await func(*images)
