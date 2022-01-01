@@ -9,7 +9,7 @@ from .data_source import commands, make_image
 __help__plugin_name__ = 'petpet'
 __des__ = '摸头等头像相关表情生成'
 __cmd__ = '''
-摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直/加载中 {qq/@user/自己/图片}
+摸/亲/贴/顶/拍/撕/丢/爬/精神支柱/一直/加载中/转 {qq/@user/自己/图片}
 '''.strip()
 __example__ = '''
 摸 @小Q

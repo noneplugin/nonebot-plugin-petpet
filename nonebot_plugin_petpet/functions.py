@@ -16,12 +16,17 @@ def rotate(img: IMG, angle: int, expand: bool = True) -> IMG:
     return img.rotate(angle, Image.BICUBIC, expand=expand)
 
 
-def circle(img: IMG) -> IMG:
+def circle(img: IMG,white: bool = False) -> IMG:
     mask = Image.new('L', img.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0, img.size[0], img.size[1]), fill=255)
     mask = mask.filter(ImageFilter.GaussianBlur(0))
-    img.putalpha(mask)
+    if not white:
+        img.putalpha(mask)
+    else:
+        imf = Image.new("RGBA", (img.size[0], img.size[1]), color="#FFFFFF")
+        imf.paste(img, (0, 0), mask)
+        img = imf
     return img
 
 
@@ -252,3 +257,16 @@ async def loading(img: IMG) -> BytesIO:
             img.seek(i)
             frames.append(paste_small(frame.copy(), img))
         return save_gif(frames, img.info['duration'] / 1000)
+
+
+async def turn(img: IMG) -> BytesIO:
+    clockwise = random.randint(0,1)
+    every_turn = -10 if clockwise else 10
+    start = 360 if clockwise else 0
+    end = 0 if clockwise else 360
+    frames = []
+    for i in range(start, end, every_turn):
+        frame = Image.new('RGBA', (250, 250), (255, 255, 255, 0))
+        frame.paste(resize(circle(img.rotate(i), True), (250, 250)))
+        frames.append(frame)
+    return save_gif(frames, 0.05)
