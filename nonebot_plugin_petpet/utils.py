@@ -83,3 +83,19 @@ async def text_to_pic(text: str, fontsize: int = 30, padding: int = 50,
     draw = ImageDraw.Draw(frame)
     draw.multiline_text((padding, padding), text, font=font, fill=font_color)
     return save_jpg(frame)
+
+
+async def fit_font_size(text: str, max_width: float, max_height: float,
+                        fontname: str, max_fontsize: int, min_fontsize: int,
+                        stroke_ratio: float = 0) -> int:
+    fontsize = max_fontsize
+    while True:
+        font = await load_font(fontname, fontsize)
+        width, height = font.getsize_multiline(
+            text, stroke_width=int(fontsize * stroke_ratio))
+        if width > max_width or height > max_height:
+            fontsize -= 1
+        else:
+            return fontsize
+        if fontsize < min_fontsize:
+            return 0

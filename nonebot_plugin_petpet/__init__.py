@@ -42,9 +42,46 @@ async def _(bot: Bot, event: Event, state: T_State):
         await help_cmd.finish(MessageSegment.image(img))
 
 
-async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
+def is_qq(msg: str):
+    return msg.isdigit() and 11 >= len(msg) >= 5
+
+
+async def get_nickname(bot: Bot, user_id: int, group_id: int = None):
+    if group_id:
+        info = await bot.get_group_member_info(group_id=group_id, user_id=user_id)
+        return info.get('card', '') or info.get('nickname', '')
+    else:
+        info = await bot.get_stranger_info(user_id=user_id)
+        return info.get('nickname', '')
+
+
+async def get_user_name(bot: Bot, event: MessageEvent):
+    msg = event.get_message()
+    msg_str = event.get_plaintext().strip()
+
+    if msg_str:
+        text = msg_str.strip().split()[0]
+        if text:
+            if is_qq(text):
+                return await get_nickname(bot, int(text))
+            elif text == '自己':
+                return event.sender.card or event.sender.nickname
+            else:
+                return text
+
+    for msg_seg in msg:
+        if isinstance(event, GroupMessageEvent) and msg_seg.type == 'at':
+            return await get_nickname(bot, msg_seg.data['qq'], event.group_id)
+
+    if isinstance(event, GroupMessageEvent) and event.is_tome():
+        return await get_nickname(bot, event.self_id, event.group_id)
+    return ''
+
+
+async def handle(matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: str):
     msg = event.get_message()
     segments = []
+    name = await get_user_name(bot, event)
     for msg_seg in msg:
         if msg_seg.type == 'at':
             segments.append(msg_seg.data['qq'])
@@ -52,7 +89,7 @@ async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
             segments.append(msg_seg.data['url'])
         elif msg_seg.type == 'text':
             for text in str(msg_seg.data['text']).split():
-                if text.isdigit() and len(text) >= 5:
+                if is_qq(text):
                     segments.append(text)
                 elif text == '自己':
                     segments.append(str(event.user_id))
@@ -71,7 +108,7 @@ async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
     matcher.block = True
 
     try:
-        msg = await make_image(type, segments)
+        msg = await make_image(type, segments, name=name)
     except DownloadError:
         await matcher.finish('资源下载出错，请稍后再试')
     except:
@@ -90,7 +127,7 @@ def create_matchers():
 
     def create_handler(type: str) -> T_Handler:
         async def handler(bot: Bot, event: Event, state: T_State):
-            await handle(matcher, event, type)
+            await handle(matcher, bot, event, type)
         return handler
 
     for command, params in commands.items():

@@ -1,12 +1,14 @@
 import random
 from io import BytesIO
+from typing import Union
 from PIL.Image import Image as IMG
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageDraw
 
-from .utils import to_jpg, save_jpg, save_gif, circle, rotate, resize, load_image
+from .utils import to_jpg, save_jpg, save_gif, circle, rotate, resize, \
+    load_image, load_font, fit_font_size
 
 
-async def petpet(img: IMG) -> BytesIO:
+async def petpet(img: IMG, **kwargs) -> BytesIO:
     frames = []
     locs = [(14, 20, 98, 98), (12, 33, 101, 85), (8, 40, 110, 76),
             (10, 33, 102, 84), (12, 20, 98, 98)]
@@ -20,7 +22,7 @@ async def petpet(img: IMG) -> BytesIO:
     return save_gif(frames, 0.06)
 
 
-async def kiss(self_img: IMG, user_img: IMG) -> BytesIO:
+async def kiss(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
     user_locs = [(58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
                  (54, 100), (46, 100), (60, 100), (35, 115), (20, 120), (40, 96)]
     self_locs = [(92, 64), (135, 40), (84, 105), (80, 110), (155, 82), (60, 96), (50, 80),
@@ -36,7 +38,7 @@ async def kiss(self_img: IMG, user_img: IMG) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def rub(self_img: IMG, user_img: IMG) -> BytesIO:
+async def rub(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
     user_locs = [(39, 91, 75, 75), (49, 101, 75, 75), (67, 98, 75, 75),
                  (55, 86, 75, 75), (61, 109, 75, 75), (65, 101, 75, 75)]
     self_locs = [(102, 95, 70, 80, 0), (108, 60, 50, 100, 0), (97, 18, 65, 95, 0),
@@ -54,7 +56,7 @@ async def rub(self_img: IMG, user_img: IMG) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def play(img: IMG) -> BytesIO:
+async def play(img: IMG, **kwargs) -> BytesIO:
     locs = [(180, 60, 100, 100), (184, 75, 100, 100), (183, 98, 100, 100),
             (179, 118, 110, 100), (156, 194, 150, 48), (178, 136, 122, 69),
             (175, 66, 122, 85), (170, 42, 130, 96), (175, 34, 118, 95),
@@ -82,7 +84,7 @@ async def play(img: IMG) -> BytesIO:
     return save_gif(frames, 0.06)
 
 
-async def pat(img: IMG) -> BytesIO:
+async def pat(img: IMG, **kwargs) -> BytesIO:
     locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
     img_frames = []
     for i in range(10):
@@ -98,7 +100,7 @@ async def pat(img: IMG) -> BytesIO:
     return save_gif(frames, 0.085)
 
 
-async def rip(img: IMG) -> BytesIO:
+async def rip(img: IMG, **kwargs) -> BytesIO:
     rip = await load_image('rip/0.png')
     frame = Image.new('RGBA', rip.size, (255, 255, 255, 0))
     left = rotate(resize(img, (385, 385)), 24)
@@ -109,7 +111,7 @@ async def rip(img: IMG) -> BytesIO:
     return save_jpg(frame)
 
 
-async def throw(img: IMG) -> BytesIO:
+async def throw(img: IMG, **kwargs) -> BytesIO:
     img = resize(rotate(circle(img), random.randint(1, 360),
                         expand=False), (143, 143))
     frame = await load_image('throw/0.png')
@@ -117,14 +119,14 @@ async def throw(img: IMG) -> BytesIO:
     return save_jpg(frame)
 
 
-async def crawl(img: IMG) -> BytesIO:
+async def crawl(img: IMG, **kwargs) -> BytesIO:
     img = resize(circle(img), (100, 100))
     frame = await load_image('crawl/{:02d}.jpg'.format(random.randint(1, 92)))
     frame.paste(img, (0, 400), mask=img)
     return save_jpg(frame)
 
 
-async def support(img: IMG) -> BytesIO:
+async def support(img: IMG, **kwargs) -> BytesIO:
     support = await load_image('support/0.png')
     frame = Image.new('RGBA', support.size, (255, 255, 255, 0))
     img = rotate(resize(img, (815, 815)), 23)
@@ -133,7 +135,7 @@ async def support(img: IMG) -> BytesIO:
     return save_jpg(frame)
 
 
-async def always(img: IMG) -> BytesIO:
+async def always(img: IMG, **kwargs) -> BytesIO:
     always = await load_image('always/0.png')
     w, h = img.size
     h1 = int(h / w * 300)
@@ -158,7 +160,7 @@ async def always(img: IMG) -> BytesIO:
         return save_gif(frames, img.info['duration'] / 1000)
 
 
-async def loading(img: IMG) -> BytesIO:
+async def loading(img: IMG, **kwargs) -> BytesIO:
     bg = await load_image('loading/0.png')
     icon = await load_image('loading/1.png')
     w, h = img.size
@@ -194,7 +196,7 @@ async def loading(img: IMG) -> BytesIO:
         return save_gif(frames, img.info['duration'] / 1000)
 
 
-async def turn(img: IMG) -> BytesIO:
+async def turn(img: IMG, **kwargs) -> BytesIO:
     img = circle(img)
     frames = []
     for i in range(0, 360, 10):
@@ -204,3 +206,41 @@ async def turn(img: IMG) -> BytesIO:
     if random.randint(0, 1):
         frames.reverse()
     return save_gif(frames, 0.05)
+
+
+async def littleangel(img: IMG, name: str, **kwargs) -> Union[str, BytesIO]:
+    img = to_jpg(img).convert('RGBA')
+    img_w, img_h = img.size
+    max_len = max(img_w, img_h)
+    img_w = int(img_w * 500 / max_len)
+    img_h = int(img_h * 500 / max_len)
+    img = resize(img, (img_w, img_h))
+
+    bg = Image.new('RGB', (600, img_h + 230), (255, 255, 255))
+    bg.paste(img, (int(300 - img_w / 2), 110))
+    draw = ImageDraw.Draw(bg)
+    fontname = 'SourceHanSansSC-Bold.otf'
+
+    font = await load_font(fontname, 48)
+    text = '非常可爱！简直就是小天使'
+    text_w, _ = font.getsize(text)
+    draw.text((300 - text_w / 2, img_h + 120), text, font=font, fill=(0, 0, 0))
+
+    font = await load_font(fontname, 26)
+    text = '她没失踪也没怎么样  我只是觉得你们都该看一下'
+    text_w, _ = font.getsize(text)
+    draw.text((300 - text_w / 2, img_h + 180), text, font=font, fill=(0, 0, 0))
+
+    if not name:
+        name = '她'
+    text = f'请问你们看到{name}了吗?'
+    fontsize = await fit_font_size(text, 560, 110, fontname, 70, 25)
+    if not fontsize:
+        return '名字太长了哦，改短点再试吧~'
+
+    font = await load_font(fontname, fontsize)
+    text_w, text_h = font.getsize(text)
+    x = 300 - text_w / 2
+    y = 55 - text_h / 2
+    draw.text((x, y), text, font=font, fill=(0, 0, 0))
+    return save_jpg(bg)

@@ -57,11 +57,16 @@ commands = {
     'turn': {
         'aliases': {'转'},
         'func': turn
-    }
+    },
+    'littleangel': {
+        'aliases': {'小天使'},
+        'func': littleangel,
+        'convert': False
+    },
 }
 
 
-async def make_image(type: str, segments: List[str]) -> Union[str, BytesIO]:
+async def make_image(type: str, segments: List[str], name: str = '') -> Union[str, BytesIO]:
     convert = commands[type].get('convert', True)
     func = commands[type]['func']
 
@@ -73,4 +78,4 @@ async def make_image(type: str, segments: List[str]) -> Union[str, BytesIO]:
             images.append(await download_url(s))
 
     images = [to_image(i, convert) for i in images]
-    return await func(*images)
+    return await func(*images, name=name)
