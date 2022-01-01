@@ -4,6 +4,16 @@
 
 ### 使用
 
+发送“头像表情包”显示下图的列表：
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/01/01/pR6j1fBJQWuyOwv.jpg" width="400" />
+</div>
+
+
+每个表情包首次使用时会下载对应的图片和字体，可以手动下载 `resources` 下的 `images` 和 `fonts` 文件夹，放置于机器人运行目录下的 `data/petpet/` 文件夹中
+
+
 #### 触发方式
 - 指令 + @user，如： /爬 @小Q
 - 指令 + qq号，如：/爬 123456
@@ -88,4 +98,11 @@
 
 <div align="left">
   <img src="./examples/loading.gif" width="200" />
+</div>
+
+
+- 转
+
+<div align="left">
+  <img src="./examples/turn.gif" width="200" />
 </div>
