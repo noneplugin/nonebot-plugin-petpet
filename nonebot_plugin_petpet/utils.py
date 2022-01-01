@@ -63,8 +63,8 @@ def to_image(data: bytes, convert: bool = True) -> IMG:
     return image
 
 
-async def load_image(path: str, name: str) -> IMG:
-    image = await get_image(path, name)
+async def load_image(name: str) -> IMG:
+    image = await get_image(name)
     return Image.open(BytesIO(image)).convert('RGBA')
 
 

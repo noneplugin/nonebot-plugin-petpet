@@ -27,7 +27,9 @@ __example__ = '''
 摸 自己
 摸 [图片]
 '''.strip()
-__usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExample:\n{__example__}'
+__cmd__ = '\n'.join([f'    {l}' for l in __cmd__.splitlines()])
+__example__ = '\n'.join([f'    {l}' for l in __example__.splitlines()])
+__usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExamples:\n{__example__}'
 
 
 help_cmd = on_command('头像表情包', aliases={'头像相关表情包', '头像相关表情制作'}, priority=12)
@@ -71,10 +73,10 @@ async def handle(matcher: Type[Matcher], event: MessageEvent, type: str):
     try:
         msg = await make_image(type, segments)
     except DownloadError:
-        return '资源下载出错，请稍后再试'
+        await matcher.finish('资源下载出错，请稍后再试')
     except:
         logger.warning(traceback.format_exc())
-        return '出错了，请稍后再试'
+        await matcher.finish('出错了，请稍后再试')
 
     if not msg:
         await matcher.finish('出错了，请稍后再试')
