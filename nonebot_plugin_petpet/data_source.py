@@ -63,6 +63,16 @@ commands = {
         'func': littleangel,
         'convert': False
     },
+    'dont_touch': {
+        'aliases': {'不要靠近'},
+        'func': dont_touch,
+        'convert': False
+    },
+    'alike': {
+        'aliases': {'一样'},
+        'func': alike,
+        'convert': False
+    }
 }
 
 
