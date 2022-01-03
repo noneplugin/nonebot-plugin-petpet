@@ -7,7 +7,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/01/01/t8PDo9LI6lAvNej.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/01/03/x6lZHGaeQctNdwL.jpg" width="400" />
 </div>
 
 
@@ -108,8 +108,15 @@
 </div>
 
 
-- 小天使
+- 不要靠近
 
 <div align="left">
-  <img src="./examples/littleangel.jpg" width="200" />
+  <img src="./examples/dont_touch.jpg" width="200" />
+</div>
+
+
+- 一样
+
+<div align="left">
+  <img src="./examples/alike.jpg" width="200" />
 </div>

@@ -65,13 +65,11 @@ commands = {
     },
     'dont_touch': {
         'aliases': {'不要靠近'},
-        'func': dont_touch,
-        'convert': False
+        'func': dont_touch
     },
     'alike': {
         'aliases': {'一样'},
-        'func': alike,
-        'convert': False
+        'func': alike
     }
 }
 

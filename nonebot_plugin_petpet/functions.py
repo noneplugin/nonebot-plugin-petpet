@@ -247,40 +247,12 @@ async def littleangel(img: IMG, name: str, **kwargs) -> Union[str, BytesIO]:
 
 
 async def dont_touch(img: IMG, **kwargs) -> BytesIO:
-    dt = await load_image('dont_touch/0.png')
-
-    def paste(im: IMG) -> IMG:
-        im = to_jpg(im)
-        frame = to_jpg(dt)
-        im = resize(im, (170, 170))
-        frame.paste(im, (23, 231))
-        return frame
-
-    if not getattr(img, 'is_animated', False):
-        return save_jpg(paste(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(paste(img))
-        return save_gif(frames, img.info['duration'] / 1000)
+    frame = await load_image('dont_touch/0.png')
+    frame.paste(resize(img, (170, 170)), (23, 231))
+    return save_jpg(frame)
 
 
 async def alike(img: IMG, **kwargs) -> BytesIO:
-    dt = await load_image('alike/0.png')
-
-    def paste(im: IMG) -> IMG:
-        im = to_jpg(im)
-        frame = to_jpg(dt)
-        im = resize(im, (90, 90))
-        frame.paste(im, (131, 14))
-        return frame
-
-    if not getattr(img, 'is_animated', False):
-        return save_jpg(paste(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(paste(img))
-        return save_gif(frames, img.info['duration'] / 1000)
+    frame = await load_image('alike/0.png')
+    frame.paste(resize(img, (90, 90)), (131, 14))
+    return save_jpg(frame)
