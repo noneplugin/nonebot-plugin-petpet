@@ -4,8 +4,8 @@ from typing import Union
 from PIL.Image import Image as IMG
 from PIL import Image, ImageFilter, ImageDraw
 
-from .utils import to_jpg, save_jpg, save_gif, circle, rotate, resize, \
-    load_image, load_font, fit_font_size
+from .utils import DEFAULT_FONT, circle, rotate, resize, perspective, \
+    to_jpg, save_jpg, save_gif, load_image, load_font, fit_font_size
 
 
 async def petpet(img: IMG, **kwargs) -> BytesIO:
@@ -15,7 +15,7 @@ async def petpet(img: IMG, **kwargs) -> BytesIO:
     for i in range(5):
         frame = Image.new('RGBA', (112, 112), (255, 255, 255, 0))
         x, y, w, h = locs[i]
-        frame.paste(img.resize((w, h), Image.ANTIALIAS), (x, y))
+        frame.paste(resize(img, (w, h)), (x, y))
         hand = await load_image(f'petpet/{i}.png')
         frame.paste(hand, mask=hand)
         frames.append(frame)
@@ -255,4 +255,44 @@ async def dont_touch(img: IMG, **kwargs) -> BytesIO:
 async def alike(img: IMG, **kwargs) -> BytesIO:
     frame = await load_image('alike/0.png')
     frame.paste(resize(img, (90, 90)), (131, 14))
+    return save_jpg(frame)
+
+
+async def roll(img: IMG, **kwargs) -> BytesIO:
+    frames = []
+    locs = [(87, 77, 0), (96, 85, -45), (92, 79, -90), (92, 78, -135),
+            (92, 75, -180), (92, 75, -225), (93, 76, -270), (90, 80, -315)]
+    for i in range(8):
+        frame = Image.new('RGBA', (300, 300), (255, 255, 255, 0))
+        x, y, a = locs[i]
+        frame.paste(rotate(resize(img, (210, 210)), a, expand=False), (x, y))
+        bg = await load_image(f'roll/{i}.png')
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.1)
+
+
+async def play_game(img: IMG, **kwargs) -> BytesIO:
+    img = to_jpg(img).convert('RGBA')
+    img_w, img_h = img.size
+    sc_w, sc_h = (220, 160)
+    ratio = min(sc_w / img_w, sc_h / img_h)
+    img_w = int(img_w * ratio)
+    img_h = int(img_h * ratio)
+    img = resize(img, (img_w, img_h))
+
+    screen = Image.new('RGB', (sc_w, sc_h), (0, 0, 0))
+    screen.paste(img, (int((sc_w - img_w)/2), int((sc_h - img_h)/2)))
+    points = [(0, 5), (225, 0), (215, 150), (0, 165)]
+    screen = rotate(perspective(screen, points), 9)
+
+    bg = await load_image('play_game/0.png')
+    frame = Image.new('RGBA', bg.size, (255, 255, 255, 0))
+    frame.paste(screen, (161, 117))
+    frame.paste(bg, mask=bg)
+
+    font = await load_font(DEFAULT_FONT, 30)
+    draw = ImageDraw.Draw(frame)
+    draw.text((160, 440), '来玩休闲游戏啊', font=font, fill='#000000',
+              stroke_fill='#FFFFFF', stroke_width=2)
     return save_jpg(frame)
