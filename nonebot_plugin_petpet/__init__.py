@@ -27,9 +27,7 @@ __example__ = '''
 摸 自己
 摸 [图片]
 '''.strip()
-__cmd__ = '\n'.join([f'    {l}' for l in __cmd__.splitlines()])
-__example__ = '\n'.join([f'    {l}' for l in __example__.splitlines()])
-__usage__ = f'{__des__}\nUsage:\n{__cmd__}\nExamples:\n{__example__}'
+__usage__ = f'{__des__}\n\nUsage:\n{__cmd__}\n\nExamples:\n{__example__}'
 
 
 help_cmd = on_command('头像表情包', aliases={'头像相关表情包', '头像相关表情制作'}, priority=12)
@@ -93,6 +91,9 @@ async def handle(matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: st
                     segments.append(text)
                 elif text == '自己':
                     segments.append(str(event.user_id))
+                else:
+                    matcher.block = False
+                    await matcher.finish()
 
     arg_num = commands[type].get('arg_num', 1)
     if not segments and isinstance(event, GroupMessageEvent) and event.is_tome():
