@@ -7,7 +7,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/01/03/x6lZHGaeQctNdwL.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/01/04/A3OWEtNcjygxPIf.jpg" width="400" />
 </div>
 
 
@@ -126,4 +126,18 @@
 
 <div align="left">
   <img src="./examples/alike.jpg" width="200" />
+</div>
+
+
+- 滚
+
+<div align="left">
+  <img src="./examples/roll.gif" width="200" />
+</div>
+
+
+- 玩游戏
+
+<div align="left">
+  <img src="./examples/play_game.png" width="200" />
 </div>
