@@ -291,8 +291,8 @@ async def play_game(img: IMG, **kwargs) -> BytesIO:
     frame.paste(screen, (161, 117))
     frame.paste(bg, mask=bg)
 
-    font = await load_font(DEFAULT_FONT, 30)
+    font = await load_font(DEFAULT_FONT, 35)
     draw = ImageDraw.Draw(frame)
-    draw.text((160, 440), '来玩休闲游戏啊', font=font, fill='#000000',
+    draw.text((150, 430), '来玩休闲游戏啊', font=font, fill='#000000',
               stroke_fill='#FFFFFF', stroke_width=2)
     return save_jpg(frame)
