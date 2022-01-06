@@ -1,14 +1,16 @@
 import random
 from io import BytesIO
-from typing import Union
+from typing import Union, List
 from PIL.Image import Image as IMG
 from PIL import Image, ImageFilter, ImageDraw
 
+from .models import UserInfo
 from .utils import DEFAULT_FONT, circle, rotate, resize, perspective, \
     to_jpg, save_jpg, save_gif, load_image, load_font, fit_font_size
 
 
-async def petpet(img: IMG, **kwargs) -> BytesIO:
+async def petpet(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     frames = []
     locs = [(14, 20, 98, 98), (12, 33, 101, 85), (8, 40, 110, 76),
             (10, 33, 102, 84), (12, 20, 98, 98)]
@@ -22,7 +24,13 @@ async def petpet(img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.06)
 
 
-async def kiss(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
+async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
+    if len(users) >= 2:
+        self_img = users[0].img
+        user_img = users[1].img
+    else:
+        self_img = sender.img
+        user_img = users[0].img
     user_locs = [(58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
                  (54, 100), (46, 100), (60, 100), (35, 115), (20, 120), (40, 96)]
     self_locs = [(92, 64), (135, 40), (84, 105), (80, 110), (155, 82), (60, 96), (50, 80),
@@ -38,7 +46,13 @@ async def kiss(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def rub(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
+async def rub(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
+    if len(users) >= 2:
+        self_img = users[0].img
+        user_img = users[1].img
+    else:
+        self_img = sender.img
+        user_img = users[0].img
     user_locs = [(39, 91, 75, 75), (49, 101, 75, 75), (67, 98, 75, 75),
                  (55, 86, 75, 75), (61, 109, 75, 75), (65, 101, 75, 75)]
     self_locs = [(102, 95, 70, 80, 0), (108, 60, 50, 100, 0), (97, 18, 65, 95, 0),
@@ -56,7 +70,8 @@ async def rub(self_img: IMG, user_img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def play(img: IMG, **kwargs) -> BytesIO:
+async def play(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     locs = [(180, 60, 100, 100), (184, 75, 100, 100), (183, 98, 100, 100),
             (179, 118, 110, 100), (156, 194, 150, 48), (178, 136, 122, 69),
             (175, 66, 122, 85), (170, 42, 130, 96), (175, 34, 118, 95),
@@ -84,7 +99,8 @@ async def play(img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.06)
 
 
-async def pat(img: IMG, **kwargs) -> BytesIO:
+async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
     img_frames = []
     for i in range(10):
@@ -100,7 +116,8 @@ async def pat(img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.085)
 
 
-async def rip(img: IMG, **kwargs) -> BytesIO:
+async def rip(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     rip = await load_image('rip/0.png')
     frame = Image.new('RGBA', rip.size, (255, 255, 255, 0))
     left = rotate(resize(img, (385, 385)), 24)
@@ -111,7 +128,8 @@ async def rip(img: IMG, **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def throw(img: IMG, **kwargs) -> BytesIO:
+async def throw(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     img = resize(rotate(circle(img), random.randint(1, 360),
                         expand=False), (143, 143))
     frame = await load_image('throw/0.png')
@@ -119,14 +137,16 @@ async def throw(img: IMG, **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def crawl(img: IMG, **kwargs) -> BytesIO:
+async def crawl(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     img = resize(circle(img), (100, 100))
     frame = await load_image('crawl/{:02d}.jpg'.format(random.randint(1, 92)))
     frame.paste(img, (0, 400), mask=img)
     return save_jpg(frame)
 
 
-async def support(img: IMG, **kwargs) -> BytesIO:
+async def support(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     support = await load_image('support/0.png')
     frame = Image.new('RGBA', support.size, (255, 255, 255, 0))
     img = rotate(resize(img, (815, 815)), 23)
@@ -135,7 +155,8 @@ async def support(img: IMG, **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def always(img: IMG, **kwargs) -> BytesIO:
+async def always(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     always = await load_image('always/0.png')
     w, h = img.size
     h1 = int(h / w * 300)
@@ -160,7 +181,8 @@ async def always(img: IMG, **kwargs) -> BytesIO:
         return save_gif(frames, img.info['duration'] / 1000)
 
 
-async def loading(img: IMG, **kwargs) -> BytesIO:
+async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     bg = await load_image('loading/0.png')
     icon = await load_image('loading/1.png')
     w, h = img.size
@@ -196,7 +218,8 @@ async def loading(img: IMG, **kwargs) -> BytesIO:
         return save_gif(frames, img.info['duration'] / 1000)
 
 
-async def turn(img: IMG, **kwargs) -> BytesIO:
+async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     img = circle(img)
     frames = []
     for i in range(0, 360, 10):
@@ -208,7 +231,8 @@ async def turn(img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def littleangel(img: IMG, name: str, **kwargs) -> Union[str, BytesIO]:
+async def littleangel(users: List[UserInfo], args: List[str] = [], **kwargs) -> Union[str, BytesIO]:
+    img = users[0].img
     img = to_jpg(img).convert('RGBA')
     img_w, img_h = img.size
     max_len = max(img_w, img_h)
@@ -227,12 +251,12 @@ async def littleangel(img: IMG, name: str, **kwargs) -> Union[str, BytesIO]:
     draw.text((300 - text_w / 2, img_h + 120), text, font=font, fill=(0, 0, 0))
 
     font = await load_font(fontname, 26)
-    text = '她没失踪也没怎么样  我只是觉得你们都该看一下'
+    ta = '他' if users[0].gender == 'male' else '她'
+    text = f'{ta}没失踪也没怎么样  我只是觉得你们都该看一下'
     text_w, _ = font.getsize(text)
     draw.text((300 - text_w / 2, img_h + 180), text, font=font, fill=(0, 0, 0))
 
-    if not name:
-        name = '她'
+    name = (args and args[0]) or users[0].name or ta
     text = f'请问你们看到{name}了吗?'
     fontsize = await fit_font_size(text, 560, 110, fontname, 70, 25)
     if not fontsize:
@@ -246,19 +270,22 @@ async def littleangel(img: IMG, name: str, **kwargs) -> Union[str, BytesIO]:
     return save_jpg(bg)
 
 
-async def dont_touch(img: IMG, **kwargs) -> BytesIO:
+async def dont_touch(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     frame = await load_image('dont_touch/0.png')
     frame.paste(resize(img, (170, 170)), (23, 231))
     return save_jpg(frame)
 
 
-async def alike(img: IMG, **kwargs) -> BytesIO:
+async def alike(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     frame = await load_image('alike/0.png')
     frame.paste(resize(img, (90, 90)), (131, 14))
     return save_jpg(frame)
 
 
-async def roll(img: IMG, **kwargs) -> BytesIO:
+async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     frames = []
     locs = [(87, 77, 0), (96, 85, -45), (92, 79, -90), (92, 78, -135),
             (92, 75, -180), (92, 75, -225), (93, 76, -270), (90, 80, -315)]
@@ -272,7 +299,8 @@ async def roll(img: IMG, **kwargs) -> BytesIO:
     return save_gif(frames, 0.1)
 
 
-async def play_game(img: IMG, **kwargs) -> BytesIO:
+async def play_game(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
     img = to_jpg(img).convert('RGBA')
     img_w, img_h = img.size
     sc_w, sc_h = (220, 160)

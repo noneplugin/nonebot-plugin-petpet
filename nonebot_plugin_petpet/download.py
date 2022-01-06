@@ -12,6 +12,10 @@ class DownloadError(Exception):
     pass
 
 
+class ResourceError(Exception):
+    pass
+
+
 async def download_url(url: str) -> bytes:
     async with httpx.AsyncClient() as client:
         for i in range(3):
@@ -35,7 +39,7 @@ async def get_resource(path: str, name: str) -> bytes:
             with file_path.open('wb') as f:
                 f.write(data)
     if not file_path.exists():
-        raise DownloadError
+        raise ResourceError
     return file_path.read_bytes()
 
 
@@ -49,6 +53,7 @@ async def get_font(name: str) -> bytes:
     return await get_resource('fonts', name)
 
 
+@cached(ttl=60)
 async def download_avatar(user_id: str) -> bytes:
     url = f"http://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640"
     data = await download_url(url)

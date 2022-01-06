@@ -1,5 +1,5 @@
 import traceback
-from typing import Type
+from typing import Type, List
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler, T_State
@@ -7,8 +7,9 @@ from nonebot.adapters.cqhttp import Bot, MessageSegment, Event, MessageEvent, Gr
 from nonebot.log import logger
 
 from .data_source import commands, make_image
-from .download import DownloadError
+from .download import DownloadError, ResourceError
 from .utils import text_to_pic
+from .models import UserInfo
 
 
 __help__plugin_name__ = 'petpet'
@@ -44,73 +45,71 @@ def is_qq(msg: str):
     return msg.isdigit() and 11 >= len(msg) >= 5
 
 
-async def get_nickname(bot: Bot, user_id: int, group_id: int = None):
-    if group_id:
-        info = await bot.get_group_member_info(group_id=group_id, user_id=user_id)
-        return info.get('card', '') or info.get('nickname', '')
+async def get_user_info(bot: Bot, user: UserInfo):
+    if not user.qq:
+        return
+
+    if user.group:
+        info = await bot.get_group_member_info(group_id=user.group, user_id=user.qq)
+        user.name = info.get('card', '') or info.get('nickname', '')
+        user.gender = info.get('sex', '')
     else:
-        info = await bot.get_stranger_info(user_id=user_id)
-        return info.get('nickname', '')
-
-
-async def get_user_name(bot: Bot, event: MessageEvent):
-    msg = event.get_message()
-    msg_str = event.get_plaintext().strip()
-
-    if msg_str:
-        text = msg_str.strip().split()[0]
-        if text:
-            if is_qq(text):
-                return await get_nickname(bot, int(text))
-            elif text == '自己':
-                return event.sender.card or event.sender.nickname
-            else:
-                return text
-
-    for msg_seg in msg:
-        if isinstance(event, GroupMessageEvent) and msg_seg.type == 'at':
-            return await get_nickname(bot, msg_seg.data['qq'], event.group_id)
-
-    if isinstance(event, GroupMessageEvent) and event.is_tome():
-        return await get_nickname(bot, event.self_id, event.group_id)
-    return ''
+        info = await bot.get_stranger_info(user_id=user.qq)
+        user.name = info.get('nickname', '')
+        user.gender = info.get('sex', '')
 
 
 async def handle(matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: str):
+    users: List[UserInfo] = []
+    sender: UserInfo = UserInfo(qq=str(event.user_id))
+    args: List[str] = []
+
     msg = event.get_message()
-    segments = []
-    name = await get_user_name(bot, event)
     for msg_seg in msg:
         if msg_seg.type == 'at':
-            segments.append(msg_seg.data['qq'])
+            users.append(UserInfo(
+                qq=msg_seg.data['qq'],
+                group=str(event.group_id)
+                if isinstance(event, GroupMessageEvent) else ''
+            ))
         elif msg_seg.type == 'image':
-            segments.append(msg_seg.data['url'])
+            users.append(UserInfo(img_url=msg_seg.data['url']))
         elif msg_seg.type == 'text':
             for text in str(msg_seg.data['text']).split():
                 if is_qq(text):
-                    segments.append(text)
+                    users.append(UserInfo(qq=text))
                 elif text == '自己':
-                    segments.append(str(event.user_id))
+                    users.append(UserInfo(
+                        qq=str(event.user_id),
+                        group=str(event.group_id)
+                        if isinstance(event, GroupMessageEvent) else ''
+                    ))
                 else:
-                    matcher.block = False
-                    await matcher.finish()
+                    args.append(text)
 
-    arg_num = commands[type].get('arg_num', 1)
-    if not segments and isinstance(event, GroupMessageEvent) and event.is_tome():
-        segments.append(str(event.self_id))
-    if segments and len(segments) == arg_num - 1:
-        segments.insert(0, str(event.user_id))
+    arg_num = commands[type].get('arg_num', 0)
+    if len(args) > arg_num:
+        matcher.block = False
+        await matcher.finish()
 
-    segments = segments[:arg_num]
-    if len(segments) != arg_num:
+    if not users and isinstance(event, GroupMessageEvent) and event.is_tome():
+        users.append(UserInfo(qq=str(event.self_id),
+                     group=str(event.group_id)))
+    if not users:
         matcher.block = False
         await matcher.finish()
 
     matcher.block = True
 
+    await get_user_info(bot, sender)
+    for user in users:
+        await get_user_info(bot, user)
+
     try:
-        msg = await make_image(type, segments, name=name)
+        msg = await make_image(type, sender, users, args=args)
     except DownloadError:
+        await matcher.finish('图片下载出错，请稍后再试')
+    except ResourceError:
         await matcher.finish('资源下载出错，请稍后再试')
     except:
         logger.warning(traceback.format_exc())

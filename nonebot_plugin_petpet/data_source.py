@@ -2,6 +2,7 @@ from typing import List, Union
 
 from .download import download_url, download_avatar
 from .utils import to_image
+from .models import UserInfo
 from .functions import *
 
 
@@ -12,13 +13,11 @@ commands = {
     },
     'kiss': {
         'aliases': {'亲', '亲亲'},
-        'func': kiss,
-        'arg_num': 2
+        'func': kiss
     },
     'rub': {
         'aliases': {'贴', '贴贴', '蹭', '蹭蹭'},
-        'func': rub,
-        'arg_num': 2
+        'func': rub
     },
     'play': {
         'aliases': {'顶', '玩'},
@@ -61,7 +60,8 @@ commands = {
     'littleangel': {
         'aliases': {'小天使'},
         'func': littleangel,
-        'convert': False
+        'convert': False,
+        'arg_num': 1
     },
     'dont_touch': {
         'aliases': {'不要靠近'},
@@ -83,16 +83,22 @@ commands = {
 }
 
 
-async def make_image(type: str, segments: List[str], name: str = '') -> Union[str, BytesIO]:
+async def download_image(user: UserInfo, convert: bool = True):
+    if user.qq:
+        user.img = await download_avatar(user.qq)
+    elif user.img_url:
+        user.img = await download_url(user.img_url)
+
+    if user.img:
+        user.img = to_image(user.img, convert)
+
+
+async def make_image(type: str, sender: UserInfo, users: List[UserInfo], args: List[str] = []) -> Union[str, BytesIO]:
     convert = commands[type].get('convert', True)
     func = commands[type]['func']
 
-    images = []
-    for s in segments:
-        if s.isdigit():
-            images.append(await download_avatar(s))
-        else:
-            images.append(await download_url(s))
+    await download_image(sender, convert)
+    for user in users:
+        await download_image(user, convert)
 
-    images = [to_image(i, convert) for i in images]
-    return await func(*images, name=name)
+    return await func(users, sender=sender, args=args)
