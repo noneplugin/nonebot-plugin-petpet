@@ -3,7 +3,8 @@ from typing import List
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler
-from nonebot.adapters.onebot.v11 import Bot, MessageSegment, MessageEvent, GroupMessageEvent
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, MessageEvent, GroupMessageEvent
 from nonebot.log import logger
 
 from .data_source import commands, make_image
@@ -60,12 +61,11 @@ async def get_user_info(bot: Bot, user: UserInfo):
         user.gender = info.get('sex', '')
 
 
-async def handle(matcher: Matcher, bot: Bot, event: MessageEvent, type: str):
+async def handle(matcher: Matcher, bot: Bot, event: MessageEvent, type: str, msg: Message):
     users: List[UserInfo] = []
     sender: UserInfo = UserInfo(qq=str(event.user_id))
     args: List[str] = []
 
-    msg = event.get_message()
     for msg_seg in msg:
         if msg_seg.type == 'at':
             users.append(UserInfo(
@@ -127,13 +127,13 @@ async def handle(matcher: Matcher, bot: Bot, event: MessageEvent, type: str):
 def create_matchers():
 
     def create_handler(type: str) -> T_Handler:
-        async def handler(bot: Bot, event: MessageEvent):
-            await handle(matcher, bot, event, type)
+        async def handler(bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
+            await handle(matcher, bot, event, type, msg)
         return handler
 
     for command, params in commands.items():
         matcher = on_command(command, aliases=params['aliases'],
-                             block=True, priority=7)
+                             block=True, priority=12)
         matcher.append_handler(create_handler(command))
 
 
