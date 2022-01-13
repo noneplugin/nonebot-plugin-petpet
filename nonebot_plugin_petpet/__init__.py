@@ -1,9 +1,9 @@
 import traceback
-from typing import Type, List
+from typing import List
 from nonebot import on_command
 from nonebot.matcher import Matcher
-from nonebot.typing import T_Handler, T_State
-from nonebot.adapters.cqhttp import Bot, MessageSegment, Event, MessageEvent, GroupMessageEvent
+from nonebot.typing import T_Handler
+from nonebot.adapters.onebot.v11 import Bot, MessageSegment, MessageEvent, GroupMessageEvent
 from nonebot.log import logger
 
 from .data_source import commands, make_image
@@ -31,11 +31,12 @@ __example__ = '''
 __usage__ = f'{__des__}\n\nUsage:\n{__cmd__}\n\nExamples:\n{__example__}'
 
 
-help_cmd = on_command('头像表情包', aliases={'头像相关表情包', '头像相关表情制作'}, priority=12)
+help_cmd = on_command('头像表情包', aliases={'头像相关表情包', '头像相关表情制作'},
+                      block=True, priority=12)
 
 
 @help_cmd.handle()
-async def _(bot: Bot, event: Event, state: T_State):
+async def _():
     img = await text_to_pic(__usage__)
     if img:
         await help_cmd.finish(MessageSegment.image(img))
@@ -59,7 +60,7 @@ async def get_user_info(bot: Bot, user: UserInfo):
         user.gender = info.get('sex', '')
 
 
-async def handle(matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: str):
+async def handle(matcher: Matcher, bot: Bot, event: MessageEvent, type: str):
     users: List[UserInfo] = []
     sender: UserInfo = UserInfo(qq=str(event.user_id))
     args: List[str] = []
@@ -126,12 +127,13 @@ async def handle(matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: st
 def create_matchers():
 
     def create_handler(type: str) -> T_Handler:
-        async def handler(bot: Bot, event: Event, state: T_State):
+        async def handler(bot: Bot, event: MessageEvent):
             await handle(matcher, bot, event, type)
         return handler
 
     for command, params in commands.items():
-        matcher = on_command(command, aliases=params['aliases'], priority=7)
+        matcher = on_command(command, aliases=params['aliases'],
+                             block=True, priority=7)
         matcher.append_handler(create_handler(command))
 
 
