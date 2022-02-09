@@ -7,95 +7,47 @@ from .functions import *
 
 
 commands = {
-    'petpet': {
-        'aliases': {'摸', '摸摸', 'rua'},
-        'func': petpet
+    "_petpet": {"aliases": {"摸", "摸摸", "rua"}, "func": petpet},
+    "_kiss": {"aliases": {"亲", "亲亲"}, "func": kiss},
+    "_rub": {"aliases": {"贴", "贴贴", "蹭", "蹭蹭"}, "func": rub},
+    "_play": {"aliases": {"顶", "玩"}, "func": play},
+    "_pat": {"aliases": {"拍"}, "func": pat},
+    "_rip": {"aliases": {"撕"}, "func": rip},
+    "_throw": {"aliases": {"丢", "扔"}, "func": throw},
+    "_crawl": {"aliases": {"爬"}, "func": crawl},
+    "_support": {"aliases": {"精神支柱"}, "func": support},
+    "_always": {"aliases": {"一直"}, "func": always, "convert": False},
+    "_loading": {"aliases": {"加载中"}, "func": loading, "convert": False},
+    "_turn": {"aliases": {"转"}, "func": turn},
+    "_littleangel": {
+        "aliases": {"小天使"},
+        "func": littleangel,
+        "convert": False,
+        "arg_num": 1,
     },
-    'kiss': {
-        'aliases': {'亲', '亲亲'},
-        'func': kiss
-    },
-    'rub': {
-        'aliases': {'贴', '贴贴', '蹭', '蹭蹭'},
-        'func': rub
-    },
-    'play': {
-        'aliases': {'顶', '玩'},
-        'func': play
-    },
-    'pat': {
-        'aliases': {'拍'},
-        'func': pat
-    },
-    'rip': {
-        'aliases': {'撕'},
-        'func': rip
-    },
-    'throw': {
-        'aliases': {'丢', '扔'},
-        'func': throw
-    },
-    'crawl': {
-        'aliases': {'爬'},
-        'func': crawl
-    },
-    'support': {
-        'aliases': {'精神支柱'},
-        'func': support
-    },
-    'always': {
-        'aliases': {'一直'},
-        'func': always,
-        'convert': False
-    },
-    'loading': {
-        'aliases': {'加载中'},
-        'func': loading,
-        'convert': False
-    },
-    'turn': {
-        'aliases': {'转'},
-        'func': turn
-    },
-    'littleangel': {
-        'aliases': {'小天使'},
-        'func': littleangel,
-        'convert': False,
-        'arg_num': 1
-    },
-    'dont_touch': {
-        'aliases': {'不要靠近'},
-        'func': dont_touch
-    },
-    'alike': {
-        'aliases': {'一样'},
-        'func': alike
-    },
-    'roll': {
-        'aliases': {'滚'},
-        'func': roll
-    },
-    'play_game': {
-        'aliases': {'玩游戏', '来玩游戏'},
-        'func': play_game,
-        'convert': False
-    }
+    "_dont_touch": {"aliases": {"不要靠近"}, "func": dont_touch},
+    "_alike": {"aliases": {"一样"}, "func": alike},
+    "_roll": {"aliases": {"滚"}, "func": roll},
+    "_play_game": {"aliases": {"玩游戏", "来玩游戏"}, "func": play_game, "convert": False},
 }
 
 
 async def download_image(user: UserInfo, convert: bool = True):
+    img = None
     if user.qq:
-        user.img = await download_avatar(user.qq)
+        img = await download_avatar(user.qq)
     elif user.img_url:
-        user.img = await download_url(user.img_url)
+        img = await download_url(user.img_url)
 
-    if user.img:
-        user.img = to_image(user.img, convert)
+    if img:
+        user.img = to_image(img, convert)
 
 
-async def make_image(type: str, sender: UserInfo, users: List[UserInfo], args: List[str] = []) -> Union[str, BytesIO]:
-    convert = commands[type].get('convert', True)
-    func = commands[type]['func']
+async def make_image(
+    type: str, sender: UserInfo, users: List[UserInfo], args: List[str] = []
+) -> Union[str, BytesIO]:
+    convert = commands[type].get("convert", True)
+    func = commands[type]["func"]
 
     await download_image(sender, convert)
     for user in users:
