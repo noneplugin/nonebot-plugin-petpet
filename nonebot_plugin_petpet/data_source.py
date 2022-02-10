@@ -29,6 +29,7 @@ commands = {
     "_alike": {"aliases": {"一样"}, "func": alike},
     "_roll": {"aliases": {"滚"}, "func": roll},
     "_play_game": {"aliases": {"玩游戏", "来玩游戏"}, "func": play_game, "convert": False},
+    "_worship": {"aliases": {"膜", "膜拜"}, "func": worship},
 }
 
 
