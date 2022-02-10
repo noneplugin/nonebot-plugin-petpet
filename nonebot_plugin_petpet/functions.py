@@ -444,7 +444,7 @@ async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
     frames = []
     for i in range(10):
         frame = Image.new("RGBA", (300, 169), (255, 255, 255, 0))
-        frame.paste(paint, (0, -30))
+        frame.paste(paint)
         bg = await load_image(f"worship/{i}.png")
         frame.paste(bg, mask=bg)
         frames.append(frame)
