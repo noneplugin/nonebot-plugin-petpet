@@ -440,7 +440,7 @@ async def play_game(users: List[UserInfo], **kwargs) -> BytesIO:
 async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     points = [(0, -30), (135, 17), (135, 145), (0, 140)]
-    paint = perspective(img, points)
+    paint = perspective(resize(img, (150, 150)), points)
     frames = []
     for i in range(10):
         frame = Image.new("RGBA", (300, 169), (255, 255, 255, 0))
