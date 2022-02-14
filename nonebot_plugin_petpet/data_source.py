@@ -30,6 +30,8 @@ commands = {
     "_roll": {"aliases": {"滚"}, "func": roll},
     "_play_game": {"aliases": {"玩游戏", "来玩游戏"}, "func": play_game, "convert": False},
     "_worship": {"aliases": {"膜", "膜拜"}, "func": worship},
+    "_eat": {"aliases": {"吃"}, "func": eat},
+    "_bite": {"aliases": {"啃"}, "func": bite},
 }
 
 
