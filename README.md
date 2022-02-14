@@ -7,7 +7,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/01/04/A3OWEtNcjygxPIf.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/02/15/PnCZ1UsJTtfohV8.jpg" width="400" />
 </div>
 
 
@@ -147,4 +147,18 @@
 
 <div align="left">
   <img src="./examples/worship.gif" width="200" />
+</div>
+
+
+- 吃
+
+<div align="left">
+  <img src="./examples/eat.gif" width="200" />
+</div>
+
+
+- 啃
+
+<div align="left">
+  <img src="./examples/bite.gif" width="200" />
 </div>
