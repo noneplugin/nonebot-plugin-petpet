@@ -7,7 +7,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/02/15/PnCZ1UsJTtfohV8.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/02/23/kNcRzFTgoVZydet.jpg" width="400" />
 </div>
 
 
@@ -27,138 +27,145 @@
 - 摸
 
 <div align="left">
-  <img src="./examples/petpet.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/oNGVO4iuCk73g8S.gif" width="200" />
 </div>
 
 
 - 亲
 
 <div align="left">
-  <img src="./examples/kiss.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/RuoiqP8plJBgw9K.gif" width="200" />
 </div>
 
 
 - 贴/蹭
 
 <div align="left">
-  <img src="./examples/rub.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/QDCE5YZIfroavub.gif" width="200" />
 </div>
 
 
 - 顶/玩
 
 <div align="left">
-  <img src="./examples/play.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/YwxA7fFgWyshuZX.gif" width="200" />
 </div>
 
 
 - 拍
 
 <div align="left">
-  <img src="./examples/pat.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/5mv6pFJMNtzHhcl.gif" width="200" />
 </div>
 
 
 - 撕
 
 <div align="left">
-  <img src="./examples/rip.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/DNIix6W1OmqknhU.jpg" width="200" />
 </div>
 
 
 - 丢
 
 <div align="left">
-  <img src="./examples/throw.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/LlDrSGYdpcqEINu.jpg" width="200" />
 </div>
 
 
 - 爬
 
 <div align="left">
-  <img src="./examples/crawl.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/hfmAToDuF2actC1.jpg" width="200" />
 </div>
 
 
 - 精神支柱
 
 <div align="left">
-  <img src="./examples/support.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/WwjNmiz4JXbuE1B.jpg" width="200" />
 </div>
 
 
 - 一直
 
 <div align="left">
-  <img src="./examples/always.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/dAf9Z3kMDwYcRWv.gif" width="200" />
 </div>
 
 
 - 加载中
 
 <div align="left">
-  <img src="./examples/loading.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/751Oudrah6gBsWe.gif" width="200" />
 </div>
 
 
 - 转
 
 <div align="left">
-  <img src="./examples/turn.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/HoZaCcDIRgs784Y.gif" width="200" />
 </div>
 
 
 - 小天使
 
 <div align="left">
-  <img src="./examples/littleangel.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/ZgD1WSMRxLIymCq.jpg" width="200" />
 </div>
 
 
 - 不要靠近
 
 <div align="left">
-  <img src="./examples/dont_touch.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/BTdkAzvhRDLOa3U.jpg" width="200" />
 </div>
 
 
 - 一样
 
 <div align="left">
-  <img src="./examples/alike.jpg" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/SwAXoOgfdjP4ecE.jpg" width="200" />
 </div>
 
 
 - 滚
 
 <div align="left">
-  <img src="./examples/roll.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/atzZsSE53UDIlOe.gif" width="200" />
 </div>
 
 
 - 玩游戏
 
 <div align="left">
-  <img src="./examples/play_game.png" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/Xx34I7nT8HjtfKi.png" width="200" />
 </div>
 
 
 - 膜
 
 <div align="left">
-  <img src="./examples/worship.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/nPgBJwV5qDb1s9l.gif" width="200" />
 </div>
 
 
 - 吃
 
 <div align="left">
-  <img src="./examples/eat.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/ba8cCtIWEvX9sS1.gif" width="200" />
 </div>
 
 
 - 啃
 
 <div align="left">
-  <img src="./examples/bite.gif" width="200" />
+  <img src="https://s2.loli.net/2022/02/23/k82n76U4KoNwsr3.gif" width="200" />
+</div>
+
+
+- 出警
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/02/23/3OIxnSZymAfudw2.jpg" width="200" />
 </div>
