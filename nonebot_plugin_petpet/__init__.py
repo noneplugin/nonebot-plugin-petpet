@@ -103,7 +103,9 @@ async def handle(
                         )
                     )
                 else:
-                    args.append(text)
+                    text = text.strip()
+                    if text:
+                        args.append(text)
 
     arg_num = commands[type].get("arg_num", 0)
     if len(args) > arg_num:
