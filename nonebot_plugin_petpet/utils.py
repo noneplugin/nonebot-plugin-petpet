@@ -7,6 +7,7 @@ from PIL.ImageFont import FreeTypeFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 from .download import get_font, get_image
+from .models import Command
 
 DEFAULT_FONT = "SourceHanSansSC-Regular.otf"
 
@@ -101,22 +102,6 @@ async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     return ImageFont.truetype(BytesIO(font), fontsize, encoding="utf-8")
 
 
-async def text_to_pic(
-    text: str,
-    fontsize: int = 30,
-    padding: int = 50,
-    bg_color=(255, 255, 255),
-    font_color=(0, 0, 0),
-) -> BytesIO:
-    font = await load_font(DEFAULT_FONT, fontsize)
-    text_w, text_h = font.getsize_multiline(text)
-
-    frame = Image.new("RGB", (text_w + padding * 2, text_h + padding * 2), bg_color)
-    draw = ImageDraw.Draw(frame)
-    draw.multiline_text((padding, padding), text, font=font, fill=font_color)
-    return save_jpg(frame)
-
-
 async def fit_font_size(
     text: str,
     max_width: float,
@@ -138,3 +123,35 @@ async def fit_font_size(
             return fontsize
         if fontsize < min_fontsize:
             return 0
+
+
+async def help_image(commands: List[Command]) -> BytesIO:
+    font = await load_font(DEFAULT_FONT, 30)
+    padding = 10
+
+    def text_img(text: str) -> IMG:
+        w, h = font.getsize_multiline(text)
+        img = Image.new("RGB", (w + padding * 2, h + padding * 2), "white")
+        draw = ImageDraw.Draw(img)
+        draw.multiline_text((padding / 2, padding / 2), text, font=font, fill="black")
+        return img
+
+    def cmd_text(cmds: List[Command], start: int = 1) -> str:
+        return "\n".join(
+            [f"{i + start}. " + "/".join(cmd.keywords) for i, cmd in enumerate(cmds)]
+        )
+
+    text1 = "摸头等头像相关表情制作\n触发方式：指令 + @user/qq/自己/图片\n支持的指令："
+    idx = int(len(commands) / 2) + 1
+    img1 = text_img(text1)
+    text2 = cmd_text(commands[:idx])
+    img2 = text_img(text2)
+    text3 = cmd_text(commands[idx:], start=idx + 1)
+    img3 = text_img(text3)
+    w = max(img1.width, img2.width + img2.width + padding)
+    h = img1.height + padding + max(img2.height, img2.height)
+    img = Image.new("RGB", (w + padding * 2, h + padding * 2), "white")
+    img.paste(img1, (padding, padding))
+    img.paste(img2, (padding, img1.height + padding))
+    img.paste(img3, (img2.width + padding, img1.height + padding))
+    return save_jpg(img)

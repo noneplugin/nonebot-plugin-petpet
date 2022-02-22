@@ -13,23 +13,17 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.log import logger
 
-from .data_source import commands, make_image
+from .data_source import make_image, commands
 from .download import DownloadError, ResourceError
-from .utils import text_to_pic
-from .models import UserInfo
+from .utils import help_image
+from .models import UserInfo, Command
 
 
 __help__plugin_name__ = "petpet"
 __des__ = "摸头等头像相关表情制作"
-petpet_help = [
-    f"{i}. {'/'.join(list(c['aliases']))}"
-    for i, c in enumerate(commands.values(), start=1)
-]
-petpet_help = "\n".join(petpet_help)
 __cmd__ = f"""
 触发方式：指令 + @user/qq/自己/图片
-支持的指令：
-{petpet_help}
+发送“头像表情包”查看支持的指令
 """.strip()
 __example__ = """
 摸 @小Q
@@ -45,7 +39,7 @@ help_cmd = on_command("头像表情包", aliases={"头像相关表情包", "头�
 
 @help_cmd.handle()
 async def _():
-    img = await text_to_pic(__usage__)
+    img = await help_image(commands)
     if img:
         await help_cmd.finish(MessageSegment.image(img))
 
@@ -71,7 +65,11 @@ async def get_user_info(bot: Bot, user: UserInfo):
 
 
 async def handle(
-    matcher: Type[Matcher], bot: Bot, event: MessageEvent, type: str, msg: Message
+    matcher: Type[Matcher],
+    bot: Bot,
+    event: MessageEvent,
+    command: Command,
+    msg: Message,
 ):
     users: List[UserInfo] = []
     sender: UserInfo = UserInfo(qq=str(event.user_id))
@@ -107,8 +105,7 @@ async def handle(
                     if text:
                         args.append(text)
 
-    arg_num = commands[type].get("arg_num", 0)
-    if len(args) > arg_num:
+    if len(args) > command.arg_num:
         matcher.block = False
         await matcher.finish()
 
@@ -125,7 +122,7 @@ async def handle(
         await get_user_info(bot, user)
 
     try:
-        res = await make_image(type, sender, users, args=args)
+        res = await make_image(command, sender, users, args=args)
     except DownloadError:
         await matcher.finish("图片下载出错，请稍后再试")
     except ResourceError:
@@ -143,15 +140,15 @@ async def handle(
 
 
 def create_matchers():
-    def create_handler(type: str) -> T_Handler:
+    def create_handler(command: Command) -> T_Handler:
         async def handler(bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
-            await handle(matcher, bot, event, type, msg)
+            await handle(matcher, bot, event, command, msg)
 
         return handler
 
-    for command, params in commands.items():
+    for command in commands:
         matcher = on_command(
-            command, aliases=params["aliases"], block=True, priority=12
+            command.keywords[0], aliases=set(command.keywords), block=True, priority=12
         )
         matcher.append_handler(create_handler(command))
 

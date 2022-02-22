@@ -353,7 +353,7 @@ async def littleangel(
     text_w, _ = font.getsize(text)
     draw.text((300 - text_w / 2, img_h + 180), text, font=font, fill=(0, 0, 0))
 
-    name = (args and args[0]) or users[0].name or ta
+    name = (args[0] if args else "") or users[0].name or ta
     text = f"请问你们看到{name}了吗?"
     fontsize = await fit_font_size(text, 560, 110, fontname, 70, 25)
     if not fontsize:
@@ -487,3 +487,12 @@ async def bite(users: List[UserInfo], **kwargs) -> BytesIO:
         frames.append(frame)
     frames.extend(raw_frames[6:])
     return save_gif(frames, 0.07)
+
+
+async def police(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    frame = await load_image("police/0.png")
+    bg = Image.new("RGBA", frame.size)
+    bg.paste(resize(img, (245, 245)), (224, 46))
+    bg.paste(frame, mask=frame)
+    return save_jpg(bg)
