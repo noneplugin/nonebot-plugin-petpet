@@ -496,3 +496,61 @@ async def police(users: List[UserInfo], **kwargs) -> BytesIO:
     bg.paste(resize(img, (245, 245)), (224, 46))
     bg.paste(frame, mask=frame)
     return save_jpg(bg)
+
+
+async def ask(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    img = resize(img, (640, int(img.height * 640 / img.width)))
+
+    img_w, img_h = img.size
+    mask_h = 150
+    start_t = 180
+    gradient = Image.new("L", (1, img_h))
+    for y in range(img_h):
+        t = 0 if y < img_h - mask_h else img_h - y + start_t - mask_h
+        gradient.putpixel((0, y), t)
+    alpha = gradient.resize((img_w, img_h))
+    mask = Image.new("RGBA", (img_w, img_h))
+    mask.putalpha(alpha)
+    mask = mask.filter(ImageFilter.GaussianBlur(radius=3))
+    img = Image.alpha_composite(img, mask)
+
+    name = (args[0] if args else "") or users[0].name
+    ta = "他" if users[0].gender == "male" else "她"
+    if not name:
+        return "找不到名字，加上名字再试吧~"
+
+    font = await load_font("SourceHanSansSC-Bold.otf", 25)
+    draw = ImageDraw.Draw(img)
+    start_h = img_h - mask_h
+    start_w = 30
+    text_w = font.getsize(name)[0]
+    line_w = text_w + 200
+    draw.text(
+        (start_w + (line_w - text_w) / 2, start_h + 5), name, font=font, fill="orange"
+    )
+    draw.line(
+        (start_w, start_h + 45, start_w + line_w, start_h + 45), fill="orange", width=2
+    )
+    text_w = font.getsize(f"{name}不知道哦")[0]
+    draw.text(
+        (start_w + (line_w - text_w) / 2, start_h + 50),
+        f"{name}不知道哦。",
+        font=font,
+        fill="white",
+    )
+
+    sep_w = 30
+    sep_h = 80
+    bg = Image.new("RGBA", (img_w + sep_w * 2, img_h + sep_h * 2), "white")
+    font = await load_font("SourceHanSansSC-Regular.otf", 35)
+    if font.getsize(name)[0] > 600:
+        return "名字太长了哦，改短点再试吧~"
+    draw = ImageDraw.Draw(bg)
+    draw.text((sep_w, 10), f"让{name}告诉你吧", font=font, fill="black")
+    draw.text((sep_w, sep_h + img_h + 10), f"啊这，{ta}说不知道", font=font, fill="black")
+    bg.paste(img, (sep_w, sep_h))
+    return save_jpg(bg)
