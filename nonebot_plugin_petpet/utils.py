@@ -1,3 +1,4 @@
+import math
 import numpy
 import imageio
 from io import BytesIO
@@ -142,7 +143,7 @@ async def help_image(commands: List[Command]) -> BytesIO:
         )
 
     text1 = "摸头等头像相关表情制作\n触发方式：指令 + @user/qq/自己/图片\n支持的指令："
-    idx = int(len(commands) / 2) + 1
+    idx = math.ceil(len(commands) / 2)
     img1 = text_img(text1)
     text2 = cmd_text(commands[:idx])
     img2 = text_img(text2)
