@@ -133,8 +133,8 @@ async def handle(
 
     if not res:
         await matcher.finish("出错了，请稍后再试")
-    if isinstance(msg, str):
-        await matcher.finish(msg)
+    if isinstance(res, str):
+        await matcher.finish(res)
     else:
         await matcher.finish(MessageSegment.image(res))
 
