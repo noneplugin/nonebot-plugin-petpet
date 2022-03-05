@@ -558,10 +558,10 @@ async def ask(
 
 async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    points = [(0, 0), (236, -19), (287, 245), (66, 332)]
+    points = [(0, 19), (236, 0), (287, 264), (66, 351)]
     screen = perspective(resize(img, (330, 330)), points)
     bg = await load_image("prpr/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(screen, (56, 303))
+    frame.paste(screen, (56, 284))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
