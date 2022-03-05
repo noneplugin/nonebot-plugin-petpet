@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_petpet"
-version = "0.2.6.1"
+version = "0.2.7"
 description = "Nonebot2 plugin for making fun pictures"
 authors = ["meetwq <meetwq@gmail.com>"]
 license = "MIT"
@@ -20,7 +20,7 @@ Pillow = ">=8.2.0"
 
 [tool.poetry.dev-dependencies]
 nb-cli = "^0.6.0"
-black = {version = "^22.1.0", allow-prereleases = true}
+black = "^22.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
