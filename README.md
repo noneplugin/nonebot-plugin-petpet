@@ -73,6 +73,13 @@
 </div>
 
 
+- 抛
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/03/10/W8X6cGZS5VMDOmh.gif" width="200" />
+</div>
+
+
 - 爬
 
 <div align="left">
@@ -189,4 +196,25 @@
 
 <div align="left">
   <img src="https://s2.loli.net/2022/03/09/slRF4ue56xSQzra.gif" width="200" />
+</div>
+
+
+- 墙纸
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/03/10/tQRXzLamGyWi24s.jpg" width="200" />
+</div>
+
+
+- 国旗
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/03/10/p7nwCvgsU3LxBDI.jpg" width="200" />
+</div>
+
+
+- 交个朋友
+
+<div align="left">
+  <img src="https://s2.loli.net/2022/03/10/SnmkNrjKuFeZvbA.jpg" width="200" />
 </div>
