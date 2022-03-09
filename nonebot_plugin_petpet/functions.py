@@ -565,3 +565,24 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(screen, (56, 284))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    frames = []
+    locs = [
+        (25, 66, 0),
+        (25, 66, 60),
+        (23, 68, 120),
+        (20, 69, 180),
+        (22, 68, 240),      
+        (25, 66, 300),
+    ]
+    for i in range(5):
+        frame = Image.new("RGBA", (166, 168), (255, 255, 255, 0))
+        x, y, a = locs[i]
+        frame.paste(rotate(resize(img, (78, 78)), a, expand=False), (x, y))
+        bg = await load_image(f"twist/{i}.png")
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.1)
