@@ -14,6 +14,7 @@ commands = [
     Command(("拍",), pat),
     Command(("撕",), rip),
     Command(("丢", "扔"), throw),
+    Command(("抛", "掷"), throw_gif),
     Command(("爬",), crawl),
     Command(("精神支柱",), support),
     Command(("一直",), always, convert=False),

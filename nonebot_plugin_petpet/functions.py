@@ -627,3 +627,25 @@ async def make_friend(
     text_frame = rotate(resize(text_frame, (250, 25)), 9)
     frame.paste(text_frame, (710, 660), mask=text_frame)
     return save_jpg(frame)
+
+
+async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    locs = [
+        [(32, 32, 108, 36)],
+        [(32, 32, 122, 36)],
+        [],
+        [(123, 123, 19, 129)],
+        [(185, 185, -50, 200), (33, 33, 289, 70)],
+        [(32, 32, 280, 73)],
+        [(35, 35, 259, 31)],
+        [(175, 175, -50, 220)],
+    ]
+    frames = []
+    for i in range(8):
+        frame = await load_image(f"throw_gif/{i}.png")
+        for w, h, x, y in locs[i]:
+            new_img = resize(circle(img), (w, h))
+            frame.paste(new_img, (x, y), mask=new_img)
+        frames.append(frame)
+    return save_gif(frames, 0.1)
