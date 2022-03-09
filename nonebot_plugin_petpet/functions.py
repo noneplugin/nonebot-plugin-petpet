@@ -567,7 +567,7 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def cuo(users: List[UserInfo], **kwargs) -> BytesIO:
+async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     frames = []
     locs = [
