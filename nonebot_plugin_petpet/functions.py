@@ -582,7 +582,7 @@ async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
         frame = Image.new("RGBA", (166, 168), (255, 255, 255, 0))
         x, y, a = locs[i]
         frame.paste(rotate(resize(img, (78, 78)), a, expand=False), (x, y))
-        bg = await load_image(f"cuo/{i}.png")
+        bg = await load_image(f"twist/{i}.png")
         frame.paste(bg, mask=bg)
         frames.append(frame)
     return save_gif(frames, 0.1)
