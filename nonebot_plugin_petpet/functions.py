@@ -575,7 +575,7 @@ async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
         (25, 66, 60),
         (23, 68, 120),
         (20, 69, 180),
-        (22, 68, 240),      
+        (22, 68, 240),
         (25, 66, 300),
     ]
     for i in range(5):
@@ -586,3 +586,21 @@ async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, mask=bg)
         frames.append(frame)
     return save_gif(frames, 0.1)
+
+
+async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    bg = await load_image("wallpaper/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(resize(img, (770, 770)), (260, 130))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
+
+
+async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    bg = await load_image("china_flag/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(resize(img, bg.size))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)

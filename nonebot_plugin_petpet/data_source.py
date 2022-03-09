@@ -31,6 +31,8 @@ commands = [
     Command(("问问", "去问问"), ask, convert=False, arg_num=1),
     Command(("舔", "舔屏", "prpr"), prpr),
     Command(("搓",), twist),
+    Command(("墙纸",), wallpaper),
+    Command(("国旗",), china_flag),
 ]
 
 
