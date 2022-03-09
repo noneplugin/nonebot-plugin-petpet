@@ -604,3 +604,26 @@ async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(resize(img, bg.size))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def make_friend(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    bg = await load_image("make_friend/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(resize(img, bg.size))
+    frame.paste(rotate(resize(img, (250, 250)), 9), (743, 845))
+    frame.paste(rotate(resize(img, (55, 55)), 9), (836, 722))
+    frame.paste(bg, mask=bg)
+    font = await load_font(DEFAULT_FONT, 40)
+
+    name = (args[0] if args else "") or users[0].name
+    if not name:
+        return "找不到名字，加上名字再试吧~"
+    text_frame = Image.new("RGBA", (500, 50))
+    draw = ImageDraw.Draw(text_frame)
+    draw.text((0, -10), name, font=font, fill="#FFFFFF")
+    text_frame = rotate(resize(text_frame, (250, 25)), 9)
+    frame.paste(text_frame, (710, 660), mask=text_frame)
+    return save_jpg(frame)

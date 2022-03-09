@@ -33,6 +33,7 @@ commands = [
     Command(("搓",), twist),
     Command(("墙纸",), wallpaper),
     Command(("国旗",), china_flag),
+    Command(("交个朋友",), make_friend),
 ]
 
 
