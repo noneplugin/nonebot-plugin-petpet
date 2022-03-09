@@ -2,8 +2,8 @@ import traceback
 from typing import List, Type
 from nonebot import on_command
 from nonebot.matcher import Matcher
-from nonebot.typing import T_Handler
-from nonebot.params import CommandArg
+from nonebot.typing import T_Handler, T_RuleChecker, T_State
+from nonebot.params import CommandArg, State
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -64,63 +64,73 @@ async def get_user_info(bot: Bot, user: UserInfo):
         user.gender = info.get("sex", "")
 
 
+def check_args_rule(command: Command) -> T_RuleChecker:
+    async def check_args(
+        bot: Bot,
+        event: MessageEvent,
+        state: T_State = State(),
+        msg: Message = CommandArg(),
+    ) -> bool:
+
+        users: List[UserInfo] = []
+        args: List[str] = []
+
+        for msg_seg in msg:
+            if msg_seg.type == "at":
+                users.append(
+                    UserInfo(
+                        qq=msg_seg.data["qq"],
+                        group=str(event.group_id)
+                        if isinstance(event, GroupMessageEvent)
+                        else "",
+                    )
+                )
+            elif msg_seg.type == "image":
+                users.append(UserInfo(img_url=msg_seg.data["url"]))
+            elif msg_seg.type == "text":
+                for text in str(msg_seg.data["text"]).split():
+                    if is_qq(text):
+                        users.append(UserInfo(qq=text))
+                    elif text == "自己":
+                        users.append(
+                            UserInfo(
+                                qq=str(event.user_id),
+                                group=str(event.group_id)
+                                if isinstance(event, GroupMessageEvent)
+                                else "",
+                            )
+                        )
+                    else:
+                        text = text.strip()
+                        if text:
+                            args.append(text)
+
+        if len(args) > command.arg_num:
+            return False
+        if not users and isinstance(event, GroupMessageEvent) and event.is_tome():
+            users.append(UserInfo(qq=str(event.self_id), group=str(event.group_id)))
+        if not users:
+            return False
+
+        sender = UserInfo(qq=str(event.user_id))
+        await get_user_info(bot, sender)
+        for user in users:
+            await get_user_info(bot, user)
+        state["sender"] = sender
+        state["users"] = users
+        state["args"] = args
+        return True
+
+    return check_args
+
+
 async def handle(
     matcher: Type[Matcher],
-    bot: Bot,
-    event: MessageEvent,
     command: Command,
-    msg: Message,
+    sender: UserInfo,
+    users: List[UserInfo],
+    args: List[str],
 ):
-    users: List[UserInfo] = []
-    sender: UserInfo = UserInfo(qq=str(event.user_id))
-    args: List[str] = []
-
-    for msg_seg in msg:
-        if msg_seg.type == "at":
-            users.append(
-                UserInfo(
-                    qq=msg_seg.data["qq"],
-                    group=str(event.group_id)
-                    if isinstance(event, GroupMessageEvent)
-                    else "",
-                )
-            )
-        elif msg_seg.type == "image":
-            users.append(UserInfo(img_url=msg_seg.data["url"]))
-        elif msg_seg.type == "text":
-            for text in str(msg_seg.data["text"]).split():
-                if is_qq(text):
-                    users.append(UserInfo(qq=text))
-                elif text == "自己":
-                    users.append(
-                        UserInfo(
-                            qq=str(event.user_id),
-                            group=str(event.group_id)
-                            if isinstance(event, GroupMessageEvent)
-                            else "",
-                        )
-                    )
-                else:
-                    text = text.strip()
-                    if text:
-                        args.append(text)
-
-    if len(args) > command.arg_num:
-        matcher.block = False
-        await matcher.finish()
-
-    if not users and isinstance(event, GroupMessageEvent) and event.is_tome():
-        users.append(UserInfo(qq=str(event.self_id), group=str(event.group_id)))
-    if not users:
-        matcher.block = False
-        await matcher.finish()
-
-    matcher.block = True
-
-    await get_user_info(bot, sender)
-    for user in users:
-        await get_user_info(bot, user)
-
     try:
         res = await make_image(command, sender, users, args=args)
     except DownloadError:
@@ -141,14 +151,20 @@ async def handle(
 
 def create_matchers():
     def create_handler(command: Command) -> T_Handler:
-        async def handler(bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
-            await handle(matcher, bot, event, command, msg)
+        async def handler(state: T_State = State()):
+            await handle(
+                matcher, command, state["sender"], state["users"], state["args"]
+            )
 
         return handler
 
     for command in commands:
         matcher = on_command(
-            command.keywords[0], aliases=set(command.keywords), block=True, priority=12
+            command.keywords[0],
+            aliases=set(command.keywords),
+            rule=check_args_rule(command),
+            block=True,
+            priority=12,
         )
         matcher.append_handler(create_handler(command))
 
