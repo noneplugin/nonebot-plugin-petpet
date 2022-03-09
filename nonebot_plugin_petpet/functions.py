@@ -11,6 +11,7 @@ from .utils import (
     rotate,
     resize,
     perspective,
+    square,
     to_jpg,
     save_jpg,
     save_gif,
@@ -592,7 +593,7 @@ async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("wallpaper/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, (770, 770)), (260, 130))
+    frame.paste(resize(img, (770, 770)), (260, 330))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
@@ -610,12 +611,16 @@ async def make_friend(
     users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    img = resize(img, (1000, int(img.height * 1000 / img.width)))
+
     bg = await load_image("make_friend/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, bg.size))
-    frame.paste(rotate(resize(img, (250, 250)), 9), (743, 845))
-    frame.paste(rotate(resize(img, (55, 55)), 9), (836, 722))
-    frame.paste(bg, mask=bg)
+    frame = img.copy()
+    frame.paste(
+        rotate(resize(img, (250, int(250 / img.width * img.height))), 9), (743, 845)
+    )
+    frame.paste(rotate(resize(square(img), (55, 55)), 9), (836, 722))
+    frame.paste(bg, (0, img.height - 1000), mask=bg)
     font = await load_font(DEFAULT_FONT, 40)
 
     name = (args[0] if args else "") or users[0].name
@@ -625,7 +630,7 @@ async def make_friend(
     draw = ImageDraw.Draw(text_frame)
     draw.text((0, -10), name, font=font, fill="#FFFFFF")
     text_frame = rotate(resize(text_frame, (250, 25)), 9)
-    frame.paste(text_frame, (710, 660), mask=text_frame)
+    frame.paste(text_frame, (img.height - 290, 660), mask=text_frame)
     return save_jpg(frame)
 
 
