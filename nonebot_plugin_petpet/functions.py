@@ -667,3 +667,19 @@ async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(rotate(resize(img, (250, 250)), 20), (46, 43))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    img_w, img_h = img.size
+    block_w, block_h = (310, 460)
+    ratio = min(block_w / img_w, block_h / img_h)
+    img_w = int(img_w * ratio)
+    img_h = int(img_h * ratio)
+    img = resize(img, (img_w, img_h))
+    frame = await load_image("perfect/0.png")
+    frame.paste(
+        img, (313 + int((block_w - img_w) / 2), 64 + int((block_h - img_h) / 2))
+    )
+    return save_jpg(frame)
