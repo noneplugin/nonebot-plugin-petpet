@@ -35,6 +35,7 @@ commands = [
     Command(("墙纸",), wallpaper),
     Command(("国旗",), china_flag),
     Command(("交个朋友",), make_friend, convert=False, arg_num=1),
+    Command(("继续干活",), back_to_work),
 ]
 
 

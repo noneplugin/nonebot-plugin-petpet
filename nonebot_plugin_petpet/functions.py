@@ -233,6 +233,28 @@ async def throw(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
+async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    locs = [
+        [(32, 32, 108, 36)],
+        [(32, 32, 122, 36)],
+        [],
+        [(123, 123, 19, 129)],
+        [(185, 185, -50, 200), (33, 33, 289, 70)],
+        [(32, 32, 280, 73)],
+        [(35, 35, 259, 31)],
+        [(175, 175, -50, 220)],
+    ]
+    frames = []
+    for i in range(8):
+        frame = await load_image(f"throw_gif/{i}.png")
+        for w, h, x, y in locs[i]:
+            new_img = resize(circle(img), (w, h))
+            frame.paste(new_img, (x, y), mask=new_img)
+        frames.append(frame)
+    return save_gif(frames, 0.1)
+
+
 async def crawl(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     img = resize(circle(img), (100, 100))
@@ -635,23 +657,10 @@ async def make_friend(
     return save_jpg(frame)
 
 
-async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
+async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    locs = [
-        [(32, 32, 108, 36)],
-        [(32, 32, 122, 36)],
-        [],
-        [(123, 123, 19, 129)],
-        [(185, 185, -50, 200), (33, 33, 289, 70)],
-        [(32, 32, 280, 73)],
-        [(35, 35, 259, 31)],
-        [(175, 175, -50, 220)],
-    ]
-    frames = []
-    for i in range(8):
-        frame = await load_image(f"throw_gif/{i}.png")
-        for w, h, x, y in locs[i]:
-            new_img = resize(circle(img), (w, h))
-            frame.paste(new_img, (x, y), mask=new_img)
-        frames.append(frame)
-    return save_gif(frames, 0.1)
+    bg = await load_image("back_to_work/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(rotate(resize(img, (250, 250)), 20), (46, 43))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
