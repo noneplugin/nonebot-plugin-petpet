@@ -617,9 +617,10 @@ async def make_friend(
     bg = await load_image("make_friend/0.png")
     frame = img.copy()
     frame.paste(
-        rotate(resize(img, (250, int(250 / img.width * img.height))), 9), (743, 845)
+        rotate(resize(img, (250, int(250 / img.width * img.height))), 9),
+        (743, img.height - 155),
     )
-    frame.paste(rotate(resize(square(img), (55, 55)), 9), (836, 722))
+    frame.paste(rotate(resize(square(img), (55, 55)), 9), (836, img.height - 278))
     frame.paste(bg, (0, img.height - 1000), mask=bg)
     font = await load_font(DEFAULT_FONT, 40)
 
@@ -630,7 +631,7 @@ async def make_friend(
     draw = ImageDraw.Draw(text_frame)
     draw.text((0, -10), name, font=font, fill="#FFFFFF")
     text_frame = rotate(resize(text_frame, (250, 25)), 9)
-    frame.paste(text_frame, (img.height - 290, 660), mask=text_frame)
+    frame.paste(text_frame, (710, img.height - 340), mask=text_frame)
     return save_jpg(frame)
 
 
