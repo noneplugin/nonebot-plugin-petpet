@@ -432,10 +432,16 @@ async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.1)
 
 
-async def play_game(users: List[UserInfo], **kwargs) -> BytesIO:
+async def play_game(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("play_game/0.png")
-    font = await load_font(DEFAULT_FONT, 35)
+    text = args[0] if args else "来玩休闲游戏啊"
+    fontname = DEFAULT_FONT
+    fontsize = await fit_font_size(text, 520, 110, fontname, 35, 25)
+    if not fontsize:
+        return "描述太长了哦，改短点再试吧~"
+    font = await load_font(fontname, fontsize)
+    text_w = font.getsize(text)[0]
 
     def make(img: IMG) -> IMG:
         img = to_jpg(img)
@@ -447,8 +453,8 @@ async def play_game(users: List[UserInfo], **kwargs) -> BytesIO:
 
         draw = ImageDraw.Draw(frame)
         draw.text(
-            (150, 430),
-            "来玩休闲游戏啊",
+            (263 - text_w / 2, 430),
+            text,
             font=font,
             fill="#000000",
             stroke_fill="#FFFFFF",
@@ -712,4 +718,34 @@ async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(
         img, (313 + int((block_w - img_w) / 2), 64 + int((block_h - img_h) / 2))
     )
+    return save_jpg(frame)
+
+
+async def subscribe(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    img = resize(circle(img), (200, 200))
+
+    fontname = "SourceHanSansSC-Regular.otf"
+    font = await load_font(fontname, 60)
+
+    ta = "女同" if users[0].gender == "female" else "男同"
+    name = (args[0] if args else "") or users[0].name or ta
+    text_name = name
+    text_name_w, text_name_h = font.getsize(text_name)
+    text_subscribe = "关注了你"
+    text_subscribe_w, text_subscribe_h = font.getsize(text_subscribe)
+    text_width = max(text_name_w, text_subscribe_w)
+    if text_width >= 1000:
+        return "名字太长了哦，改短点再试吧~"
+
+    frame = Image.new("RGBA", (300 + text_width + 50, 300), (255, 255, 255, 0))
+    frame.paste(img, (50, 50), mask=img)
+    text_frame = Image.new("RGBA", (text_width + 50, 300), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(text_frame)
+    draw.text((0, 135 - text_name_h), text_name, font=font,fill="black")
+    draw.text((0, 145), text_subscribe, font=font, fill="grey")
+    frame.paste(text_frame, (300, 0), mask=text_frame)
+
     return save_jpg(frame)

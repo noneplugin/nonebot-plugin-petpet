@@ -24,7 +24,7 @@ commands = [
     Command(("不要靠近",), dont_touch),
     Command(("一样",), alike),
     Command(("滚",), roll),
-    Command(("玩游戏", "来玩游戏"), play_game, convert=False),
+    Command(("玩游戏", "来玩游戏"), play_game, convert=False, arg_num=1),
     Command(("膜", "膜拜"), worship),
     Command(("吃",), eat),
     Command(("啃",), bite),
@@ -37,6 +37,7 @@ commands = [
     Command(("交个朋友",), make_friend, convert=False, arg_num=1),
     Command(("继续干活",), back_to_work),
     Command(("完美", "完美的"), perfect, convert=False),
+    Command(("关注",), subscribe, convert=False, arg_num=1),
 ]
 
 
