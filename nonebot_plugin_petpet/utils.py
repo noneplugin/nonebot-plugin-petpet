@@ -66,7 +66,7 @@ class FitSizeDir(Enum):
 def fit_size(
     img: IMG,
     size: Tuple[int, int],
-    mode: FitSizeMode = FitSizeMode.INSIDE,
+    mode: FitSizeMode = FitSizeMode.INCLUDE,
     direction: FitSizeDir = FitSizeDir.CENTER,
     bg_color="#000000",
 ) -> IMG:
@@ -105,6 +105,13 @@ def fit_size(
 
 
 def perspective(img: IMG, points: List[Tuple[float, float]]):
+    """
+    透视变换
+    :params
+      * ``img``: 待变换的图片
+      * ``points``: 变换后点的位置，顺序依次为：左上->右上->右下->左下
+    """
+
     def find_coeffs(pa: List[Tuple[float, float]], pb: List[Tuple[float, float]]):
         matrix = []
         for p1, p2 in zip(pa, pb):

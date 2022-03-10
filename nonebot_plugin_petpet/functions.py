@@ -392,10 +392,9 @@ async def play_game(
     def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        new_img = fit_size(img, (220, 160), mode=FitSizeMode.INSIDE, bg_color="#7F7F7F")
         points = [(0, 5), (227, 0), (216, 150), (0, 165)]
-        screen = rotate(
-            perspective(fit_size(img, (220, 160), bg_color="#7F7F7F"), points), 9
-        )
+        screen = rotate(perspective(new_img, points), 9)
         frame.paste(screen, (161, 117))
         frame.paste(bg, mask=bg)
 
@@ -540,7 +539,7 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
         points = [(0, 19), (236, 0), (287, 264), (66, 351)]
-        screen = perspective(fit_size(img, (330, 330), FitSizeMode.INCLUDE), points)
+        screen = perspective(fit_size(img, (330, 330)), points)
         frame.paste(screen, (56, 284))
         frame.paste(bg, mask=bg)
         return frame
@@ -576,7 +575,7 @@ async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
     def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame.paste(fit_size(img, (775, 496), FitSizeMode.INCLUDE), (260, 580))
+        frame.paste(fit_size(img, (775, 496)), (260, 580))
         frame.paste(bg, mask=bg)
         return frame
 
@@ -625,9 +624,7 @@ async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
     img = to_jpg(img).convert("RGBA")
     bg = await load_image("back_to_work/1.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    new_img = fit_size(
-        img, (220, 310), mode=FitSizeMode.INCLUDE, direction=FitSizeDir.NORTH
-    )
+    new_img = fit_size(img, (220, 310), direction=FitSizeDir.NORTH)
     frame.paste(rotate(new_img, 25), (56, 32))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
@@ -681,8 +678,6 @@ async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
     img = to_jpg(img).convert("RGBA")
     bg = await load_image("paint/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(
-        rotate(fit_size(img, (117, 135), mode=FitSizeMode.INCLUDE), 4), (95, 107)
-    )
+    frame.paste(rotate(fit_size(img, (117, 135)), 4), (95, 107))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
