@@ -1,6 +1,7 @@
 import math
 import numpy
 import imageio
+from enum import Enum
 from io import BytesIO
 from typing import List, Tuple
 from PIL.Image import Image as IMG
@@ -41,6 +42,64 @@ def square(img: IMG) -> IMG:
             int((height + length) / 2),
         )
     )
+
+
+# 适应大小模式
+class FitSizeMode(Enum):
+    INSIDE = 0  # 图片必须在指定的大小范围内
+    INCLUDE = 1  # 图片必须包括指定的大小范围
+
+
+# 适应大小方向
+class FitSizeDir(Enum):
+    CENTER = 0  # 居中
+    NORTH = 1
+    SOUTH = 2
+    WEST = 3
+    EAST = 4
+    NORTHWEST = 5
+    NORTHEAST = 6
+    SOUTHWEST = 7
+    SOUTHEAST = 8
+
+
+def fit_size(
+    img: IMG,
+    size: Tuple[int, int],
+    mode: FitSizeMode = FitSizeMode.INSIDE,
+    direction: FitSizeDir = FitSizeDir.CENTER,
+) -> IMG:
+    """
+    调整图片到指定的大小
+    :params
+      * ``img``: 待调整的图片
+      * ``size``: 期望图片大小
+      * ``mode``: FitSizeMode.INSIDE 表示图片必须在指定的大小范围内，不足部分留空；FitSizeMode.INCLUDE 表示图片必须包括指定的大小范围，超出部分裁剪
+      * ``direction``: 调整图片大小时图片的方位；默认为居中 FitSizeDir.CENTER
+    """
+    w, h = size
+    img_w, img_h = img.size
+    if mode == FitSizeMode.INSIDE:
+        ratio = min(w / img_w, h / img_h)
+    elif mode == FitSizeMode.INCLUDE:
+        ratio = max(w / img_w, h / img_h)
+    img_w = int(img_w * ratio)
+    img_h = int(img_h * ratio)
+    img = resize(img, (img_w, img_h))
+
+    x = int(w - img_w) / 2
+    y = int(h - img_h) / 2
+    if direction in [FitSizeDir.NORTH, FitSizeDir.NORTHWEST, FitSizeDir.NORTHEAST]:
+        y = 0
+    elif direction in [FitSizeDir.SOUTH, FitSizeDir.SOUTHWEST, FitSizeDir.SOUTHEAST]:
+        y = h - img_h
+    if direction in [FitSizeDir.WEST, FitSizeDir.NORTHWEST, FitSizeDir.SOUTHWEST]:
+        x = 0
+    elif direction in [FitSizeDir.EAST, FitSizeDir.NORTHEAST, FitSizeDir.SOUTHEAST]:
+        x = w - img_w
+    result = Image.new("RGBA", size)
+    result.paste(img, (x, y))
+    return result
 
 
 def perspective(img: IMG, points: List[Tuple[float, float]]):

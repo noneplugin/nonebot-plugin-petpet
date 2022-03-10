@@ -12,6 +12,8 @@ from .utils import (
     resize,
     perspective,
     square,
+    fit_size,
+    FitSizeMode,
     to_jpg,
     save_jpg,
     save_gif,
@@ -432,35 +434,36 @@ async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def play_game(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
-    img_w, img_h = img.size
-    sc_w, sc_h = (220, 160)
-    ratio = min(sc_w / img_w, sc_h / img_h)
-    img_w = int(img_w * ratio)
-    img_h = int(img_h * ratio)
-    img = resize(img, (img_w, img_h))
-
-    screen = Image.new("RGB", (sc_w, sc_h), (0, 0, 0))
-    screen.paste(img, (int((sc_w - img_w) / 2), int((sc_h - img_h) / 2)))
-    points = [(0, 5), (225, 0), (215, 150), (0, 165)]
-    screen = rotate(perspective(screen, points), 9)
-
     bg = await load_image("play_game/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(screen, (161, 117))
-    frame.paste(bg, mask=bg)
-
     font = await load_font(DEFAULT_FONT, 35)
-    draw = ImageDraw.Draw(frame)
-    draw.text(
-        (150, 430),
-        "来玩休闲游戏啊",
-        font=font,
-        fill="#000000",
-        stroke_fill="#FFFFFF",
-        stroke_width=2,
-    )
-    return save_jpg(frame)
+
+    def make(img: IMG) -> IMG:
+        img = to_jpg(img)
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        points = [(0, 5), (225, 0), (215, 150), (0, 165)]
+        screen = rotate(perspective(fit_size(img, (220, 160)), points), 9)
+        frame.paste(screen, (161, 117))
+        frame.paste(bg, mask=bg)
+
+        draw = ImageDraw.Draw(frame)
+        draw.text(
+            (150, 430),
+            "来玩休闲游戏啊",
+            font=font,
+            fill="#000000",
+            stroke_fill="#FFFFFF",
+            stroke_width=2,
+        )
+        return frame
+
+    if not getattr(img, "is_animated", False):
+        return save_jpg(make(img))
+    else:
+        frames = []
+        for i in range(img.n_frames):
+            img.seek(i)
+            frames.append(make(img))
+        return save_gif(frames, img.info["duration"] / 1000)
 
 
 async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -584,13 +587,25 @@ async def ask(
 
 async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    points = [(0, 19), (236, 0), (287, 264), (66, 351)]
-    screen = perspective(resize(img, (330, 330)), points)
     bg = await load_image("prpr/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(screen, (56, 284))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+
+    def make(img: IMG) -> IMG:
+        img = to_jpg(img)
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        points = [(0, 19), (236, 0), (287, 264), (66, 351)]
+        screen = perspective(fit_size(img, (330, 330)), points)
+        frame.paste(screen, (56, 284))
+        frame.paste(bg, mask=bg)
+        return frame
+
+    if not getattr(img, "is_animated", False):
+        return save_jpg(make(img))
+    else:
+        frames = []
+        for i in range(img.n_frames):
+            img.seek(i)
+            frames.append(make(img))
+        return save_gif(frames, img.info["duration"] / 1000)
 
 
 async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -617,10 +632,25 @@ async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
 async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("wallpaper/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, (770, 770)), (260, 330))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+
+    def make(img: IMG) -> IMG:
+        img = to_jpg(img)
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame.paste(fit_size(img, (775, 496), FitSizeMode.INCLUDE), (260, 580))
+        frame.paste(bg, mask=bg)
+        return frame
+
+    if not getattr(img, "is_animated", False):
+        return save_jpg(make(img))
+    else:
+        frames = []
+        for i in range(img.n_frames):
+            img.seek(i)
+            ratio = 0.7
+            frames.append(
+                resize(make(img), (int(bg.width * ratio), int(bg.height * ratio)))
+            )
+        return save_gif(frames, img.info["duration"] / 1000)
 
 
 async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
