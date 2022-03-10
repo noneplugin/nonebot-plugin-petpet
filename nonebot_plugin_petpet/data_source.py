@@ -35,7 +35,7 @@ commands = [
     Command(("墙纸",), wallpaper, convert=False),
     Command(("国旗",), china_flag),
     Command(("交个朋友",), make_friend, convert=False, arg_num=1),
-    Command(("继续干活",), back_to_work),
+    Command(("继续干活",), back_to_work, convert=False),
     Command(("完美", "完美的"), perfect, convert=False),
     Command(("关注",), follow, arg_num=1),
 ]

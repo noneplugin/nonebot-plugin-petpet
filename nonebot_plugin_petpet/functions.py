@@ -14,6 +14,7 @@ from .utils import (
     square,
     fit_size,
     FitSizeMode,
+    FitSizeDir,
     to_jpg,
     save_jpg,
     save_gif,
@@ -619,9 +620,13 @@ async def make_friend(
 
 async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    bg = await load_image("back_to_work/0.png")
+    img = to_jpg(img).convert("RGBA")
+    bg = await load_image("back_to_work/1.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(rotate(resize(img, (250, 250)), 20), (46, 43))
+    new_img = fit_size(
+        img, (220, 310), mode=FitSizeMode.INCLUDE, direction=FitSizeDir.NORTH
+    )
+    frame.paste(rotate(new_img, 25), (56, 32))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
