@@ -172,7 +172,7 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.085)
 
 
-async def rip(users: List[UserInfo], **kwargs) -> BytesIO:
+async def rip(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
     img = users[0].img
     rip = await load_image("rip/0.png")
     frame = Image.new("RGBA", rip.size, (255, 255, 255, 0))
@@ -181,6 +181,8 @@ async def rip(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(left, (-5, 355))
     frame.paste(right, (649, 310))
     frame.paste(rip, mask=rip)
+    sender_img = resize(circle(sender.img), (215, 215))
+    frame.paste(sender_img, (408, 418), mask=sender_img)
     return save_jpg(frame)
 
 
