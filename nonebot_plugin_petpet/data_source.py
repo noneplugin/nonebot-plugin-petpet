@@ -38,6 +38,7 @@ commands = [
     Command(("继续干活",), back_to_work, convert=False),
     Command(("完美", "完美的"), perfect, convert=False),
     Command(("关注",), follow, arg_num=1),
+    Command(("这像画吗",), paint, convert=False),
 ]
 
 

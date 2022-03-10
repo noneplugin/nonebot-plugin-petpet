@@ -674,3 +674,15 @@ async def follow(
     frame.paste(text_frame, (300, 0), mask=text_frame)
 
     return save_jpg(frame)
+
+
+async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    bg = await load_image("paint/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(
+        rotate(fit_size(img, (117, 135), mode=FitSizeMode.INCLUDE), 4), (95, 107)
+    )
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
