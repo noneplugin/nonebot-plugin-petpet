@@ -68,6 +68,7 @@ def fit_size(
     size: Tuple[int, int],
     mode: FitSizeMode = FitSizeMode.INSIDE,
     direction: FitSizeDir = FitSizeDir.CENTER,
+    bg_color="#000000",
 ) -> IMG:
     """
     调整图片到指定的大小
@@ -76,6 +77,7 @@ def fit_size(
       * ``size``: 期望图片大小
       * ``mode``: FitSizeMode.INSIDE 表示图片必须在指定的大小范围内，不足部分留空；FitSizeMode.INCLUDE 表示图片必须包括指定的大小范围，超出部分裁剪
       * ``direction``: 调整图片大小时图片的方位；默认为居中 FitSizeDir.CENTER
+      * ``bg_color``: FitSizeMode.INSIDE 时的背景颜色
     """
     w, h = size
     img_w, img_h = img.size
@@ -97,7 +99,7 @@ def fit_size(
         x = 0
     elif direction in [FitSizeDir.EAST, FitSizeDir.NORTHEAST, FitSizeDir.SOUTHEAST]:
         x = w - img_w
-    result = Image.new("RGBA", size)
+    result = Image.new("RGBA", size, bg_color)
     result.paste(img, (x, y))
     return result
 

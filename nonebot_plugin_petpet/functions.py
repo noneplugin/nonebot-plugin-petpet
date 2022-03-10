@@ -392,8 +392,10 @@ async def play_game(
     def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        points = [(0, 5), (225, 0), (215, 150), (0, 165)]
-        screen = rotate(perspective(fit_size(img, (220, 160)), points), 9)
+        points = [(0, 5), (227, 0), (216, 150), (0, 165)]
+        screen = rotate(
+            perspective(fit_size(img, (220, 160), bg_color="#7F7F7F"), points), 9
+        )
         frame.paste(screen, (161, 117))
         frame.paste(bg, mask=bg)
 
