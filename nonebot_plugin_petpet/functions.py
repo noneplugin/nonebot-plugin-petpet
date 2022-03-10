@@ -17,6 +17,7 @@ from .utils import (
     to_jpg,
     save_jpg,
     save_gif,
+    make_jpg_or_gif,
     load_image,
     load_font,
     fit_font_size,
@@ -53,36 +54,16 @@ async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
     else:
         self_img = sender.img
         user_img = users[0].img
+    # fmt: off
     user_locs = [
-        (58, 90),
-        (62, 95),
-        (42, 100),
-        (50, 100),
-        (56, 100),
-        (18, 120),
-        (28, 110),
-        (54, 100),
-        (46, 100),
-        (60, 100),
-        (35, 115),
-        (20, 120),
-        (40, 96),
+        (58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
+        (54, 100), (46, 100), (60, 100), (35, 115), (20, 120), (40, 96)
     ]
     self_locs = [
-        (92, 64),
-        (135, 40),
-        (84, 105),
-        (80, 110),
-        (155, 82),
-        (60, 96),
-        (50, 80),
-        (98, 55),
-        (35, 65),
-        (38, 100),
-        (70, 80),
-        (84, 65),
-        (75, 65),
+        (92, 64), (135, 40), (84, 105), (80, 110), (155, 82), (60, 96), (50, 80),
+        (98, 55), (35, 65), (38, 100), (70, 80), (84, 65), (75, 65)
     ]
+    # fmt: on
     frames = []
     for i in range(13):
         frame = await load_image(f"kiss/{i}.png")
@@ -184,36 +165,9 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
         raw_frame = await load_image(f"pat/{i}.png")
         frame.paste(raw_frame, mask=raw_frame)
         img_frames.append(frame)
-    seq = [
-        0,
-        1,
-        2,
-        3,
-        1,
-        2,
-        3,
-        0,
-        1,
-        2,
-        3,
-        0,
-        0,
-        1,
-        2,
-        3,
-        0,
-        0,
-        0,
-        0,
-        4,
-        5,
-        5,
-        5,
-        6,
-        7,
-        8,
-        9,
-    ]
+    # fmt: off
+    seq = [0, 1, 2, 3, 1, 2, 3, 0, 1, 2, 3, 0, 0, 1, 2, 3, 0, 0, 0, 0, 4, 5, 5, 5, 6, 7, 8, 9]
+    # fmt: on
     frames = [img_frames[n] for n in seq]
     return save_gif(frames, 0.085)
 
@@ -286,7 +240,7 @@ async def always(users: List[UserInfo], **kwargs) -> BytesIO:
     h2 = int(h / w * 60)
     height = h1 + h2 + 10
 
-    def paste(img: IMG) -> IMG:
+    def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
         frame.paste(always, (0, h1 - 300 + int((h2 - 60) / 2)))
@@ -294,14 +248,7 @@ async def always(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(resize(img, (60, h2)), (165, h1 + 5))
         return frame
 
-    if not getattr(img, "is_animated", False):
-        return save_jpg(paste(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(paste(img))
-        return save_gif(frames, img.info["duration"] / 1000)
+    return make_jpg_or_gif(img, make)
 
 
 async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -313,7 +260,7 @@ async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
     h2 = int(h / w * 60)
     height = h1 + h2 + 10
 
-    def paste_large(img: IMG) -> IMG:
+    def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
         frame.paste(bg, (0, h1 - 300 + int((h2 - 60) / 2)))
@@ -323,22 +270,10 @@ async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
         mask = Image.new("RGBA", (300, h1), (0, 0, 0, 128))
         frame.paste(mask, (0, 0), mask=mask)
         frame.paste(icon, (100, int(h1 / 2) - 50), mask=icon)
-        return frame
-
-    def paste_small(frame: IMG, img: IMG) -> IMG:
-        img = to_jpg(img)
         frame.paste(resize(img, (60, h2)), (60, h1 + 5))
         return frame
 
-    if not getattr(img, "is_animated", False):
-        return save_jpg(paste_small(paste_large(img), img))
-    else:
-        frames = []
-        frame = paste_large(img)
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(paste_small(frame.copy(), img))
-        return save_gif(frames, img.info["duration"] / 1000)
+    return make_jpg_or_gif(img, make)
 
 
 async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -464,14 +399,7 @@ async def play_game(
         )
         return frame
 
-    if not getattr(img, "is_animated", False):
-        return save_jpg(make(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(make(img))
-        return save_gif(frames, img.info["duration"] / 1000)
+    return make_jpg_or_gif(img, make)
 
 
 async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -606,14 +534,7 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, mask=bg)
         return frame
 
-    if not getattr(img, "is_animated", False):
-        return save_jpg(make(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(make(img))
-        return save_gif(frames, img.info["duration"] / 1000)
+    return make_jpg_or_gif(img, make)
 
 
 async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
@@ -648,17 +569,7 @@ async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, mask=bg)
         return frame
 
-    if not getattr(img, "is_animated", False):
-        return save_jpg(make(img))
-    else:
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            ratio = 0.7
-            frames.append(
-                resize(make(img), (int(bg.width * ratio), int(bg.height * ratio)))
-            )
-        return save_gif(frames, img.info["duration"] / 1000)
+    return make_jpg_or_gif(img, make, gif_zoom=0.7)
 
 
 async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:

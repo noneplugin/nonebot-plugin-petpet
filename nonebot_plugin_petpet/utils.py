@@ -3,7 +3,7 @@ import numpy
 import imageio
 from enum import Enum
 from io import BytesIO
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -143,6 +143,40 @@ def save_jpg(frame: IMG) -> BytesIO:
     frame = frame.convert("RGB")
     frame.save(output, format="jpeg")
     return output
+
+
+def make_jpg_or_gif(
+    img: IMG, func: Callable[[IMG], IMG], gif_zoom: float = 1, gif_max_frames: int = 50
+) -> BytesIO:
+    """
+    制作静图或者动图
+    :params
+      * ``img``: 输入图片，如头像
+      * ``func``: 图片处理函数，输入img，返回处理后的图片
+      * ``gif_zoom``: gif 图片缩放比率，避免生成的 gif 太大
+      * ``direction``: gif 最大帧数，避免生成的 gif 太大
+    """
+    if not getattr(img, "is_animated", False):
+        return save_jpg(func(img))
+    else:
+        index = range(img.n_frames)
+        ratio = img.n_frames / gif_max_frames
+        duration = img.info["duration"] / 1000
+        if ratio > 1:
+            index = (int(i * ratio) for i in range(gif_max_frames))
+            duration *= ratio
+
+        frames = []
+        for i in index:
+            img.seek(i)
+            new_img = func(img)
+            frames.append(
+                resize(
+                    new_img,
+                    (int(new_img.width * gif_zoom), int(new_img.height * gif_zoom)),
+                )
+            )
+        return save_gif(frames, duration)
 
 
 def to_image(data: bytes, convert: bool = True) -> IMG:
