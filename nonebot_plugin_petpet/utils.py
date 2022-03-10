@@ -87,8 +87,8 @@ def fit_size(
     img_h = int(img_h * ratio)
     img = resize(img, (img_w, img_h))
 
-    x = int(w - img_w) / 2
-    y = int(h - img_h) / 2
+    x = int((w - img_w) / 2)
+    y = int((h - img_h) / 2)
     if direction in [FitSizeDir.NORTH, FitSizeDir.NORTHWEST, FitSizeDir.NORTHEAST]:
         y = 0
     elif direction in [FitSizeDir.SOUTH, FitSizeDir.SOUTHWEST, FitSizeDir.SOUTHEAST]:

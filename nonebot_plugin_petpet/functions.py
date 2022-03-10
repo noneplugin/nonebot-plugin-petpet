@@ -593,7 +593,7 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
         points = [(0, 19), (236, 0), (287, 264), (66, 351)]
-        screen = perspective(fit_size(img, (330, 330)), points)
+        screen = perspective(fit_size(img, (330, 330), FitSizeMode.INCLUDE), points)
         frame.paste(screen, (56, 284))
         frame.paste(bg, mask=bg)
         return frame
