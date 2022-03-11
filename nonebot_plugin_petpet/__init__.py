@@ -76,6 +76,11 @@ def check_args_rule(command: Command) -> T_RuleChecker:
         users: List[UserInfo] = []
         args: List[str] = []
 
+        if event.reply:
+            reply_imgs = event.reply.message["image"]
+            for reply_img in reply_imgs:
+                users.append(UserInfo(img_url=reply_img.data["url"]))
+
         for msg_seg in msg:
             if msg_seg.type == "at":
                 users.append(
