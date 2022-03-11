@@ -384,9 +384,8 @@ async def play_game(
     def make(img: IMG) -> IMG:
         img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        new_img = fit_size(img, (220, 160), mode=FitSizeMode.INSIDE, bg_color="#7F7F7F")
         points = [(0, 5), (227, 0), (216, 150), (0, 165)]
-        screen = rotate(perspective(new_img, points), 9)
+        screen = rotate(perspective(fit_size(img, (220, 160)), points), 9)
         frame.paste(screen, (161, 117))
         frame.paste(bg, mask=bg)
 
@@ -567,7 +566,7 @@ async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, mask=bg)
         return frame
 
-    return make_jpg_or_gif(img, make, gif_zoom=0.7)
+    return make_jpg_or_gif(img, make, gif_zoom=0.5)
 
 
 async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
