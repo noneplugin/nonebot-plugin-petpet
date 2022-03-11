@@ -160,23 +160,44 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def rip(
     users: List[UserInfo], sender: UserInfo, args: List[str] = [], **kwargs
-) -> BytesIO:
+) -> Union[str, BytesIO]:
     if len(users) >= 2:
         self_img = users[0].img
         user_img = users[1].img
     else:
         self_img = sender.img
         user_img = users[0].img
-    rip = await load_image("rip/0.png")
+
+    arg = "".join(args)
+    if "滑稽" in arg:
+        rip = await load_image("rip/0.png")
+    else:
+        rip = await load_image("rip/1.png")
+    text = arg.strip("滑稽").strip()
+
     frame = Image.new("RGBA", rip.size, (255, 255, 255, 0))
     left = rotate(resize(user_img, (385, 385)), 24)
     right = rotate(resize(user_img, (385, 385)), -11)
     frame.paste(left, (-5, 355))
     frame.paste(right, (649, 310))
+    frame.paste(resize(self_img, (230, 230)), (408, 418))
     frame.paste(rip, mask=rip)
-    if not (args and "滑稽" in args[0]):
-        self_img = resize(circle(self_img), (215, 215))
-        frame.paste(self_img, (408, 418), mask=self_img)
+
+    if text:
+        fontname = DEFAULT_FONT
+        fontsize = await fit_font_size(text, rip.width - 50, 300, fontname, 150, 25)
+        if not fontsize:
+            return "文字太长了哦，改短点再试吧~"
+        font = await load_font(fontname, fontsize)
+        text_w = font.getsize(text)[0]
+        draw = ImageDraw.Draw(frame)
+        draw.text(
+            ((rip.width - text_w) / 2, 40),
+            text,
+            font=font,
+            fill="#FF0000",
+            stroke_width=2,
+        )
     return save_jpg(frame)
 
 

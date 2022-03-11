@@ -12,7 +12,7 @@ commands = [
     Command(("贴", "贴贴", "蹭", "蹭蹭"), rub),
     Command(("顶", "玩"), play),
     Command(("拍",), pat),
-    Command(("撕",), rip, arg_num=1),
+    Command(("撕",), rip, arg_num=2),
     Command(("丢", "扔"), throw),
     Command(("抛", "掷"), throw_gif),
     Command(("爬",), crawl, arg_num=1),
