@@ -29,6 +29,7 @@ commands = [
     Command(("吃",), eat),
     Command(("啃",), bite),
     Command(("出警",), police),
+    Command(("警察",), police1, convert=False),
     Command(("问问", "去问问"), ask, convert=False, arg_num=1),
     Command(("舔", "舔屏", "prpr"), prpr, convert=False),
     Command(("搓",), twist),

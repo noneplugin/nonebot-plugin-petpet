@@ -477,11 +477,21 @@ async def bite(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def police(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    frame = await load_image("police/0.png")
-    bg = Image.new("RGBA", frame.size)
-    bg.paste(resize(img, (245, 245)), (224, 46))
-    bg.paste(frame, mask=frame)
-    return save_jpg(bg)
+    bg = await load_image("police/0.png")
+    frame = Image.new("RGBA", bg.size)
+    frame.paste(resize(img, (245, 245)), (224, 46))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
+
+
+async def police1(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    bg = await load_image("police/1.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(rotate(fit_size(img, (60, 75)), 16), (37, 291))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
 
 
 async def ask(
