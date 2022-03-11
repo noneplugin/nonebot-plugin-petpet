@@ -1,3 +1,4 @@
+import shlex
 import traceback
 from typing import List, Type
 from nonebot import on_command
@@ -88,7 +89,12 @@ def check_args_rule(command: Command) -> T_RuleChecker:
             elif msg_seg.type == "image":
                 users.append(UserInfo(img_url=msg_seg.data["url"]))
             elif msg_seg.type == "text":
-                for text in str(msg_seg.data["text"]).split():
+                raw_text = str(msg_seg)
+                try:
+                    texts = shlex.split(raw_text)
+                except:
+                    texts = raw_text.split()
+                for text in texts:
                     if is_qq(text):
                         users.append(UserInfo(qq=text))
                     elif text == "自己":
