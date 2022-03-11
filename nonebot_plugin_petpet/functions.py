@@ -759,3 +759,32 @@ async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
             rotate(motion_blur(img, blur_angle, blur_degree), angle, expand=False)
         )
     return save_gif(frames, 0.001)
+
+
+async def coupon(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    bg = await load_image("coupon/0.png")
+    new_img = rotate(resize(circle(img), (60, 60)), 22)
+    bg.paste(new_img, (164, 85), mask=new_img)
+
+    font = await load_font(DEFAULT_FONT, 30)
+    text_img = Image.new("RGBA", (250, 100))
+    text = f"{users[0].name}陪睡券" if not args else args[0]
+    text += "\n（永久有效）"
+    text_w = font.getsize_multiline(text)[0]
+    if text_w > text_img.width:
+        return "文字太长了哦，改短点再试吧~"
+
+    draw = ImageDraw.Draw(text_img)
+    draw.multiline_text(
+        ((text_img.width - text_w) / 2, 0),
+        text,
+        font=font,
+        align="center",
+        fill="#000000",
+    )
+    text_img = rotate(text_img, 22)
+    bg.paste(text_img, (94, 108), mask=text_img)
+    return save_jpg(bg)
