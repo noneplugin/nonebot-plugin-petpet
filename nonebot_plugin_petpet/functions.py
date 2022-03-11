@@ -173,17 +173,23 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.085)
 
 
-async def rip(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
-    img = users[0].img
+async def rip(users: List[UserInfo], sender: UserInfo, args: List[str] = [], **kwargs) -> BytesIO:
+    if len(users) >= 2:
+        self_img = users[0].img
+        user_img = users[1].img
+    else:
+        self_img = sender.img
+        user_img = users[0].img
     rip = await load_image("rip/0.png")
     frame = Image.new("RGBA", rip.size, (255, 255, 255, 0))
-    left = rotate(resize(img, (385, 385)), 24)
-    right = rotate(resize(img, (385, 385)), -11)
+    left = rotate(resize(user_img, (385, 385)), 24)
+    right = rotate(resize(user_img, (385, 385)), -11)
     frame.paste(left, (-5, 355))
     frame.paste(right, (649, 310))
     frame.paste(rip, mask=rip)
-    sender_img = resize(circle(sender.img), (215, 215))
-    frame.paste(sender_img, (408, 418), mask=sender_img)
+    if not (args and "滑稽" in args[0]):
+        self_img = resize(circle(self_img), (215, 215))
+        frame.paste(self_img, (408, 418), mask=self_img)
     return save_jpg(frame)
 
 
@@ -217,10 +223,20 @@ async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.1)
 
 
-async def crawl(users: List[UserInfo], **kwargs) -> BytesIO:
+async def crawl(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = resize(circle(img), (100, 100))
-    frame = await load_image("crawl/{:02d}.jpg".format(random.randint(1, 92)))
+    crawl_total = 92
+    crawl_random_num = random.randint(1, crawl_total)
+    crawl_num = crawl_random_num
+    if args:
+        try:
+            crawl_num = int(args[0])
+            if crawl_num > crawl_total or crawl_num < 1:
+                crawl_num = crawl_random_num
+        except ValueError:
+            ...
+    frame = await load_image("crawl/{:02d}.jpg".format(crawl_num))
     frame.paste(img, (0, 400), mask=img)
     return save_jpg(frame)
 
@@ -299,7 +315,7 @@ async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def littleangel(
-    users: List[UserInfo], args: List[str] = [], **kwargs
+        users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
@@ -377,7 +393,7 @@ async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def play_game(
-    users: List[UserInfo], args: List[str] = [], **kwargs
+        users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
     bg = await load_image("play_game/0.png")
@@ -474,7 +490,7 @@ async def police(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def ask(
-    users: List[UserInfo], args: List[str] = [], **kwargs
+        users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
@@ -592,7 +608,7 @@ async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def make_friend(
-    users: List[UserInfo], args: List[str] = [], **kwargs
+        users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
@@ -647,7 +663,7 @@ async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def follow(
-    users: List[UserInfo], args: List[str] = [], **kwargs
+        users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
     img = resize(circle(img), (200, 200))
