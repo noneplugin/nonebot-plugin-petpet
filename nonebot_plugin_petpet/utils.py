@@ -1,9 +1,10 @@
 import math
-import numpy
 import imageio
+import cv2 as cv
+import numpy as np
 from enum import Enum
 from io import BytesIO
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Union
 from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -68,7 +69,7 @@ def fit_size(
     size: Tuple[int, int],
     mode: FitSizeMode = FitSizeMode.INCLUDE,
     direction: FitSizeDir = FitSizeDir.CENTER,
-    bg_color=None,
+    bg_color: Union[str, float, Tuple[float, ...]] = (255, 255, 255, 0),
 ) -> IMG:
     """
     调整图片到指定的大小
@@ -117,10 +118,10 @@ def perspective(img: IMG, points: List[Tuple[float, float]]):
         for p1, p2 in zip(pa, pb):
             matrix.append([p1[0], p1[1], 1, 0, 0, 0, -p2[0] * p1[0], -p2[0] * p1[1]])
             matrix.append([0, 0, 0, p1[0], p1[1], 1, -p2[1] * p1[0], -p2[1] * p1[1]])
-        A = numpy.matrix(matrix, dtype=numpy.float32)
-        B = numpy.array(pb).reshape(8)
-        res = numpy.dot(numpy.linalg.inv(A.T * A) * A.T, B)
-        return numpy.array(res).reshape(8)
+        A = np.matrix(matrix, dtype=np.float32)
+        B = np.array(pb).reshape(8)
+        res = np.dot(np.linalg.inv(A.T * A) * A.T, B)
+        return np.array(res).reshape(8)
 
     img_w, img_h = img.size
     points_w = [p[0] for p in points]
@@ -130,6 +131,17 @@ def perspective(img: IMG, points: List[Tuple[float, float]]):
     p = [(0, 0), (img_w, 0), (img_w, img_h), (0, img_h)]
     coeffs = find_coeffs(points, p)
     return img.transform((new_w, new_h), Image.PERSPECTIVE, coeffs, Image.BICUBIC)
+
+
+def motion_blur(img: IMG, angle=0, degree=0) -> IMG:
+    if degree == 0:
+        return img.copy()
+    matrix = cv.getRotationMatrix2D((degree / 2, degree / 2), angle + 45, 1)
+    kernel = np.diag(np.ones(degree))
+    kernel = cv.warpAffine(kernel, matrix, (degree, degree)) / degree
+    blurred = cv.filter2D(np.asarray(img), -1, kernel)
+    cv.normalize(blurred, blurred, 0, 255, cv.NORM_MINMAX)
+    return Image.fromarray(np.array(blurred, dtype=np.uint8))
 
 
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:

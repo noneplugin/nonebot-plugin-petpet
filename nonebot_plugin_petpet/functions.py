@@ -11,6 +11,7 @@ from .utils import (
     rotate,
     resize,
     perspective,
+    motion_blur,
     square,
     fit_size,
     FitSizeMode,
@@ -704,3 +705,26 @@ async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(rotate(fit_size(img, (117, 135)), 4), (95, 107))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = resize(img, (300, 300))
+    frames = []
+    # fmt: off
+    params = [
+        (15, 0, 30), (-15, 90, 10), (-15, -45, 25), (-15, 45, 10),
+        (15, 45, 20), (0, -60, 30), (-10, 20, 10), (-15, 0, 0),
+        (-20, 0, 0), (0, 90, 40), (0, -70, 20), (0, 0, 20),
+        (-10, 90, 5), (-20, 90, 40), (-10, 0, 0), (15, 90, 10),
+        (10, 0, 10), (10, 0, 5), (-20, 90, 5), (-5, -45, 20),
+        (15, 0, 5), (0, 90, 5), (10, 80, 10), (-15, -45, 20),
+        (0, 0, 20), (20, 0, 10), (0, 45, 30), (-10, 90, 5),
+        (15, 0, 5), (-10, 0, 5)
+    ]
+    # fmt: on
+    for angle, blur_angle, blur_degree in params:
+        frames.append(
+            rotate(motion_blur(img, blur_angle, blur_degree), angle, expand=False)
+        )
+    return save_gif(frames, 0.001)
