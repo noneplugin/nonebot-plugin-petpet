@@ -68,7 +68,7 @@ def fit_size(
     size: Tuple[int, int],
     mode: FitSizeMode = FitSizeMode.INCLUDE,
     direction: FitSizeDir = FitSizeDir.CENTER,
-    bg_color="#000000",
+    bg_color=None,
 ) -> IMG:
     """
     调整图片到指定的大小
