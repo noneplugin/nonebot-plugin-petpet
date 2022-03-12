@@ -826,3 +826,59 @@ async def listen_music(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, (0, 0), mask=bg)
         frames.append(to_jpg(frame))
     return save_gif(frames, 0.05)
+
+
+async def dianzhongdian(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
+    img = users[0].img
+
+    isBlack = True
+    if args and args[0] == "彩":
+        isBlack = False
+        args = args[1:]
+    if isBlack:
+        img = img.convert("L")
+    if not args:
+        return "你想表达什么？"
+
+    img_w, img_h = img.size
+    scale = 500 / max(img_w, img_h)
+    img_w = int(img_w * scale)
+    img_h = int(img_h * scale)
+    if img_w > 500 or img_h > 500:
+        img.thumbnail((img_w, img_h))
+    else:
+        img = img.resize((img_w, img_h))
+    img_w, img_h = img.size
+
+    fontname = DEFAULT_FONT
+    text_1_w = img_w - 20
+    text_1_h = img_h + 10
+    font_size = await fit_font_size(args[0], text_1_w, text_1_h, fontname, 100, 10)
+    if not font_size:
+        return "文字太长了哦，改短点再试吧~"
+    font = await load_font(fontname, font_size)
+    text_1_w, text_1_h = font.getsize(args[0])
+    text_1_frame = Image.new("RGBA", (text_1_w, text_1_h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(text_1_frame)
+    draw.text((0, 0), args[0], font=font, fill="white")
+
+    text_2_h = 0
+    if len(args) > 1:
+        text_2_w = img_w - 20
+        text_2_h = img_h + 10
+        font_size = await fit_font_size(args[1], text_2_w, text_2_h, fontname, font_size - 10, 10)
+        if not font_size:
+            return "文字太长了哦，改短点再试吧~"
+        font = await load_font(fontname, font_size)
+        text_2_w, text_2_h = font.getsize(args[1])
+        text_2_frame = Image.new("RGBA", (text_2_w, text_2_h), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(text_2_frame)
+        draw.text((0, 0), args[1], font=font, fill="white")
+
+    frame = Image.new("RGBA", (img_w, img_h+text_1_h+text_2_h+30), (0, 0, 0, 0))
+    frame.paste(img, (0, 0))
+    frame.paste(text_1_frame, (int(img_w/2-text_1_w/2), int(img_h+text_1_frame.size[1]/2-text_1_h/2)), mask=text_1_frame)
+    if len(args) > 1:
+        frame.paste(text_2_frame, (int(img_w/2-text_2_w/2), int(img_h+text_1_h+text_2_frame.size[1]/2-text_2_h/2)), mask=text_2_frame)
+
+    return save_jpg(frame)
