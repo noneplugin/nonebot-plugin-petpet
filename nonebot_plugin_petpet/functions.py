@@ -778,7 +778,7 @@ async def coupon(
     font = await load_font(DEFAULT_FONT, 30)
     text_img = Image.new("RGBA", (250, 100))
     text = f"{users[0].name}陪睡券" if not args else args[0]
-    text += "\n（永久有效）"
+    text += "\n（永久有效）" if len(args) <= 1 else f"\n{args[1]}"
     text_w = font.getsize_multiline(text)[0]
     if text_w > text_img.width:
         return "文字太长了哦，改短点再试吧~"

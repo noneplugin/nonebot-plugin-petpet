@@ -42,7 +42,7 @@ commands = [
     Command(("我朋友说", "我有个朋友说"), my_friend, arg_num=2),
     Command(("这像画吗",), paint, convert=False),
     Command(("震惊",), shock),
-    Command(("兑换券",), coupon, arg_num=1),
+    Command(("兑换券",), coupon, arg_num=2),
 ]
 
 
