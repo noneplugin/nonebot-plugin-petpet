@@ -710,7 +710,7 @@ async def my_friend(
 
     dialog_left = await load_image("my_friend/0.png")
     dialog_right = await load_image("my_friend/1.png")
-    dialog_box = Image.new("RGBA", (text_w + 140, 150))
+    dialog_box = Image.new("RGBA", (max(text_w, name_w + 15) + 140, 150))
     dialog_box.paste(dialog_left, (0, 0))
     dialog_box.paste(Image.new("RGBA", (text_w, 110), "#ffffff"), (70, 20))
     dialog_box.paste(dialog_right, (text_w + 70, 0))
