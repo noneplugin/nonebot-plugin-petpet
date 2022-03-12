@@ -39,7 +39,7 @@ commands = [
     Command(("继续干活",), back_to_work, convert=False),
     Command(("完美", "完美的"), perfect, convert=False),
     Command(("关注",), follow, arg_num=1),
-    Command(("我朋友说", "我有个朋友说"), my_friend, arg_num=2),
+    Command(("我朋友说", "我有个朋友说"), my_friend, arg_num=10),
     Command(("这像画吗",), paint, convert=False),
     Command(("震惊",), shock),
     Command(("兑换券",), coupon, arg_num=2),

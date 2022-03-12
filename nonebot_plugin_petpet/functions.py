@@ -22,6 +22,7 @@ from .utils import (
     make_jpg_or_gif,
     load_image,
     load_font,
+    wrap_text,
     fit_font_size,
 )
 
@@ -693,38 +694,57 @@ async def my_friend(
         return "你朋友说啥？"
     elif len(args) <= 1:
         name = users[0].name or "朋友"
-        text = args[0]
+        texts = args
     else:
         name = args[0] or "朋友"
-        text = args[1]
-    text = text.replace("他", "我").replace("她", "我").replace("它", "我")
+        texts = args[1:]
 
     name_font = await load_font(DEFAULT_FONT, 25)
     text_font = await load_font(DEFAULT_FONT, 40)
     name_w, name_h = name_font.getsize(name)
-    text_w, text_h = text_font.getsize(text)
-    if name_w >= 800:
+    if name_w >= 700:
         return "名字太长了哦，改短点再试吧~"
-    if text_w >= 1000:
-        return "文本太长了哦，改短点再试吧~"
 
-    dialog_left = await load_image("my_friend/0.png")
-    dialog_right = await load_image("my_friend/1.png")
-    dialog_box = Image.new("RGBA", (max(text_w, name_w + 15) + 140, 150))
-    dialog_box.paste(dialog_left, (0, 0))
-    dialog_box.paste(Image.new("RGBA", (text_w, 110), "#ffffff"), (70, 20))
-    dialog_box.paste(dialog_right, (text_w + 70, 0))
-    draw = ImageDraw.Draw(dialog_box)
-    draw.text((70, 15 + (110 - text_h) / 2), text, font=text_font, fill="#000000")
-
-    img = resize(circle(img), (100, 100))
-    frame = Image.new("RGBA", (dialog_box.width + 130, 210), "#eaedf4")
-    frame.paste(img, (20, 20), mask=img)
-    frame.paste(dialog_box, (130, 60), mask=dialog_box)
+    corner1 = await load_image("my_friend/corner1.png")
+    corner2 = await load_image("my_friend/corner2.png")
+    corner3 = await load_image("my_friend/corner3.png")
+    corner4 = await load_image("my_friend/corner4.png")
     label = await load_image("my_friend/2.png")
-    frame.paste(label, (160, 25))
-    draw = ImageDraw.Draw(frame)
-    draw.text((260, 22 + (35 - name_h) / 2), name, font=name_font, fill="#868894")
+    img = resize(circle(img), (100, 100))
+
+    def make_dialog(text: str) -> IMG:
+        text = "\n".join(wrap_text(text, text_font, 700))
+        text_w, text_h = text_font.getsize_multiline(text)
+        box_w = max(text_w, name_w + 15) + 140
+        box_h = max(text_h + 103, 150)
+        box = Image.new("RGBA", (box_w, box_h))
+        box.paste(corner1, (0, 0))
+        box.paste(corner2, (0, box_h - 75))
+        box.paste(corner3, (text_w + 70, 0))
+        box.paste(corner4, (text_w + 70, box_h - 75))
+        box.paste(Image.new("RGBA", (text_w, box_h - 40), "#ffffff"), (70, 20))
+        box.paste(Image.new("RGBA", (text_w + 88, box_h - 150), "#ffffff"), (27, 75))
+
+        draw = ImageDraw.Draw(box)
+        draw.multiline_text(
+            (70, 15 + (box_h - 40 - text_h) / 2), text, font=text_font, fill="#000000"
+        )
+        dialog = Image.new("RGBA", (box.width + 130, box.height + 60), "#eaedf4")
+        dialog.paste(img, (20, 20), mask=img)
+        dialog.paste(box, (130, 60), mask=box)
+        dialog.paste(label, (160, 25))
+        draw = ImageDraw.Draw(dialog)
+        draw.text((260, 22 + (35 - name_h) / 2), name, font=name_font, fill="#868894")
+        return dialog
+
+    dialogs = [make_dialog(text) for text in texts]
+    frame_w = max((dialog.width for dialog in dialogs))
+    frame_h = sum((dialog.height for dialog in dialogs))
+    frame = Image.new("RGBA", (frame_w, frame_h), "#eaedf4")
+    current_h = 0
+    for dialog in dialogs:
+        frame.paste(dialog, (0, current_h))
+        current_h += dialog.height
     return save_jpg(frame)
 
 
@@ -742,7 +762,6 @@ async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     img = resize(img, (300, 300))
     frames = []
-    # fmt: off
     # params = [
     #     (15, 0, 30), (-15, 90, 10), (-15, -45, 25), (-15, 45, 10),
     #     (15, 45, 20), (0, -60, 30), (-10, 20, 10), (-15, 0, 0),
@@ -759,7 +778,6 @@ async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
         random_blur_angle = random.randint(-90, 90)
         random_blur_degree = random.randint(0, 90)
         params.append((random_angle, random_blur_angle, random_blur_degree))
-    # fmt: on
     for angle, blur_angle, blur_degree in params:
         frames.append(
             rotate(motion_blur(img, blur_angle, blur_degree), angle, expand=False)

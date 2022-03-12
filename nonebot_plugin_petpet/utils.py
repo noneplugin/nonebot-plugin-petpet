@@ -217,6 +217,22 @@ async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     return ImageFont.truetype(BytesIO(font), fontsize, encoding="utf-8")
 
 
+def wrap_text(text: str, font: FreeTypeFont, max_width: float, **kwargs) -> List[str]:
+    line = ""
+    lines = []
+    for t in text:
+        if t == "\n":
+            lines.append(line)
+            line = ""
+        elif font.getsize(line + t, **kwargs)[0] > max_width:
+            lines.append(line)
+            line = t
+        else:
+            line += t
+    lines.append(line)
+    return lines
+
+
 async def fit_font_size(
     text: str,
     max_width: float,
