@@ -43,6 +43,7 @@ commands = [
     Command(("这像画吗",), paint, convert=False),
     Command(("震惊",), shock),
     Command(("兑换券",), coupon, arg_num=2),
+    Command(("听音乐",), listen_music),
 ]
 
 

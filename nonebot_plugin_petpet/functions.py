@@ -794,3 +794,17 @@ async def coupon(
     text_img = rotate(text_img, 22)
     bg.paste(text_img, (94, 108), mask=text_img)
     return save_jpg(bg)
+
+
+async def listen_music(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = circle(img)
+    bg = await load_image("listen_music/0.png")
+    frames = []
+    for i in range(0, 360, 10):
+        frame = Image.new("RGBA", (414, 399))
+        temp_img = resize(rotate(img, i, False), (215, 215))
+        frame.paste(temp_img, (100, 100), mask=temp_img)
+        frame.paste(bg, (0, 0), mask=bg)
+        frames.append(to_jpg(frame))
+    return save_gif(frames, 0.05)
