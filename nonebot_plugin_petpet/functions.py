@@ -875,7 +875,7 @@ async def dianzhongdian(users: List[UserInfo], args: List[str] = [], **kwargs) -
         draw = ImageDraw.Draw(text_2_frame)
         draw.text((0, 0), args[1], font=font, fill="white")
 
-    frame = Image.new("RGBA", (img_w, img_h+text_1_h+text_2_h+10), (0, 0, 0, 0))
+    frame = Image.new("RGBA", (img_w, img_h+text_1_h+text_2_h+30), (0, 0, 0, 0))
     frame.paste(img, (0, 0))
     frame.paste(text_1_frame, (int(img_w/2-text_1_w/2), int(img_h+text_1_frame.size[1]/2-text_1_h/2)), mask=text_1_frame)
     if len(args) > 1:
