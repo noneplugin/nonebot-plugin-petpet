@@ -743,22 +743,28 @@ async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
     img = resize(img, (300, 300))
     frames = []
     # fmt: off
-    params = [
-        (15, 0, 30), (-15, 90, 10), (-15, -45, 25), (-15, 45, 10),
-        (15, 45, 20), (0, -60, 30), (-10, 20, 10), (-15, 0, 0),
-        (-20, 0, 0), (0, 90, 40), (0, -70, 20), (0, 0, 20),
-        (-10, 90, 5), (-20, 90, 40), (-10, 0, 0), (15, 90, 10),
-        (10, 0, 10), (10, 0, 5), (-20, 90, 5), (-5, -45, 20),
-        (15, 0, 5), (0, 90, 5), (10, 80, 10), (-15, -45, 20),
-        (0, 0, 20), (20, 0, 10), (0, 45, 30), (-10, 90, 5),
-        (15, 0, 5), (-10, 0, 5)
-    ]
+    # params = [
+    #     (15, 0, 30), (-15, 90, 10), (-15, -45, 25), (-15, 45, 10),
+    #     (15, 45, 20), (0, -60, 30), (-10, 20, 10), (-15, 0, 0),
+    #     (-20, 0, 0), (0, 90, 40), (0, -70, 20), (0, 0, 20),
+    #     (-10, 90, 5), (-20, 90, 40), (-10, 0, 0), (15, 90, 10),
+    #     (10, 0, 10), (10, 0, 5), (-20, 90, 5), (-5, -45, 20),
+    #     (15, 0, 5), (0, 90, 5), (10, 80, 10), (-15, -45, 20),
+    #     (0, 0, 20), (20, 0, 10), (0, 45, 30), (-10, 90, 5),
+    #     (15, 0, 5), (-10, 0, 5)
+    # ]
+    params = []
+    for i in range(30):
+        random_angle = random.randint(-20, 20)
+        random_blur_angle = random.randint(-90, 90)
+        random_blur_degree = random.randint(0, 90)
+        params.append((random_angle, random_blur_angle, random_blur_degree))
     # fmt: on
     for angle, blur_angle, blur_degree in params:
         frames.append(
             rotate(motion_blur(img, blur_angle, blur_degree), angle, expand=False)
         )
-    return save_gif(frames, 0.001)
+    return save_gif(frames, 0.01)
 
 
 async def coupon(
