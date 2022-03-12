@@ -853,7 +853,7 @@ async def dianzhongdian(users: List[UserInfo], args: List[str] = [], **kwargs) -
     fontname = DEFAULT_FONT
     text_1_w = img_w - 20
     text_1_h = img_h + 10
-    font_size = await fit_font_size(args[0], text_1_w, text_1_h, fontname, 100, 10)
+    font_size = await fit_font_size(args[0], text_1_w, text_1_h, fontname, 50, 10)
     if not font_size:
         return "文字太长了哦，改短点再试吧~"
     font = await load_font(fontname, font_size)
@@ -866,7 +866,9 @@ async def dianzhongdian(users: List[UserInfo], args: List[str] = [], **kwargs) -
     if len(args) > 1:
         text_2_w = img_w - 20
         text_2_h = img_h + 10
-        font_size = await fit_font_size(args[1], text_2_w, text_2_h, fontname, font_size - 10, 10)
+        text_2_font_size = int(font_size/2)
+        text_2_font_size = text_2_font_size if text_2_font_size > 10 else 10
+        font_size = await fit_font_size(args[1], text_2_w, text_2_h, fontname, text_2_font_size, 10)
         if not font_size:
             return "文字太长了哦，改短点再试吧~"
         font = await load_font(fontname, font_size)
@@ -875,7 +877,7 @@ async def dianzhongdian(users: List[UserInfo], args: List[str] = [], **kwargs) -
         draw = ImageDraw.Draw(text_2_frame)
         draw.text((0, 0), args[1], font=font, fill="white")
 
-    frame = Image.new("RGBA", (img_w, img_h+text_1_h+text_2_h+30), (0, 0, 0, 0))
+    frame = Image.new("RGBA", (img_w, img_h+text_1_h+text_2_h+20), (0, 0, 0, 0))
     frame.paste(img, (0, 0))
     frame.paste(text_1_frame, (int(img_w/2-text_1_w/2), int(img_h+text_1_frame.size[1]/2-text_1_h/2)), mask=text_1_frame)
     if len(args) > 1:
