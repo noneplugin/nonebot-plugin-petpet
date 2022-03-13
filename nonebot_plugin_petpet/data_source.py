@@ -45,6 +45,7 @@ commands = [
     Command(("兑换券",), coupon, arg_num=2),
     Command(("听音乐",), listen_music),
     Command(("典中典",), dianzhongdian, convert=False, arg_num=3),
+    Command(("哈哈镜",), funny_mirror),
 ]
 
 

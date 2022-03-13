@@ -33,16 +33,8 @@ def circle(img: IMG) -> IMG:
 
 
 def square(img: IMG) -> IMG:
-    width, height = img.size
-    length = min(width, height)
-    return img.crop(
-        (
-            int((width - length) / 2),
-            int((height - length) / 2),
-            int((width + length) / 2),
-            int((height + length) / 2),
-        )
-    )
+    length = min(img.width, img.height)
+    return cut_size(img, (length, length))
 
 
 # 适应大小模式
@@ -85,6 +77,37 @@ def limit_size(
     return resize(img, (img_w, img_h))
 
 
+def cut_size(
+    img: IMG,
+    size: Tuple[int, int],
+    direction: FitSizeDir = FitSizeDir.CENTER,
+    bg_color: Union[str, float, Tuple[float, ...]] = (255, 255, 255, 0),
+) -> IMG:
+    """
+    裁剪图片到指定的大小，超出部分裁剪，不足部分设为指定颜色
+    :params
+      * ``img``: 待调整的图片
+      * ``size``: 期望图片大小
+      * ``direction``: 调整图片大小时图片的方位；默认为居中 FitSizeDir.CENTER
+      * ``bg_color``: FitSizeMode.INSIDE 时的背景颜色
+    """
+    w, h = size
+    img_w, img_h = img.size
+    x = int((w - img_w) / 2)
+    y = int((h - img_h) / 2)
+    if direction in [FitSizeDir.NORTH, FitSizeDir.NORTHWEST, FitSizeDir.NORTHEAST]:
+        y = 0
+    elif direction in [FitSizeDir.SOUTH, FitSizeDir.SOUTHWEST, FitSizeDir.SOUTHEAST]:
+        y = h - img_h
+    if direction in [FitSizeDir.WEST, FitSizeDir.NORTHWEST, FitSizeDir.SOUTHWEST]:
+        x = 0
+    elif direction in [FitSizeDir.EAST, FitSizeDir.NORTHEAST, FitSizeDir.SOUTHEAST]:
+        x = w - img_w
+    result = Image.new("RGBA", size, bg_color)
+    result.paste(img, (x, y))
+    return result
+
+
 def fit_size(
     img: IMG,
     size: Tuple[int, int],
@@ -101,22 +124,7 @@ def fit_size(
       * ``direction``: 调整图片大小时图片的方位；默认为居中 FitSizeDir.CENTER
       * ``bg_color``: FitSizeMode.INSIDE 时的背景颜色
     """
-    img = limit_size(img, size, mode)
-    w, h = size
-    img_w, img_h = img.size
-    x = int((w - img_w) / 2)
-    y = int((h - img_h) / 2)
-    if direction in [FitSizeDir.NORTH, FitSizeDir.NORTHWEST, FitSizeDir.NORTHEAST]:
-        y = 0
-    elif direction in [FitSizeDir.SOUTH, FitSizeDir.SOUTHWEST, FitSizeDir.SOUTHEAST]:
-        y = h - img_h
-    if direction in [FitSizeDir.WEST, FitSizeDir.NORTHWEST, FitSizeDir.SOUTHWEST]:
-        x = 0
-    elif direction in [FitSizeDir.EAST, FitSizeDir.NORTHEAST, FitSizeDir.SOUTHEAST]:
-        x = w - img_w
-    result = Image.new("RGBA", size, bg_color)
-    result.paste(img, (x, y))
-    return result
+    return cut_size(limit_size(img, size, mode), size, direction, bg_color)
 
 
 def perspective(img: IMG, points: List[Tuple[float, float]]):
@@ -156,6 +164,15 @@ def motion_blur(img: IMG, angle=0, degree=0) -> IMG:
     blurred = cv.filter2D(np.asarray(img), -1, kernel)
     cv.normalize(blurred, blurred, 0, 255, cv.NORM_MINMAX)
     return Image.fromarray(np.array(blurred, dtype=np.uint8))
+
+
+def distort(img: IMG, coefficients: Tuple[float, float, float, float]) -> IMG:
+    res = cv.undistort(
+        np.asarray(img),
+        np.array([[100, 0, img.width / 2], [0, 100, img.height / 2], [0, 0, 1]]),
+        np.asarray(coefficients),
+    )
+    return Image.fromarray(np.array(res, dtype=np.uint8))
 
 
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:
