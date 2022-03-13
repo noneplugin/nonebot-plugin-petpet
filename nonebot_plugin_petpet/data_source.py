@@ -46,6 +46,7 @@ commands = [
     Command(("听音乐",), listen_music),
     Command(("典中典",), dianzhongdian, convert=False, arg_num=3),
     Command(("哈哈镜",), funny_mirror),
+    Command(("永远爱你",), love_you),
 ]
 
 

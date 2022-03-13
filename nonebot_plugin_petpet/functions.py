@@ -856,3 +856,17 @@ async def funny_mirror(users: List[UserInfo], **kwargs) -> BytesIO:
         )
     frames.extend(frames[::-1])
     return save_gif(frames, 0.05)
+
+
+async def love_you(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    frames = []
+    locs = [(68, 65, 70, 70), (63, 59, 80, 80)]
+    for i in range(2):
+        heart = await load_image(f"love_you/{i}.png")
+        frame = Image.new("RGBA", heart.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(heart, mask=heart)
+        frames.append(frame)
+    return save_gif(frames, 0.2)
