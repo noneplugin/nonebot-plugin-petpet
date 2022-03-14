@@ -48,7 +48,8 @@ commands = [
     Command(("哈哈镜",), funny_mirror),
     Command(("永远爱你",), love_you),
     Command(("对称",), symmetric, convert=False, arg_num=1),
-    Command(("安全感",), safe_sense, arg_num=2),
+    Command(("安全感",), safe_sense, convert=False),
+    Command(("永远喜欢", "我永远喜欢"), always_like, convert=False, arg_num=1),
 ]
 
 

@@ -880,7 +880,7 @@ async def symmetric(
     img_w, img_h = img.size
 
     boxes = {
-        "left":{
+        "left": {
             "mode": Image.FLIP_LEFT_RIGHT,
             "frame_box": (img_w // 2 * 2, img_h),
             "first_box": (0, 0, img_w // 2, img_h),
@@ -891,8 +891,8 @@ async def symmetric(
         "right": {
             "mode": Image.FLIP_LEFT_RIGHT,
             "frame_box": (img_w // 2 * 2, img_h),
-            "first_box":  (img_w // 2, 0, img_w // 2 * 2, img_h),
-            "first_position":  (img_w // 2, 0),
+            "first_box": (img_w // 2, 0, img_w // 2 * 2, img_h),
+            "first_position": (img_w // 2, 0),
             "second_box": (0, 0, img_w // 2, img_h),
             "second_position": (0, 0),
         },
@@ -910,8 +910,8 @@ async def symmetric(
             "first_box": (0, img_h // 2, img_w, img_h // 2 * 2),
             "first_position": (0, img_h // 2),
             "second_box": (0, 0, img_w, img_h // 2),
-            "second_position": (0, 0)
-        }
+            "second_position": (0, 0),
+        },
     }
 
     mode = "left"
@@ -935,12 +935,38 @@ async def symmetric(
     return save_jpg(frame)
 
 
-async def safe_sense(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def safe_sense(users: List[UserInfo], **kwargs) -> Union[str, BytesIO]:
     img = users[0].img
+    img = to_jpg(img).convert("RGBA")
     img = fit_size(img, (215, 343))
     frame = await load_image(f"safe_sense/1.png")
     frame.paste(img, (215, 135))
+    return save_jpg(frame)
 
+
+async def always_like(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+
+    ta = "她" if users[0].gender == "female" else "他"
+    name = (args[0] if args else "") or users[0].name or ta
+    text = "我永远喜欢" + name
+    fontname = DEFAULT_FONT
+    fontsize = await fit_font_size(text, 800, 100, fontname, 70, 30)
+    if not fontsize:
+        return "名字太长了哦，改短点再试吧~"
+
+    frame = await load_image(f"always_like/0.png")
+    frame.paste(fit_size(img, (400, 470), FitSizeMode.INSIDE), (15, 15))
+    font = await load_font(fontname, fontsize)
+    text_w, text_h = font.getsize(text)
+    draw = ImageDraw.Draw(frame)
+    draw.text(
+        ((frame.width - text_w) / 2, 470 + (100 - text_h) / 2),
+        text,
+        font=font,
+        fill="black",
+    )
     return save_jpg(frame)
