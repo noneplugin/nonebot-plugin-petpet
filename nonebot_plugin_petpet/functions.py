@@ -870,3 +870,77 @@ async def love_you(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(heart, mask=heart)
         frames.append(frame)
     return save_gif(frames, 0.2)
+
+
+async def symmetric(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
+    img_w, img_h = img.size
+
+    boxes = {
+        "left":{
+            "mode": Image.FLIP_LEFT_RIGHT,
+            "frame_box": (img_w // 2 * 2, img_h),
+            "first_box": (0, 0, img_w // 2, img_h),
+            "first_position": (0, 0),
+            "second_box": (img_w // 2, 0, img_w // 2 * 2, img_h),
+            "second_position": (img_w // 2, 0),
+        },
+        "right": {
+            "mode": Image.FLIP_LEFT_RIGHT,
+            "frame_box": (img_w // 2 * 2, img_h),
+            "first_box":  (img_w // 2, 0, img_w // 2 * 2, img_h),
+            "first_position":  (img_w // 2, 0),
+            "second_box": (0, 0, img_w // 2, img_h),
+            "second_position": (0, 0),
+        },
+        "top": {
+            "mode": Image.FLIP_TOP_BOTTOM,
+            "frame_box": (img_w, img_h // 2 * 2),
+            "first_box": (0, 0, img_w, img_h // 2),
+            "first_position": (0, 0),
+            "second_box": (0, img_h // 2, img_w, img_h // 2 * 2),
+            "second_position": (0, img_h // 2),
+        },
+        "bottom": {
+            "mode": Image.FLIP_TOP_BOTTOM,
+            "frame_box": (img_w, img_h // 2 * 2),
+            "first_box": (0, img_h // 2, img_w, img_h // 2 * 2),
+            "first_position": (0, img_h // 2),
+            "second_box": (0, 0, img_w, img_h // 2),
+            "second_position": (0, 0)
+        }
+    }
+
+    mode = "left"
+    if args:
+        if "右" in args[0]:
+            mode = "right"
+        elif "上" in args[0]:
+            mode = "top"
+        elif "下" in args[0]:
+            mode = "bottom"
+
+    first = img
+    second = img.transpose(boxes[mode]["mode"])
+    frame = Image.new("RGBA", boxes[mode]["frame_box"], (255, 255, 255, 0))
+
+    first = first.crop(boxes[mode]["first_box"])
+    frame.paste(first, boxes[mode]["first_position"])
+    second = second.crop(boxes[mode]["second_box"])
+    frame.paste(second, boxes[mode]["second_position"])
+
+    return save_jpg(frame)
+
+
+async def safe_sense(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    img = fit_size(img, (215, 343))
+    frame = await load_image(f"safe_sense/1.png")
+    frame.paste(img, (215, 135))
+
+    return save_jpg(frame)
