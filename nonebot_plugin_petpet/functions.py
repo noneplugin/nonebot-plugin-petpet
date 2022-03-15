@@ -966,28 +966,66 @@ async def safe_sense(
 async def always_like(
     users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
-    img = users[0].img
-    img = to_jpg(img).convert("RGBA")
-
-    ta = "她" if users[0].gender == "female" else "他"
-    name = (args[0] if args else "") or users[0].name or ta
+    img = to_jpg(users[0].img).convert("RGBA")
+    name = (args[0] if args else "") or users[0].name
+    if not name:
+        return "找不到名字，加上名字再试吧~"
     text = "我永远喜欢" + name
-    fontname = DEFAULT_FONT
+    fontname = "SourceHanSansSC-Bold.otf"
     fontsize = await fit_font_size(text, 800, 100, fontname, 70, 30)
     if not fontsize:
         return "名字太长了哦，改短点再试吧~"
 
+    def random_color():
+        return random.choice(
+            ["red", "darkorange", "gold", "darkgreen", "blue", "cyan", "purple"]
+        )
+
     frame = await load_image(f"always_like/0.png")
-    frame.paste(fit_size(img, (400, 470), FitSizeMode.INSIDE), (15, 15))
+    frame.paste(fit_size(img, (350, 400), FitSizeMode.INSIDE), (25, 35))
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
     draw = ImageDraw.Draw(frame)
-    draw.text(
-        ((frame.width - text_w) / 2, 470 + (100 - text_h) / 2),
-        text,
-        font=font,
-        fill="black",
-    )
+    start_w = (frame.width - text_w) / 2
+    start_h = 470 + (100 - text_h) / 2
+    draw.text((start_w, start_h), text, font=font, fill="black")
+    if len(users) > 1:
+        line_h = start_h + text_h / 5 * 3
+        draw.line(
+            (start_w + font.getsize("我永远喜欢")[0], line_h, start_w + text_w, line_h),
+            fill=random_color(),
+            width=10,
+        )
+
+    current_h = start_h
+    for i, user in enumerate(users[1:], start=1):
+        img = to_jpg(user.img).convert("RGBA")
+        new_img = fit_size(img, (350, 400), FitSizeMode.INSIDE)
+        frame.paste(
+            new_img,
+            (10 + random.randint(0, 50), 20 + random.randint(0, 70)),
+            mask=new_img,
+        )
+        name = (args[i] if len(args) > i else "") or user.name
+        if not name:
+            return "找不到对应的名字，检查名字再试吧~"
+        fontsize = await fit_font_size(name, 400, 100, fontname, 70, 30)
+        if not fontsize:
+            return "名字太长了哦，改短点再试吧~"
+        font = await load_font(fontname, fontsize)
+        text_w, text_h = font.getsize(name)
+        current_h -= text_h - 20
+        if current_h < 10:
+            return "你喜欢的人太多啦"
+        start_w = 400 + (430 - text_w) / 2
+        draw.text((start_w, current_h), name, font=font, fill="black")
+        if len(users) > i + 1:
+            line_h = current_h + text_h / 5 * 3
+            draw.line(
+                (start_w, line_h, start_w + text_w, line_h),
+                fill=random_color(),
+                width=10,
+            )
     return save_jpg(frame)
 
 
