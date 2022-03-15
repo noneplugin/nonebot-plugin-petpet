@@ -373,7 +373,7 @@ async def play_game(
     users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> Union[str, BytesIO]:
     img = users[0].img
-    bg = await load_image("play_game/0.png")
+    bg = await load_image("play_game/1.png")
     text = args[0] if args else "来玩休闲游戏啊"
     fontname = DEFAULT_FONT
     fontsize = await fit_font_size(text, 520, 110, fontname, 35, 25)
