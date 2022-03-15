@@ -935,13 +935,39 @@ async def symmetric(
     return save_jpg(frame)
 
 
-async def safe_sense(users: List[UserInfo], **kwargs) -> Union[str, BytesIO]:
-    img = users[0].img
-    img = to_jpg(img).convert("RGBA")
-    img = fit_size(img, (215, 343))
-    frame = await load_image(f"safe_sense/1.png")
-    frame.paste(img, (215, 135))
-    return save_jpg(frame)
+async def safe_sense(
+        users: List[UserInfo], args: List[str] = [],**kwargs
+) -> Union[str, BytesIO]:
+    img = fit_size(to_jpg(users[0].img).convert("RGBA"), (215, 343))
+    img_frame = await load_image(f"safe_sense/0.png")
+    img_frame.paste(img, (215, 135))
+
+    ta = "她" if users[0].gender == "female" else "他"
+    texts = ["你给我的安全感",f"远不及{ta}的万分之一"] if len(args) < 2 else args
+
+    async def text_frame(text: str, max_fontsize: int, min_fontsize: int, paste_position: tuple) -> int:
+        fontname = DEFAULT_FONT
+        fontsize = await fit_font_size(
+            text, 430, 45, fontname, max_fontsize, min_fontsize
+        )
+        if not fontsize:
+            return fontsize
+        font = await load_font(fontname, fontsize)
+        text_w, text_h = font.getsize(text)
+        frame = Image.new("RGB", (430, 50), (255, 255, 255))
+        draw = ImageDraw.Draw(frame)
+        draw.text((int((430 - text_w) / 2), 0), text, font=font, fill="black")
+        img_frame.paste(frame, paste_position)
+        return fontsize
+
+    fontsize = await text_frame(texts[0], 70, 10, (0, 15))
+    if not fontsize:
+        return "文字太长了哦，改短点再试吧~"
+    fontsize = await text_frame(texts[1], 70, 10, (0, 70))
+    if not fontsize:
+        return "文字太长了哦，改短点再试吧~"
+
+    return save_jpg(img_frame)
 
 
 async def always_like(
@@ -969,4 +995,44 @@ async def always_like(
         font=font,
         fill="black",
     )
+    return save_jpg(frame)
+
+
+async def interview(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    if len(users) >= 2:
+        self_img = users[0].img
+        user_img = users[1].img
+    else:
+        self_img = await load_image("interview/huaji.png")
+        user_img = users[0].img
+    self_img = fit_size(to_jpg(self_img).convert("RGBA"), (124, 124))
+    user_img = fit_size(to_jpg(user_img).convert("RGBA"), (124, 124))
+
+    img_frame = Image.new("RGBA", (600, 200), (255, 255, 255, 0))
+    microphone = await load_image("interview/microphone.png")
+    img_frame.paste(microphone, (330, 103), mask=microphone)
+    img_frame.paste(self_img, (419, 40))
+    img_frame.paste(user_img, (57, 40))
+
+    text = args[0] if args else "采访大佬经验"
+    fontname = DEFAULT_FONT
+    fontsize = await fit_font_size(
+        text, 550, 100, fontname, 50, 20
+    )
+    if not fontsize:
+        return "文字太长了哦，改短点再试吧~"
+    font = await load_font(fontname, fontsize)
+    text_w, text_h = font.getsize(text)
+    text_frame = Image.new("RGB", (600, 100), "#FFFFFF")
+    draw = ImageDraw.Draw(text_frame)
+    draw.text((int((600 - text_w) / 2), int((100 - text_h) / 2)), text, font=font, fill="black")
+
+    frames = [img_frame, text_frame]
+    frame = Image.new("RGB", (600, sum((f.height for f in frames)) + 10), "#FFFFFF")
+    current_h = 0
+    for f in frames:
+        frame.paste(f, (0, current_h))
+        current_h += f.height
     return save_jpg(frame)
