@@ -784,7 +784,7 @@ async def listen_music(users: List[UserInfo], **kwargs) -> BytesIO:
     frames = []
     for i in range(0, 360, 10):
         frame = Image.new("RGBA", (414, 399))
-        temp_img = resize(rotate(img, i, False), (215, 215))
+        temp_img = resize(rotate(img, -i, False), (215, 215))
         frame.paste(temp_img, (100, 100), mask=temp_img)
         frame.paste(bg, (0, 0), mask=bg)
         frames.append(to_jpg(frame))
