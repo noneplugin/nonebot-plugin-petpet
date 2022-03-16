@@ -1036,7 +1036,7 @@ async def interview(
         self_img = users[0].img
         user_img = users[1].img
     else:
-        self_img = await load_image("interview/huaji.png")
+        self_img = to_jpg(await load_image("interview/huaji.png"))
         user_img = users[0].img
     self_img = resize(self_img, (124, 124))
     user_img = resize(user_img, (124, 124))
