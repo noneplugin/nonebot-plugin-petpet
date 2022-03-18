@@ -52,6 +52,7 @@ commands = [
     Command(("永远喜欢", "我永远喜欢"), always_like, convert=False, arg_num=10),
     Command(("采访",), interview, arg_num=1),
     Command(("打拳",), punch, convert=False),
+    Command(("群青",), cyan),
 ]
 
 

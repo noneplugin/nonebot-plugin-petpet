@@ -1085,3 +1085,25 @@ async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(fist, mask=fist)
         frames.append(frame)
     return save_gif(frames, 0.03)
+
+
+async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = resize(img, (500, 500))
+    color = (78, 114, 184)
+    img = color_mask(img, color)
+    draw = ImageDraw.Draw(img)
+    font = await load_font("SourceHanSansSC-Bold.otf", 80)
+    draw.text(
+        (400, 50), "群\n青", font=font, fill="white", stroke_width=2, stroke_fill=color
+    )
+    font = await load_font("SourceHanSansSC-Regular.otf", 40)
+    draw.text(
+        (310, 270),
+        "YOASOBI",
+        font=font,
+        fill="white",
+        stroke_width=2,
+        stroke_fill=color,
+    )
+    return save_jpg(img)

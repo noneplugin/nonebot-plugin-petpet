@@ -175,6 +175,30 @@ def distort(img: IMG, coefficients: Tuple[float, float, float, float]) -> IMG:
     return Image.fromarray(np.array(res, dtype=np.uint8))
 
 
+def color_mask(img: IMG, color: Tuple[int, int, int]) -> IMG:
+    img = img.convert("RGB")
+    w, h = img.size
+    img_array = np.asarray(img)
+    img_gray = cv.cvtColor(img_array, cv.COLOR_RGB2GRAY)
+    img_hsl = cv.cvtColor(img_array, cv.COLOR_RGB2HLS)
+    img_new = np.zeros((h, w, 3), np.uint8)
+    r, g, b = color
+    rgb_sum = sum(color)
+    for i in range(h):
+        for j in range(w):
+            value = img_gray[i, j]
+            new_color = [
+                int(value * r / rgb_sum),
+                int(value * g / rgb_sum),
+                int(value * b / rgb_sum),
+            ]
+            img_new[i, j] = new_color
+    img_new_hsl = cv.cvtColor(img_new, cv.COLOR_RGB2HLS)
+    result = np.dstack((img_new_hsl[:, :, 0], img_hsl[:, :, 1], img_new_hsl[:, :, 2]))
+    result = cv.cvtColor(result, cv.COLOR_HLS2RGB)
+    return Image.fromarray(result)
+
+
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:
     output = BytesIO()
     imageio.mimsave(output, frames, format="gif", duration=duration)
