@@ -826,9 +826,11 @@ async def dianzhongdian(
     fontsize = await text_frame(args[0], 50, 10)
     if not fontsize:
         return "文字太长了哦，改短点再试吧~"
-    if len(args) > 1:
+
+    text = args[1] if len(args) > 1 else await translate(args[0], "ja")
+    if text:
         fontsize = max(int(fontsize / 2), 10)
-        fontsize = await text_frame(args[1], fontsize, 10)
+        fontsize = await text_frame(text, fontsize, 10)
         if not fontsize:
             return "文字太长了哦，改短点再试吧~"
 

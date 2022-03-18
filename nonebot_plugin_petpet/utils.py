@@ -1,4 +1,5 @@
 import math
+import httpx
 import imageio
 import cv2 as cv
 import numpy as np
@@ -309,6 +310,18 @@ async def fit_font_size(
             return fontsize
         if fontsize < min_fontsize:
             return 0
+
+
+async def translate(text: str, to_lang: str, from_lang: str = "autodetect"):
+    url = "http://api.mymemory.translated.net/get"
+    params = {"q": text, "langpair": f"{from_lang}|{to_lang}"}
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, params=params)
+            result = resp.json()
+        return result["responseData"]["translatedText"]
+    except:
+        return ""
 
 
 async def help_image(commands: List[Command]) -> BytesIO:
