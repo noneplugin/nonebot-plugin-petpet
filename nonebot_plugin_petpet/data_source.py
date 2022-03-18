@@ -51,6 +51,7 @@ commands = [
     Command(("安全感",), safe_sense, convert=False, arg_num=2),
     Command(("永远喜欢", "我永远喜欢"), always_like, convert=False, arg_num=10),
     Command(("采访",), interview, arg_num=1),
+    Command(("打拳",), punch, convert=False),
 ]
 
 

@@ -1062,3 +1062,26 @@ async def interview(
         fill="black",
     )
     return save_jpg(frame)
+
+
+async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    img = limit_size(img, (260, 230))
+    x = int((260 - img.width) / 2)
+    y = int((230 - img.height) / 2)
+    frames = []
+    # fmt: off
+    locs = [
+        (-50, 20), (-40, 10), (-30, 0), (-20, -10), (-10, -10), (0, 0),
+        (10, 10), (20, 20), (10, 10), (0, 0), (-10, -10), (10, 0), (-30, 10)
+    ]
+    # fmt: on
+    for i in range(13):
+        frame = Image.new("RGBA", (260, 230), (255, 255, 255, 0))
+        dx, dy = locs[i]
+        frame.paste(img, (x + dx, y + dy))
+        fist = await load_image(f"punch/{i}.png")
+        frame.paste(fist, mask=fist)
+        frames.append(frame)
+    return save_gif(frames, 0.03)
