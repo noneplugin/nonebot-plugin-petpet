@@ -324,6 +324,17 @@ async def translate(text: str, to_lang: str, from_lang: str = "autodetect"):
         return ""
 
 
+async def qq_translate_iyk0(text: str):
+    url = f"https://api.iyk0.com/qqfy/?msg={text}"
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url)
+            result = resp.json()
+        return result["result"]
+    except:
+        return ""
+
+
 async def help_image(commands: List[Command]) -> BytesIO:
     font = await load_font(DEFAULT_FONT, 30)
     padding = 10
