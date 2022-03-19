@@ -312,14 +312,14 @@ async def fit_font_size(
             return 0
 
 
-async def translate(text: str, to_lang: str, from_lang: str = "autodetect"):
-    url = "http://api.mymemory.translated.net/get"
-    params = {"q": text, "langpair": f"{from_lang}|{to_lang}"}
+async def translate(text: str) -> str:
+    url = f"http://fanyi.youdao.com/translate"
+    params = {"type": "ZH_CN2JA", "i": text, "doctype": "json"}
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.get(url, params=params)
             result = resp.json()
-        return result["responseData"]["translatedText"]
+        return result["translateResult"][0][0]["tgt"]
     except:
         return ""
 
