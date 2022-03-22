@@ -1,5 +1,6 @@
 import httpx
 import hashlib
+import aiofiles
 from pathlib import Path
 from aiocache import cached
 from nonebot.log import logger
@@ -36,11 +37,12 @@ async def get_resource(path: str, name: str) -> bytes:
         url = f"https://cdn.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@master/resources/{path}/{name}"
         data = await download_url(url)
         if data:
-            with file_path.open("wb") as f:
-                f.write(data)
+            async with aiofiles.open(str(file_path), "wb") as f:
+                await f.write(data)
     if not file_path.exists():
         raise ResourceError
-    return file_path.read_bytes()
+    async with aiofiles.open(str(file_path), "rb") as f:
+        return await f.read()
 
 
 @cached(ttl=600)
