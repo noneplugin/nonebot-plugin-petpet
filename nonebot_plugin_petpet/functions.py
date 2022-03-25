@@ -776,8 +776,8 @@ async def coupon(
     if text_w > text_img.width:
         return "文字太长了哦，改短点再试吧~"
 
-    draw = ImageDraw.Draw(text_img)
-    draw.multiline_text(
+    await draw_text(
+        text_img,
         ((text_img.width - text_w) / 2, 0),
         text,
         font=font,
@@ -965,8 +965,8 @@ async def safe_sense(
         return "文字太长了哦，改短点再试吧~"
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize_multiline(text)
-    draw = ImageDraw.Draw(frame)
-    draw.multiline_text(
+    await draw_text(
+        frame,
         ((frame.width - text_w) / 2, 30 + (45 - text_h) / 2),
         text,
         font=font,
@@ -1105,13 +1105,19 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
     img = resize(img, (500, 500))
     color = (78, 114, 184)
     img = color_mask(img, color)
-    draw = ImageDraw.Draw(img)
     font = await load_font("SourceHanSansSC-Bold.otf", 80)
-    draw.text(
-        (400, 50), "群\n青", font=font, fill="white", stroke_width=2, stroke_fill=color
+    await draw_text(
+        img,
+        (400, 50),
+        "群\n青",
+        font=font,
+        fill="white",
+        stroke_width=2,
+        stroke_fill=color,
     )
     font = await load_font("SourceHanSansSC-Regular.otf", 40)
-    draw.text(
+    await draw_text(
+        img,
         (310, 270),
         "YOASOBI",
         font=font,
