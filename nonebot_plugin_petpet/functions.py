@@ -1147,6 +1147,22 @@ async def pound(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
+async def thump(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    # fmt: off
+    locs = [(65, 128, 77, 72), (67, 128, 73, 72), (54, 139, 94, 61), (57, 135, 86, 65)]
+    # fmt: on
+    frames = []
+    for i in range(4):
+        bg = await load_image(f"thump/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.04)
+
+
 async def need(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("need/0.png")

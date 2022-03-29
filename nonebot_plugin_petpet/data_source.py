@@ -54,6 +54,7 @@ commands = [
     Command(("打拳",), punch, convert=False),
     Command(("群青",), cyan),
     Command(("捣",), pound),
+    Command(("捶",), thump),
     Command(("需要", "你可能需要"), need),
     Command(("捂脸",), cover_face),
 ]
