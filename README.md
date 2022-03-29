@@ -4,6 +4,8 @@
 
 ### 使用
 
+**以下命令需要加[命令前缀](https://v2.nonebot.dev/docs/api/config#Config-command_start) (默认为`/`)，可自行设置为空**
+
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
