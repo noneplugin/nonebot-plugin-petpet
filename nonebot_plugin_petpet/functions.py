@@ -1105,7 +1105,7 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
     img = resize(img, (500, 500))
     color = (78, 114, 184)
     img = color_mask(img, color)
-    font = await load_font("SourceHanSansSC-Bold.otf", 80)
+    font = await load_font(BOLD_FONT, 80)
     await draw_text(
         img,
         (400, 50),
@@ -1115,10 +1115,10 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
         stroke_width=2,
         stroke_fill=color,
     )
-    font = await load_font("SourceHanSansSC-Regular.otf", 40)
+    font = await load_font(DEFAULT_FONT, 40)
     await draw_text(
         img,
-        (310, 270),
+        (280, 270),
         "YOASOBI",
         font=font,
         fill="white",
@@ -1126,3 +1126,42 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
         stroke_fill=color,
     )
     return save_jpg(img)
+
+
+async def pound(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    # fmt: off
+    locs = [
+        (135, 240, 138, 47), (135, 240, 138, 47), (150, 190, 105, 95), (150, 190, 105, 95),
+        (148, 188, 106, 98), (146, 196, 110, 88), (145, 223, 112, 61), (145, 223, 112, 61)
+    ]
+    # fmt: on
+    frames = []
+    for i in range(8):
+        bg = await load_image(f"pound/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.05)
+
+
+async def need(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    bg = await load_image("need/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(resize(img, (115, 115)), (327, 232))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
+
+
+async def cover_face(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    bg = await load_image("cover_face/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    points = [(15, 11), (448, 0), (445, 452), (0, 461)]
+    screen = perspective(resize(img, (450, 450)), points)
+    frame.paste(screen, (120, 154))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)

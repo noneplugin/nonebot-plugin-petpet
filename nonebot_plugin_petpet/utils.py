@@ -12,7 +12,6 @@ from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from emoji.unicode_codes import UNICODE_EMOJI
-from nonebot.log import logger
 
 from .download import get_font, get_image
 from .models import Command
@@ -58,7 +57,6 @@ async def draw_text(
     if not text:
         return
     lines = text.strip().split("\n")
-    logger.info(lines)
     draw = ImageDraw.Draw(img)
     max_w = font.getsize_multiline(text, spacing=spacing, stroke_width=stroke_width)[0]
     current_x, current_y = pos
