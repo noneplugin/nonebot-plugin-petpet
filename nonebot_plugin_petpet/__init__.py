@@ -1,6 +1,6 @@
 import shlex
 import traceback
-from typing import List, Type
+from typing import List
 from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler, T_RuleChecker, T_State
@@ -67,10 +67,7 @@ async def get_user_info(bot: Bot, user: UserInfo):
 
 def check_args_rule(command: Command) -> T_RuleChecker:
     async def check_args(
-        bot: Bot,
-        event: MessageEvent,
-        state: T_State = State(),
-        msg: Message = CommandArg(),
+        event: MessageEvent, state: T_State = State(), msg: Message = CommandArg()
     ) -> bool:
 
         users: List[UserInfo] = []
@@ -133,7 +130,7 @@ def check_args_rule(command: Command) -> T_RuleChecker:
 
 
 async def handle(
-    matcher: Type[Matcher],
+    matcher: Matcher,
     command: Command,
     sender: UserInfo,
     users: List[UserInfo],
@@ -159,7 +156,7 @@ async def handle(
 
 def create_matchers():
     def create_handler(command: Command) -> T_Handler:
-        async def handler(bot: Bot, state: T_State = State()):
+        async def handler(matcher: Matcher, bot: Bot, state: T_State = State()):
             sender: UserInfo = state["sender"]
             users: List[UserInfo] = state["users"]
             args: List[str] = state["args"]
@@ -171,14 +168,13 @@ def create_matchers():
         return handler
 
     for command in commands:
-        matcher = on_command(
+        on_command(
             command.keywords[0],
             aliases=set(command.keywords),
             rule=check_args_rule(command),
             block=True,
             priority=12,
-        )
-        matcher.append_handler(create_handler(command))
+        ).append_handler(create_handler(command))
 
 
 create_matchers()

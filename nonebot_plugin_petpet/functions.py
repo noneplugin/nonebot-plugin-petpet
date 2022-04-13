@@ -1118,7 +1118,7 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
     font = await load_font(DEFAULT_FONT, 40)
     await draw_text(
         img,
-        (280, 270),
+        (310, 270),
         "YOASOBI",
         font=font,
         fill="white",
