@@ -57,6 +57,10 @@ commands = [
     Command(("捶",), thump),
     Command(("需要", "你可能需要"), need),
     Command(("捂脸",), cover_face),
+    Command(("敲",), knock),
+    Command(("垃圾", "垃圾桶"), garbage),
+    Command(("为什么@我", "为什么at我"), whyatme),
+    Command(("像样的亲亲",), decent_kiss, convert=False),
 ]
 
 

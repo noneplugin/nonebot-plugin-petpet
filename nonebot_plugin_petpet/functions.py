@@ -1181,3 +1181,55 @@ async def cover_face(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(screen, (120, 154))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def knock(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    # fmt: off
+    locs = [(60, 308, 210, 195), (60, 308, 210, 198), (45, 330, 250, 172), (58, 320, 218, 180),
+            (60, 310, 215, 193), (40, 320, 250, 285), (48, 308, 226, 192), (51, 301, 223, 200)]
+    # fmt: on
+    frames = []
+    for i in range(8):
+        bg = await load_image(f"knock/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.04)
+
+
+async def garbage(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = resize(img, (79, 79))
+    # fmt: off
+    locs = [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10 + [(39, 30), (39, 27), (39, 32), (37, 49), (37, 64), (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]  # type: ignore
+    # fmt: on
+    frames = []
+    for i in range(25):
+        bg = await load_image(f"garbage/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame.paste(img, locs[i])
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.04)
+
+
+async def whyatme(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    bg = await load_image("whyatme/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(resize(img, (265, 265)), (42, 13))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
+
+
+async def decent_kiss(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    bg = await load_image("decent_kiss/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(fit_size(img, (589, 340)), (0, 91))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
