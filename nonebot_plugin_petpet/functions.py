@@ -1233,3 +1233,71 @@ async def decent_kiss(users: List[UserInfo], **kwargs) -> BytesIO:
     frame.paste(fit_size(img, (589, 340)), (0, 91))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
+
+
+async def jiujiu(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = fit_size(to_jpg(img).convert("RGBA"), (75, 51))
+    frames = []
+    for i in range(8):
+        bg = await load_image(f"jiujiu/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame.paste(img)
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.06)
+
+
+async def suck(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    # fmt: off
+    locs = [(82, 100, 130, 119), (82, 94, 126, 125), (82, 120, 128, 99), (81, 164, 132, 55),
+            (79, 163, 132, 55), (82, 140, 127, 79), (83, 152, 125, 67), (75, 157, 140, 62),
+            (72, 165, 144, 54), (80, 132, 128, 87), (81, 127, 127, 92), (79, 111, 132, 108)]
+    # fmt: on
+    frames = []
+    for i in range(12):
+        bg = await load_image(f"suck/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.08)
+
+
+async def hammer(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    # fmt: off
+    locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92), (46, 182, 184, 100),
+            (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
+    # fmt: on
+    frames = []
+    for i in range(7):
+        bg = await load_image(f"hammer/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.07)
+
+
+async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = fit_size(to_jpg(img).convert("RGBA"), (640, 400))
+    # fmt: off
+    locs = [(39, 169, 267, 141), (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135),
+            (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135), (28, 176, 293, 134),
+            (5, 215, 333, 96), (10, 210, 321, 102), (3, 210, 330, 104), (4, 210, 328, 102), (4, 212, 328, 100),
+            (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (29, 195, 285, 120)]
+    # fmt: on
+    frames = []
+    for i in range(20):
+        bg = await load_image(f"tightly/{i}.png")
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        x, y, w, h = locs[i]
+        frame.paste(resize(img, (w, h)), (x, y))
+        frame.paste(bg, mask=bg)
+        frames.append(frame)
+    return save_gif(frames, 0.08)

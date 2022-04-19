@@ -61,6 +61,10 @@ commands = [
     Command(("垃圾", "垃圾桶"), garbage),
     Command(("为什么@我", "为什么at我"), whyatme),
     Command(("像样的亲亲",), decent_kiss, convert=False),
+    Command(("啾啾",), jiujiu, convert=False),
+    Command(("吸", "嗦"), suck),
+    Command(("锤",), hammer),
+    Command(("紧贴", "紧紧贴着"), tightly, convert=False),
 ]
 
 
