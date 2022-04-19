@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "nonebot_plugin_petpet"
-version = "0.2.14"
+version = "0.2.15"
 description = "Nonebot2 plugin for making fun pictures"
 authors = ["meetwq <meetwq@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/MeetWq/nonebot-plugin-petpet"
-repository = "https://github.com/MeetWq/nonebot-plugin-petpet"
+homepage = "https://github.com/noneplugin/nonebot-plugin-petpet"
+repository = "https://github.com/noneplugin/nonebot-plugin-petpet"
 
 [tool.poetry.dependencies]
 python = "^3.7.3"
