@@ -1301,3 +1301,46 @@ async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
         frame.paste(bg, mask=bg)
         frames.append(frame)
     return save_gif(frames, 0.08)
+
+
+async def default(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    return save_jpg(img)
+
+
+async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
+    img_w, img_h = img.size
+    frames: List[IMG] = [img]
+
+    async def text_frame(text: str, max_fontsize: int, min_fontsize: int) -> int:
+        fontname = DEFAULT_FONT
+        fontsize = await fit_font_size(
+            text, img_w - 20, img_h, fontname, max_fontsize, min_fontsize
+        )
+        if not fontsize:
+            return fontsize
+        font = await load_font(fontname, fontsize)
+        text_w, text_h = font.getsize(text)
+        frame = Image.new("RGB", (img_w, text_h + 5), "#FFFFFF")
+        await draw_text(frame, ((img_w - text_w) / 2, 0), text, font=font, fill="black")
+        frames.append(frame)
+        return fontsize
+
+    text = "万能表情" if not len(args) else args[0]
+    fontsize = await text_frame(text, 50, 10)
+    if not fontsize:
+        return "文字太长了哦，改短点再试吧~"
+    if len(args) > 1:
+        for a in args[1:]:
+            fontsize = await text_frame(a, fontsize, fontsize)
+            if not fontsize:
+                return "文字太长了哦，改短点再试吧~"
+
+    frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "#FFFFFF")
+    current_h = 0
+    for f in frames:
+        frame.paste(f, (0, current_h))
+        current_h += f.height
+    return save_jpg(frame)
