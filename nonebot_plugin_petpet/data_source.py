@@ -67,6 +67,7 @@ commands = [
     Command(("吸", "嗦"), suck),
     Command(("锤",), hammer),
     Command(("紧贴", "紧紧贴着"), tightly, convert=False),
+    Command(("注意力涣散",), distracted, convert=False),
 ]
 
 

@@ -1355,3 +1355,13 @@ async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
         frame.paste(f, (0, current_h))
         current_h += f.height
     return save_jpg(frame)
+
+
+async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = fit_size(img, (500, 500))
+    _distracted_color_mask = await load_image("distracted/1.png")
+    img.paste(_distracted_color_mask,(0,0),mask=_distracted_color_mask)
+    _distracted = await load_image("distracted/0.png")
+    img.paste(_distracted,(140,320),mask=_distracted)
+    return save_jpg(img)
