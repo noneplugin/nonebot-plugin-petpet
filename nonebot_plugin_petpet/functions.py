@@ -1303,8 +1303,19 @@ async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.08)
 
 
-async def default(users: List[UserInfo], **kwargs) -> BytesIO:
+async def default(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
+    for a in args:
+        if a == "水平翻转":
+            img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        elif a == "垂直翻转":
+            img = img.transpose(Image.FLIP_TOP_BOTTOM)
+        elif a == "黑白":
+            img = img.convert("L")
+        elif "旋转" in a:
+            angle = a[2:]
+            if angle.isdigit() and int(angle) % 90 == 0:
+                img = rotate(img,int(angle))
     return save_jpg(img)
 
 

@@ -7,7 +7,7 @@ from .models import UserInfo, Command
 from .functions import *
 
 commands = [
-    Command(("默认",), default),
+    Command(("默认",), default, arg_num=4),
     Command(("万能表情",), universal, arg_num=10),
     Command(("摸", "摸摸", "摸头", "摸摸头", "rua"), petpet, arg_num=1),
     Command(("亲", "亲亲"), kiss),
