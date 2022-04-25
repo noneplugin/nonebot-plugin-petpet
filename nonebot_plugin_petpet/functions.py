@@ -2,10 +2,95 @@ import random
 from io import BytesIO
 from typing import Union, List
 from PIL.Image import Image as IMG
-from PIL import Image, ImageFilter, ImageDraw
+from PIL import Image, ImageFilter, ImageDraw, ImageOps
 
 from .models import UserInfo
 from .utils import *
+
+
+async def operations(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    if not args:
+        return "支持的操作：水平翻转、垂直翻转、黑白、旋转、反相、浮雕、轮廓、锐化"
+
+    op = args[0]
+    if op == "倒放" and getattr(img, "is_animated", False):
+        duration = img.info["duration"] / 1000
+        frames = []
+        for i in range(img.n_frames):
+            img.seek(i)
+            frames.append(img.convert("RGB"))
+        frames.reverse()
+        return save_gif(frames, duration)
+
+    async def make(img: IMG) -> IMG:
+        if op == "水平翻转":
+            frame = img.transpose(Image.FLIP_LEFT_RIGHT)
+        elif op == "垂直翻转":
+            frame = img.transpose(Image.FLIP_TOP_BOTTOM)
+        elif op == "黑白":
+            frame = img.convert("L")
+        elif op == "旋转":
+            angle = int(args[1]) if args[1:] and args[1].isdigit() else 90
+            frame = rotate(img, int(angle))
+        elif op == "反相":
+            frame = ImageOps.invert(img)
+        elif op == "浮雕":
+            frame = img.filter(ImageFilter.EMBOSS)
+        elif op == "轮廓":
+            frame = img.filter(ImageFilter.CONTOUR)
+        elif op == "锐化":
+            frame = img.filter(ImageFilter.SHARPEN)
+        else:
+            frame = img
+        return frame
+
+    return await make_jpg_or_gif(img, make)
+
+
+async def universal(
+    users: List[UserInfo], args: List[str] = [], **kwargs
+) -> Union[str, BytesIO]:
+    img = users[0].img
+    if not args:
+        args = ["万能表情"]
+
+    img_w, img_h = limit_size(img, (500, 500), FitSizeMode.INSIDE).size
+    fontname = DEFAULT_FONT
+    min_fontsize = 50
+    for a in args:
+        fontsize = await fit_font_size(a, img_w - 20, img_h, fontname, 50, 10)
+        if not fontsize:
+            return "文字太长了哦，改短点再试吧~"
+        if fontsize < min_fontsize:
+            min_fontsize = fontsize
+
+    async def make(img: IMG) -> IMG:
+        img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
+        frames: List[IMG] = [img]
+
+        async def text_frame(text: str, fontsize: int):
+            font = await load_font(fontname, fontsize)
+            text_w, text_h = font.getsize(text)
+            frame = Image.new("RGB", (img_w, text_h + 5), "white")
+            await draw_text(
+                frame, ((img_w - text_w) / 2, 0), text, font=font, fill="black"
+            )
+            frames.append(frame)
+
+        for a in args:
+            await text_frame(a, min_fontsize)
+
+        frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "white")
+        current_h = 0
+        for f in frames:
+            frame.paste(f, (0, current_h))
+            current_h += f.height
+        return frame
+
+    return await make_jpg_or_gif(img, make)
 
 
 async def petpet(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
@@ -1303,65 +1388,11 @@ async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.08)
 
 
-async def default(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    for a in args:
-        if a == "水平翻转":
-            img = img.transpose(Image.FLIP_LEFT_RIGHT)
-        elif a == "垂直翻转":
-            img = img.transpose(Image.FLIP_TOP_BOTTOM)
-        elif a == "黑白":
-            img = img.convert("L")
-        elif "旋转" in a:
-            angle = a[2:]
-            if angle.isdigit() and int(angle) % 90 == 0:
-                img = rotate(img,int(angle))
-    return save_jpg(img)
-
-
-async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
-    img_w, img_h = img.size
-    frames: List[IMG] = [img]
-
-    async def text_frame(text: str, max_fontsize: int, min_fontsize: int) -> int:
-        fontname = DEFAULT_FONT
-        fontsize = await fit_font_size(
-            text, img_w - 20, img_h, fontname, max_fontsize, min_fontsize
-        )
-        if not fontsize:
-            return fontsize
-        font = await load_font(fontname, fontsize)
-        text_w, text_h = font.getsize(text)
-        frame = Image.new("RGB", (img_w, text_h + 5), "#FFFFFF")
-        await draw_text(frame, ((img_w - text_w) / 2, 0), text, font=font, fill="black")
-        frames.append(frame)
-        return fontsize
-
-    text = "万能表情" if not len(args) else args[0]
-    fontsize = await text_frame(text, 50, 10)
-    if not fontsize:
-        return "文字太长了哦，改短点再试吧~"
-    if len(args) > 1:
-        for a in args[1:]:
-            fontsize = await text_frame(a, fontsize, fontsize)
-            if not fontsize:
-                return "文字太长了哦，改短点再试吧~"
-
-    frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "#FFFFFF")
-    current_h = 0
-    for f in frames:
-        frame.paste(f, (0, current_h))
-        current_h += f.height
-    return save_jpg(frame)
-
-
 async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = fit_size(img, (500, 500))
-    _distracted_color_mask = await load_image("distracted/1.png")
-    img.paste(_distracted_color_mask,(0,0),mask=_distracted_color_mask)
-    _distracted = await load_image("distracted/0.png")
-    img.paste(_distracted,(140,320),mask=_distracted)
+    img = resize(img, (500, 500))
+    color_mask = await load_image("distracted/1.png")
+    img.paste(color_mask, (0, 0), mask=color_mask)
+    frame = await load_image("distracted/0.png")
+    img.paste(frame, (140, 320), mask=frame)
     return save_jpg(img)

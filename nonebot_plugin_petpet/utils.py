@@ -341,7 +341,7 @@ async def make_jpg_or_gif(
         frames = []
         for i in index:
             img.seek(i)
-            new_img = await func(img)
+            new_img = await func(img.convert("RGB"))
             frames.append(
                 resize(
                     new_img,

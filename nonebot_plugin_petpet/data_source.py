@@ -7,8 +7,8 @@ from .models import UserInfo, Command
 from .functions import *
 
 commands = [
-    Command(("默认",), default, arg_num=4),
-    Command(("万能表情",), universal, arg_num=10),
+    Command(("图片操作",), operations, convert=False, arg_num=2),
+    Command(("万能表情",), universal, convert=False, arg_num=10),
     Command(("摸", "摸摸", "摸头", "摸摸头", "rua"), petpet, arg_num=1),
     Command(("亲", "亲亲"), kiss),
     Command(("贴", "贴贴", "蹭", "蹭蹭"), rub),
@@ -67,7 +67,7 @@ commands = [
     Command(("吸", "嗦"), suck),
     Command(("锤",), hammer),
     Command(("紧贴", "紧紧贴着"), tightly, convert=False),
-    Command(("注意力涣散",), distracted, convert=False),
+    Command(("注意力涣散",), distracted),
 ]
 
 
