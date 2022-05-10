@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import List, Union
+from typing import List
 
 from .download import download_url, download_avatar
 from .utils import to_image
@@ -85,7 +85,7 @@ async def download_image(user: UserInfo, convert: bool = True):
 
 async def make_image(
     command: Command, sender: UserInfo, users: List[UserInfo], args: List[str] = []
-) -> Union[str, BytesIO]:
+) -> BytesIO:
     await download_image(sender, command.convert)
     for user in users:
         await download_image(user, command.convert)

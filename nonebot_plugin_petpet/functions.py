@@ -1,6 +1,6 @@
 import random
 from io import BytesIO
-from typing import Union, List
+from typing import List
 from PIL.Image import Image as IMG
 from PIL import Image, ImageFilter, ImageDraw, ImageOps
 
@@ -8,12 +8,17 @@ from .models import UserInfo
 from .utils import *
 
 
-async def operations(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
+NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
+REQUIRE_NAME = "找不到名字，加上名字再试吧~"
+REQUIRE_ARG = "该表情至少需要一个参数"
+
+
+async def operations(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
+    help_msg = "支持的操作：水平翻转、垂直翻转、黑白、旋转、反相、浮雕、轮廓、锐化"
     if not args:
-        return "支持的操作：水平翻转、垂直翻转、黑白、旋转、反相、浮雕、轮廓、锐化"
+        raise ValueError(help_msg)
 
     op = args[0]
     if op == "倒放" and getattr(img, "is_animated", False):
@@ -44,15 +49,13 @@ async def operations(
         elif op == "锐化":
             frame = img.filter(ImageFilter.SHARPEN)
         else:
-            frame = img
+            raise ValueError(help_msg)
         return frame
 
     return await make_jpg_or_gif(img, make)
 
 
-async def universal(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     if not args:
         args = ["万能表情"]
@@ -63,7 +66,7 @@ async def universal(
     for a in args:
         fontsize = await fit_font_size(a, img_w - 20, img_h, fontname, 50, 10)
         if not fontsize:
-            return "文字太长了哦，改短点再试吧~"
+            raise ValueError(TEXT_TOO_LONG)
         if fontsize < min_fontsize:
             min_fontsize = fontsize
 
@@ -227,7 +230,7 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def rip(
     users: List[UserInfo], sender: UserInfo, args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+) -> BytesIO:
     if len(users) >= 2:
         self_img = users[0].img
         user_img = users[1].img
@@ -254,7 +257,7 @@ async def rip(
         fontname = BOLD_FONT
         fontsize = await fit_font_size(text, rip.width - 50, 300, fontname, 150, 25)
         if not fontsize:
-            return "文字太长了哦，改短点再试吧~"
+            raise ValueError(TEXT_TOO_LONG)
         font = await load_font(fontname, fontsize)
         text_w = font.getsize(text)[0]
         await draw_text(
@@ -382,9 +385,7 @@ async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.05)
 
 
-async def littleangel(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def littleangel(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
@@ -413,7 +414,7 @@ async def littleangel(
     text = f"请问你们看到{name}了吗?"
     fontsize = await fit_font_size(text, 560, 110, fontname, 70, 25)
     if not fontsize:
-        return "名字太长了哦，改短点再试吧~"
+        raise ValueError(NAME_TOO_LONG)
 
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
@@ -456,16 +457,14 @@ async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.1)
 
 
-async def play_game(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def play_game(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("play_game/1.png")
     text = args[0] if args else "来玩休闲游戏啊"
     fontname = DEFAULT_FONT
     fontsize = await fit_font_size(text, 520, 110, fontname, 35, 25)
     if not fontsize:
-        return "描述太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w = font.getsize(text)[0]
 
@@ -560,9 +559,7 @@ async def police1(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def ask(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def ask(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (640, 0))
@@ -582,7 +579,7 @@ async def ask(
     name = (args[0] if args else "") or users[0].name
     ta = "他" if users[0].gender == "male" else "她"
     if not name:
-        return "找不到名字，加上名字再试吧~"
+        raise ValueError(REQUIRE_NAME)
 
     font = await load_font(BOLD_FONT, 25)
     start_h = img_h - mask_h
@@ -614,7 +611,7 @@ async def ask(
     bg = Image.new("RGBA", (img_w + sep_w * 2, img_h + sep_h * 2), "white")
     font = await load_font(DEFAULT_FONT, 35)
     if font.getsize(name)[0] > 600:
-        return "名字太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
     await draw_text(bg, (sep_w, 10), f"让{name}告诉你吧", font=font, fill="black")
     await draw_text(
         bg, (sep_w, sep_h + img_h + 10), f"啊这，{ta}说不知道", font=font, fill="black"
@@ -681,9 +678,7 @@ async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def make_friend(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def make_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (1000, 0))
@@ -698,7 +693,7 @@ async def make_friend(
 
     name = (args[0] if args else "") or users[0].name
     if not name:
-        return "找不到名字，加上名字再试吧~"
+        raise ValueError(REQUIRE_NAME)
     text_frame = Image.new("RGBA", (500, 50))
     await draw_text(text_frame, (0, -10), name, font=font, fill="#FFFFFF")
     text_frame = rotate(resize(text_frame, (250, 25)), 9)
@@ -726,9 +721,7 @@ async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(frame)
 
 
-async def follow(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def follow(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = resize(circle(img), (200, 200))
 
@@ -740,7 +733,7 @@ async def follow(
     text_follow = "关注了你"
     text_width = max(text_name_w, font.getsize(text_follow)[0])
     if text_width >= 1000:
-        return "名字太长了哦，改短点再试吧~"
+        raise ValueError(NAME_TOO_LONG)
 
     frame = Image.new("RGBA", (300 + text_width + 50, 300), (255, 255, 255, 0))
     frame.paste(img, (50, 50), mask=img)
@@ -754,12 +747,10 @@ async def follow(
     return save_jpg(frame)
 
 
-async def my_friend(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def my_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     if not args:
-        return "你朋友说啥？"
+        raise ValueError(REQUIRE_ARG)
     elif len(args) <= 1:
         name = users[0].name or "朋友"
         texts = args
@@ -771,7 +762,7 @@ async def my_friend(
     text_font = await load_font(DEFAULT_FONT, 40)
     name_w, name_h = name_font.getsize(name)
     if name_w >= 700:
-        return "名字太长了哦，改短点再试吧~"
+        raise ValueError(NAME_TOO_LONG)
 
     corner1 = await load_image("my_friend/corner1.png")
     corner2 = await load_image("my_friend/corner2.png")
@@ -845,9 +836,7 @@ async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.01)
 
 
-async def coupon(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def coupon(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("coupon/0.png")
     new_img = rotate(resize(circle(img), (60, 60)), 22)
@@ -859,7 +848,7 @@ async def coupon(
     text += "\n（永久有效）" if len(args) <= 1 else f"\n{args[1]}"
     text_w = font.getsize_multiline(text)[0]
     if text_w > text_img.width:
-        return "文字太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
 
     await draw_text(
         text_img,
@@ -890,7 +879,7 @@ async def listen_music(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def dianzhongdian(
     users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+) -> BytesIO:
     img = users[0].img
     img = to_jpg(img)
 
@@ -899,7 +888,7 @@ async def dianzhongdian(
     else:
         img = img.convert("L")
     if not args:
-        return "你想表达什么？"
+        raise ValueError(REQUIRE_ARG)
 
     img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
     img_w, img_h = img.size
@@ -911,7 +900,7 @@ async def dianzhongdian(
             text, img_w - 20, img_h, fontname, max_fontsize, min_fontsize
         )
         if not fontsize:
-            return fontsize
+            raise ValueError(TEXT_TOO_LONG)
         font = await load_font(fontname, fontsize)
         text_w, text_h = font.getsize(text)
         frame = Image.new("RGB", (img_w, text_h + 5), "#000000")
@@ -920,15 +909,10 @@ async def dianzhongdian(
         return fontsize
 
     fontsize = await text_frame(args[0], 50, 10)
-    if not fontsize:
-        return "文字太长了哦，改短点再试吧~"
-
     text = args[1] if len(args) > 1 else await translate(args[0])
     if text:
         fontsize = max(int(fontsize / 2), 10)
-        fontsize = await text_frame(text, fontsize, 10)
-        if not fontsize:
-            return "文字太长了哦，改短点再试吧~"
+        await text_frame(text, fontsize, 10)
 
     frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "#000000")
     current_h = 0
@@ -970,9 +954,7 @@ async def love_you(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.2)
 
 
-async def symmetric(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def symmetric(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
     img_w, img_h = img.size
@@ -1033,9 +1015,7 @@ async def symmetric(
     return save_jpg(frame)
 
 
-async def safe_sense(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def safe_sense(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = fit_size(to_jpg(users[0].img).convert("RGBA"), (215, 343))
     frame = await load_image(f"safe_sense/0.png")
     frame.paste(img, (215, 135))
@@ -1047,7 +1027,7 @@ async def safe_sense(
     fontname = DEFAULT_FONT
     fontsize = await fit_font_size(text, 400, 100, fontname, 70, 10)
     if not fontsize:
-        return "文字太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize_multiline(text)
     await draw_text(
@@ -1061,18 +1041,16 @@ async def safe_sense(
     return save_jpg(frame)
 
 
-async def always_like(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def always_like(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = to_jpg(users[0].img).convert("RGBA")
     name = (args[0] if args else "") or users[0].name
     if not name:
-        return "找不到名字，加上名字再试吧~"
+        raise ValueError(REQUIRE_NAME)
     text = "我永远喜欢" + name
     fontname = BOLD_FONT
     fontsize = await fit_font_size(text, 800, 100, fontname, 70, 30)
     if not fontsize:
-        return "名字太长了哦，改短点再试吧~"
+        raise ValueError(NAME_TOO_LONG)
 
     def random_color():
         return random.choice(
@@ -1106,15 +1084,15 @@ async def always_like(
         )
         name = (args[i] if len(args) > i else "") or user.name
         if not name:
-            return "找不到对应的名字，检查名字再试吧~"
+            raise ValueError("找不到对应的名字，名字数须与目标数一致")
         fontsize = await fit_font_size(name, 400, 100, fontname, 70, 30)
         if not fontsize:
-            return "名字太长了哦，改短点再试吧~"
+            raise ValueError(NAME_TOO_LONG)
         font = await load_font(fontname, fontsize)
         text_w, text_h = font.getsize(name)
         current_h -= text_h - 20
         if current_h < 10:
-            return "你喜欢的人太多啦"
+            raise ValueError("你喜欢的人太多啦")
         start_w = 400 + (430 - text_w) / 2
         await draw_text(frame, (start_w, current_h), name, font=font, fill="black")
         if len(users) > i + 1:
@@ -1127,9 +1105,7 @@ async def always_like(
     return save_jpg(frame)
 
 
-async def interview(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def interview(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     if len(users) >= 2:
         self_img = users[0].img
         user_img = users[1].img
@@ -1149,7 +1125,7 @@ async def interview(
     fontname = DEFAULT_FONT
     fontsize = await fit_font_size(text, 550, 100, fontname, 50, 20)
     if not fontsize:
-        return "文字太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
     await draw_text(
@@ -1289,7 +1265,11 @@ async def garbage(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     img = resize(img, (79, 79))
     # fmt: off
-    locs = [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10 + [(39, 30), (39, 27), (39, 32), (37, 49), (37, 64), (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]  # type: ignore
+    locs = (
+        [] + [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10
+        + [(39, 30), (39, 27), (39, 32), (37, 49), (37, 64),
+           (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]
+    )
     # fmt: on
     frames = []
     for i in range(25):
@@ -1398,9 +1378,7 @@ async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_jpg(img)
 
 
-async def anyasuki(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> Union[str, BytesIO]:
+async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
     # Image
@@ -1414,7 +1392,7 @@ async def anyasuki(
     text = args[0] if args else "阿尼亚喜欢这个"
     fontsize = await fit_font_size(text, frame_w - 20, 40, fontname, 40, 10)
     if not fontsize:
-        return "文字太长了哦，改短点再试吧~"
+        raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
     await draw_text(

@@ -142,16 +142,15 @@ async def handle(
         await matcher.finish("图片下载出错，请稍后再试")
     except ResourceError:
         await matcher.finish("资源下载出错，请稍后再试")
+    except ValueError as e:
+        await matcher.finish(str(e))
     except:
         logger.warning(traceback.format_exc())
         await matcher.finish("出错了，请稍后再试")
 
     if not res:
         await matcher.finish("出错了，请稍后再试")
-    if isinstance(res, str):
-        await matcher.finish(res)
-    else:
-        await matcher.finish(MessageSegment.image(res))
+    await matcher.finish(MessageSegment.image(res))
 
 
 def create_matchers():

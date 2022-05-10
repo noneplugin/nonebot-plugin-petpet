@@ -2,7 +2,7 @@ from io import BytesIO
 from PIL import Image
 from PIL.Image import Image as IMG
 from dataclasses import dataclass
-from typing import List, Tuple, Union, Protocol
+from typing import List, Tuple, Protocol
 
 
 class UserInfo:
@@ -16,7 +16,7 @@ class UserInfo:
 
 
 class Func(Protocol):
-    async def __call__(self, users: List[UserInfo], **kwargs) -> Union[str, BytesIO]:
+    async def __call__(self, users: List[UserInfo], **kwargs) -> BytesIO:
         ...
 
 
