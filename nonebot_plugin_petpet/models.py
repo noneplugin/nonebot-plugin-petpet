@@ -24,5 +24,5 @@ class Func(Protocol):
 class Command:
     keywords: Tuple[str, ...]
     func: Func
-    convert: bool = True
+    allow_gif: bool = False
     arg_num: int = 0

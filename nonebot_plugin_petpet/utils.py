@@ -30,6 +30,7 @@ def rotate(img: IMG, angle: int, expand: bool = True) -> IMG:
 
 
 def circle(img: IMG) -> IMG:
+    img = square(img)
     mask = Image.new("L", img.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((1, 1, img.size[0] - 2, img.size[1] - 2), fill=255)
@@ -329,6 +330,7 @@ async def make_jpg_or_gif(
       * ``direction``: gif 最大帧数，避免生成的 gif 太大
     """
     if not getattr(img, "is_animated", False):
+        img = to_jpg(img).convert("RGBA")
         return save_jpg(await func(img))
     else:
         index = range(img.n_frames)
@@ -341,7 +343,7 @@ async def make_jpg_or_gif(
         frames = []
         for i in index:
             img.seek(i)
-            new_img = await func(img.convert("RGB"))
+            new_img = await func(to_jpg(img).convert("RGBA"))
             frames.append(
                 resize(
                     new_img,
@@ -351,10 +353,10 @@ async def make_jpg_or_gif(
         return save_gif(frames, duration)
 
 
-def to_image(data: bytes, convert: bool = True) -> IMG:
+def to_image(data: bytes, allow_gif: bool = False) -> IMG:
     image = Image.open(BytesIO(data))
-    if convert:
-        image = square(to_jpg(image).convert("RGBA"))
+    if not allow_gif:
+        image = to_jpg(image).convert("RGBA")
     return image
 
 

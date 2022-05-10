@@ -97,7 +97,7 @@ async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
 
 
 async def petpet(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     frames = []
     locs = [
         (14, 20, 98, 98),
@@ -126,6 +126,8 @@ async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
     else:
         self_img = sender.img
         user_img = users[0].img
+    self_head = resize(circle(self_img), (40, 40))
+    user_head = resize(circle(user_img), (50, 50))
     # fmt: off
     user_locs = [
         (58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
@@ -139,9 +141,7 @@ async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
     frames = []
     for i in range(13):
         frame = await load_image(f"kiss/{i}.png")
-        user_head = resize(circle(user_img), (50, 50))
         frame.paste(user_head, user_locs[i], mask=user_head)
-        self_head = resize(circle(self_img), (40, 40))
         frame.paste(self_head, self_locs[i], mask=self_head)
         frames.append(frame)
     return save_gif(frames, 0.05)
@@ -178,7 +178,7 @@ async def rub(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
 
 
 async def play(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [
         (180, 60, 100, 100), (184, 75, 100, 100), (183, 98, 100, 100),
@@ -211,7 +211,7 @@ async def play(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
     img_frames = []
     for i in range(10):
@@ -246,11 +246,11 @@ async def rip(
     text = arg.strip("滑稽").strip()
 
     frame = Image.new("RGBA", rip.size, (255, 255, 255, 0))
-    left = rotate(resize(user_img, (385, 385)), 24)
-    right = rotate(resize(user_img, (385, 385)), -11)
+    left = rotate(fit_size(user_img, (385, 385)), 24)
+    right = rotate(fit_size(user_img, (385, 385)), -11)
     frame.paste(left, (-5, 355))
     frame.paste(right, (649, 310))
-    frame.paste(resize(self_img, (230, 230)), (408, 418))
+    frame.paste(fit_size(self_img, (230, 230)), (408, 418))
     frame.paste(rip, mask=rip)
 
     if text:
@@ -316,7 +316,7 @@ async def support(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     support = await load_image("support/0.png")
     frame = Image.new("RGBA", support.size, (255, 255, 255, 0))
-    img = rotate(resize(img, (815, 815)), 23)
+    img = rotate(fit_size(img, (815, 815)), 23)
     frame.paste(img, (-172, -17))
     frame.paste(support, mask=support)
     return save_jpg(frame)
@@ -331,7 +331,6 @@ async def always(users: List[UserInfo], **kwargs) -> BytesIO:
     height = h1 + h2 + 10
 
     async def make(img: IMG) -> IMG:
-        img = to_jpg(img)
         frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
         frame.paste(always, (0, h1 - 300 + int((h2 - 60) / 2)))
         frame.paste(resize(img, (300, h1)), (0, 0))
@@ -351,7 +350,7 @@ async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
     height = h1 + h2 + 10
 
     def make_static(img: IMG) -> IMG:
-        img = to_jpg(img)
+        img = to_jpg(img).convert("RGBA")
         frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
         frame.paste(bg, (0, h1 - 300 + int((h2 - 60) / 2)))
         img = resize(img, (300, h1))
@@ -387,7 +386,6 @@ async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def littleangel(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
     img_w, img_h = img.size
 
@@ -427,19 +425,20 @@ async def littleangel(users: List[UserInfo], args: List[str] = [], **kwargs) -> 
 async def dont_touch(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     frame = await load_image("dont_touch/0.png")
-    frame.paste(resize(img, (170, 170)), (23, 231))
+    frame.paste(fit_size(img, (170, 170)), (23, 231))
     return save_jpg(frame)
 
 
 async def alike(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     frame = await load_image("alike/0.png")
-    frame.paste(resize(img, (90, 90)), (131, 14))
+    frame.paste(fit_size(img, (90, 90)), (131, 14))
     return save_jpg(frame)
 
 
 async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
+    img = fit_size(img, (210, 210))
     frames = []
     # fmt: off
     locs = [
@@ -450,7 +449,7 @@ async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
     for i in range(8):
         frame = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
         x, y, a = locs[i]
-        frame.paste(rotate(resize(img, (210, 210)), a, expand=False), (x, y))
+        frame.paste(rotate(img, a, expand=False), (x, y))
         bg = await load_image(f"roll/{i}.png")
         frame.paste(bg, mask=bg)
         frames.append(frame)
@@ -469,7 +468,6 @@ async def play_game(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
     text_w = font.getsize(text)[0]
 
     async def make(img: IMG) -> IMG:
-        img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
         points = [(0, 5), (227, 0), (216, 150), (0, 165)]
         screen = rotate(perspective(fit_size(img, (220, 160)), points), 9)
@@ -493,7 +491,7 @@ async def play_game(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
 async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     points = [(0, -30), (135, 17), (135, 145), (0, 140)]
-    paint = perspective(resize(img, (150, 150)), points)
+    paint = perspective(fit_size(img, (150, 150)), points)
     frames = []
     for i in range(10):
         frame = Image.new("RGBA", (300, 169), (255, 255, 255, 0))
@@ -505,7 +503,7 @@ async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def eat(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = resize(users[0].img, (32, 32))
+    img = fit_size(users[0].img, (32, 32))
     frames = []
     for i in range(3):
         frame = Image.new("RGBA", (60, 67), (255, 255, 255, 0))
@@ -517,7 +515,7 @@ async def eat(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def bite(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     raw_frames = []
     for i in range(16):
         raw_frame = await load_image(f"bite/{i}.png")
@@ -544,14 +542,13 @@ async def police(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("police/0.png")
     frame = Image.new("RGBA", bg.size)
-    frame.paste(resize(img, (245, 245)), (224, 46))
+    frame.paste(fit_size(img, (245, 245)), (224, 46))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
 
 async def police1(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     bg = await load_image("police/1.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     frame.paste(rotate(fit_size(img, (60, 75)), 16), (37, 291))
@@ -561,7 +558,6 @@ async def police1(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def ask(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (640, 0))
     img_w, img_h = img.size
     mask_h = 150
@@ -625,7 +621,6 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
     bg = await load_image("prpr/0.png")
 
     async def make(img: IMG) -> IMG:
-        img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
         points = [(0, 19), (236, 0), (287, 264), (66, 351)]
         screen = perspective(fit_size(img, (330, 330)), points)
@@ -638,6 +633,7 @@ async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
+    img = fit_size(img, (78, 78))
     frames = []
     # fmt: off
     locs = [
@@ -648,7 +644,7 @@ async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
     for i in range(5):
         frame = Image.new("RGBA", (166, 168), (255, 255, 255, 0))
         x, y, a = locs[i]
-        frame.paste(rotate(resize(img, (78, 78)), a, expand=False), (x, y))
+        frame.paste(rotate(img, a, expand=False), (x, y))
         bg = await load_image(f"twist/{i}.png")
         frame.paste(bg, mask=bg)
         frames.append(frame)
@@ -660,7 +656,6 @@ async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
     bg = await load_image("wallpaper/0.png")
 
     async def make(img: IMG) -> IMG:
-        img = to_jpg(img)
         frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
         frame.paste(fit_size(img, (775, 496)), (260, 580))
         frame.paste(bg, mask=bg)
@@ -673,14 +668,13 @@ async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("china_flag/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, bg.size))
+    frame.paste(fit_size(img, bg.size))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
 
 async def make_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (1000, 0))
     img_w, img_h = img.size
 
@@ -703,7 +697,6 @@ async def make_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> 
 
 async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     bg = await load_image("back_to_work/1.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     new_img = fit_size(img, (220, 310), direction=FitSizeDir.NORTH)
@@ -714,7 +707,6 @@ async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     frame = await load_image("perfect/0.png")
     new_img = fit_size(img, (310, 460), mode=FitSizeMode.INSIDE)
     frame.paste(new_img, (313, 64), mask=new_img)
@@ -813,7 +805,6 @@ async def my_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
 
 async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     bg = await load_image("paint/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     frame.paste(rotate(fit_size(img, (117, 135)), 4), (95, 107))
@@ -823,7 +814,7 @@ async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = resize(img, (300, 300))
+    img = fit_size(img, (300, 300))
     frames = []
     for i in range(30):
         frames.append(
@@ -881,7 +872,6 @@ async def dianzhongdian(
     users: List[UserInfo], args: List[str] = [], **kwargs
 ) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img)
 
     if args and args[0] == "彩":
         args = args[1:]
@@ -924,7 +914,7 @@ async def dianzhongdian(
 
 async def funny_mirror(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = resize(img, (500, 500))
+    img = fit_size(img, (500, 500))
     frames = [img]
     coeffs = [0.01, 0.03, 0.05, 0.08, 0.12, 0.17, 0.23, 0.3, 0.4, 0.6]
     borders = [25, 52, 67, 83, 97, 108, 118, 128, 138, 148]
@@ -941,7 +931,7 @@ async def funny_mirror(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def love_you(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     frames = []
     locs = [(68, 65, 70, 70), (63, 59, 80, 80)]
     for i in range(2):
@@ -1016,7 +1006,8 @@ async def symmetric(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
 
 
 async def safe_sense(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = fit_size(to_jpg(users[0].img).convert("RGBA"), (215, 343))
+    img = users[0].img
+    img = fit_size(img, (215, 343))
     frame = await load_image(f"safe_sense/0.png")
     frame.paste(img, (215, 135))
 
@@ -1042,7 +1033,7 @@ async def safe_sense(users: List[UserInfo], args: List[str] = [], **kwargs) -> B
 
 
 async def always_like(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = to_jpg(users[0].img).convert("RGBA")
+    img = users[0].img
     name = (args[0] if args else "") or users[0].name
     if not name:
         raise ValueError(REQUIRE_NAME)
@@ -1112,8 +1103,8 @@ async def interview(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
     else:
         self_img = to_jpg(await load_image("interview/huaji.png"))
         user_img = users[0].img
-    self_img = resize(self_img, (124, 124))
-    user_img = resize(user_img, (124, 124))
+    self_img = fit_size(self_img, (124, 124))
+    user_img = fit_size(user_img, (124, 124))
 
     frame = Image.new("RGB", (600, 310), "white")
     microphone = await load_image("interview/microphone.png")
@@ -1140,7 +1131,6 @@ async def interview(users: List[UserInfo], args: List[str] = [], **kwargs) -> By
 
 async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     img = limit_size(img, (260, 230))
     x = int((260 - img.width) / 2)
     y = int((230 - img.height) / 2)
@@ -1163,7 +1153,7 @@ async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = resize(img, (500, 500))
+    img = fit_size(img, (500, 500))
     color = (78, 114, 184)
     img = color_mask(img, color)
     font = await load_font(BOLD_FONT, 80)
@@ -1190,7 +1180,7 @@ async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def pound(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [
         (135, 240, 138, 47), (135, 240, 138, 47), (150, 190, 105, 95), (150, 190, 105, 95),
@@ -1209,7 +1199,7 @@ async def pound(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def thump(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [(65, 128, 77, 72), (67, 128, 73, 72), (54, 139, 94, 61), (57, 135, 86, 65)]
     # fmt: on
@@ -1228,7 +1218,7 @@ async def need(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("need/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, (115, 115)), (327, 232))
+    frame.paste(fit_size(img, (115, 115)), (327, 232))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
@@ -1238,14 +1228,14 @@ async def cover_face(users: List[UserInfo], **kwargs) -> BytesIO:
     bg = await load_image("cover_face/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     points = [(15, 11), (448, 0), (445, 452), (0, 461)]
-    screen = perspective(resize(img, (450, 450)), points)
+    screen = perspective(fit_size(img, (450, 450)), points)
     frame.paste(screen, (120, 154))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
 
 async def knock(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [(60, 308, 210, 195), (60, 308, 210, 198), (45, 330, 250, 172), (58, 320, 218, 180),
             (60, 310, 215, 193), (40, 320, 250, 285), (48, 308, 226, 192), (51, 301, 223, 200)]
@@ -1263,7 +1253,7 @@ async def knock(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def garbage(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = resize(img, (79, 79))
+    img = fit_size(img, (79, 79))
     # fmt: off
     locs = (
         [] + [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10
@@ -1285,14 +1275,13 @@ async def whyatme(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     bg = await load_image("whyatme/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(resize(img, (265, 265)), (42, 13))
+    frame.paste(fit_size(img, (265, 265)), (42, 13))
     frame.paste(bg, mask=bg)
     return save_jpg(frame)
 
 
 async def decent_kiss(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     bg = await load_image("decent_kiss/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     frame.paste(fit_size(img, (589, 340)), (0, 91))
@@ -1302,7 +1291,7 @@ async def decent_kiss(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def jiujiu(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = fit_size(to_jpg(img).convert("RGBA"), (75, 51))
+    img = fit_size(img, (75, 51))
     frames = []
     for i in range(8):
         bg = await load_image(f"jiujiu/{i}.png")
@@ -1314,7 +1303,7 @@ async def jiujiu(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def suck(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [(82, 100, 130, 119), (82, 94, 126, 125), (82, 120, 128, 99), (81, 164, 132, 55),
             (79, 163, 132, 55), (82, 140, 127, 79), (83, 152, 125, 67), (75, 157, 140, 62),
@@ -1332,7 +1321,7 @@ async def suck(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def hammer(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+    img = square(users[0].img)
     # fmt: off
     locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92), (46, 182, 184, 100),
             (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
@@ -1350,7 +1339,7 @@ async def hammer(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = fit_size(to_jpg(img).convert("RGBA"), (640, 400))
+    img = fit_size(img, (640, 400))
     # fmt: off
     locs = [(39, 169, 267, 141), (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135),
             (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135), (28, 176, 293, 134),
@@ -1370,7 +1359,7 @@ async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    img = resize(img, (500, 500))
+    img = fit_size(img, (500, 500))
     color_mask = await load_image("distracted/1.png")
     img.paste(color_mask, (0, 0), mask=color_mask)
     frame = await load_image("distracted/0.png")
@@ -1380,7 +1369,6 @@ async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
     img = users[0].img
-    img = to_jpg(img).convert("RGBA")
     # Image
     bg = await load_image("anyasuki/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
