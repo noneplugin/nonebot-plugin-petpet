@@ -1404,7 +1404,7 @@ async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> Byt
         args = ["阿尼亚喜欢这个"]
     # Image
     img = to_jpg(img).convert("RGBA").resize((305, 305))
-    bg = await load_image("anya/0.png")
+    bg = await load_image("anyasuki/0.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
     frame.alpha_composite(img, (106, 25))
     frame.alpha_composite(bg)
