@@ -9,7 +9,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/04/20/UB4w28Cedrz7mKp.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/05/11/6BSiDuAft7o3k5U.jpg" width="400" />
 </div>
 
 
@@ -57,7 +57,7 @@
 | 墙纸 | <img src="https://s2.loli.net/2022/03/10/tQRXzLamGyWi24s.jpg" width="200" /> | 支持gif |
 | 国旗 | <img src="https://s2.loli.net/2022/03/10/p7nwCvgsU3LxBDI.jpg" width="200" /> |  |
 | 交个朋友 | <img src="https://s2.loli.net/2022/03/10/SnmkNrjKuFeZvbA.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
-| 继续干活 | <img src="https://s2.loli.net/2022/04/20/LIak2BsJ9Dd5O7l.jpg" width="200" > |  |
+| 继续干活<br>打工人 | <img src="https://s2.loli.net/2022/04/20/LIak2BsJ9Dd5O7l.jpg" width="200" > |  |
 | 完美<br>完美的 | <img src="https://s2.loli.net/2022/03/10/lUS1nmPAKIYtwih.jpg" width="200" /> |  |
 | 关注 | <img src="https://s2.loli.net/2022/03/12/FlpjRWCte72ozqs.jpg" width="200" > | 名字为qq昵称，可指定名字 |
 | 我朋友说<br>我有个朋友说 | <img src="https://s2.loli.net/2022/03/12/cBk4aG3RwIoYbMF.jpg" width="200" > | 名字为qq昵称，可指定名字<br>如：我朋友说 meetwq 来份涩图 自己 |
@@ -86,3 +86,5 @@
 | 吸<br>嗦 | <img src="https://s2.loli.net/2022/04/20/LlFNscXC1IQrkgE.gif" width="200" > |  |
 | 锤 | <img src="https://s2.loli.net/2022/04/20/ajXFm95tHRM6CzZ.gif" width="200" > |  |
 | 紧贴<br>紧紧贴着 | <img src="https://s2.loli.net/2022/04/20/FiBwc3ZxvVLObGP.gif" width="200" > |  |
+| 注意力涣散 | <img src="https://s2.loli.net/2022/05/11/mEtyxoZ3DfwBCn5.jpg" width="200" > |  |
+| 阿尼亚喜欢 | <img src="https://s2.loli.net/2022/05/11/U3ZMXHB1PduKckQ.jpg" width="200" > |  |
