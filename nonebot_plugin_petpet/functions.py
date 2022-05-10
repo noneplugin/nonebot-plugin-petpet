@@ -1396,3 +1396,32 @@ async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
     frame = await load_image("distracted/0.png")
     img.paste(frame, (140, 320), mask=frame)
     return save_jpg(img)
+
+
+async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
+    img = users[0].img
+    if not args:
+        args = ["阿尼亚喜欢这个"]
+    # Image
+    img = to_jpg(img).convert("RGBA").resize((305, 305))
+    bg = await load_image("anyasuki/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.alpha_composite(img, (106, 25))
+    frame.alpha_composite(bg)
+    # Text
+    frame_w, frame_h = frame.size
+    fontname = DEFAULT_FONT
+    text = args[0]
+    fontsize = await fit_font_size(text, frame_w - 20, 40, fontname, 40, 10)
+    if not fontsize:
+        return "文字太长了哦，改短点再试吧~"
+    font = await load_font(fontname, fontsize)
+    text_w, text_h = font.getsize(text)
+    await draw_text(
+        frame,
+        ((frame_w - text_w) / 2, frame_h - text_h / 2 - 22),
+        text,
+        font=font,
+        fill="white",
+    )
+    return save_jpg(frame)
