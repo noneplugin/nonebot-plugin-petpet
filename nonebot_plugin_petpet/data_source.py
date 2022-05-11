@@ -70,6 +70,7 @@ commands = [
     Command(("注意力涣散",), distracted),
     Command(("阿尼亚喜欢",), anyasuki, arg_num=1),
     Command(("想什么",), thinkwhat),
+    
 ]
 
 
