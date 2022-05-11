@@ -1392,6 +1392,7 @@ async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> Byt
     )
     return save_jpg(frame)
 
+
 async def thinkwhat(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
     img = to_jpg(img).convert("RGBA")
