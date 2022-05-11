@@ -68,7 +68,7 @@ commands = [
     Command(("锤",), hammer),
     Command(("紧贴", "紧紧贴着"), tightly),
     Command(("注意力涣散",), distracted),
-    Command(("阿尼亚喜欢",), anyasuki, arg_num=1),
+    Command(("阿尼亚喜欢",), anyasuki, arg_num=1, allow_gif=True),
     Command(("想什么",), thinkwhat),
 ]
 

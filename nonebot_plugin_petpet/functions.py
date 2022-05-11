@@ -1368,14 +1368,12 @@ async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
 
 
 async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
     # Image
-    bg = await load_image("anyasuki/0.png")
+    img = users[0].img
+    bg = await load_image("anyasuki/1.png")
     frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(fit_size(img, (305, 235)), (106, 72))
-    frame.paste(bg, mask=bg)
-    # Text
     frame_w, frame_h = frame.size
+    # Text
     fontname = DEFAULT_FONT
     text = args[0] if args else "阿尼亚喜欢这个"
     fontsize = await fit_font_size(text, frame_w - 20, 40, fontname, 40, 10)
@@ -1383,14 +1381,22 @@ async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> Byt
         raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
-    await draw_text(
-        frame,
-        ((frame_w - text_w) / 2, frame_h - text_h / 2 - 22),
-        text,
-        font=font,
-        fill="white",
-    )
-    return save_jpg(frame)
+    # Draw
+    async def make(img: IMG) -> IMG:
+        frame.paste(fit_size(img, (305, 235)), (106, 72))
+        frame.paste(bg, mask=bg)
+        await draw_text(
+            frame,
+            ((frame_w - text_w) / 2, frame_h - text_h / 2 - 22),
+            text,
+            font=font,
+            fill="white",
+            stroke_fill="black",
+            stroke_width=1,
+        )
+        return frame
+
+    return await make_jpg_or_gif(img, make)
 
 
 async def thinkwhat(users: List[UserInfo], **kwargs) -> BytesIO:
