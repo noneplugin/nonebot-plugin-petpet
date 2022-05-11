@@ -69,6 +69,7 @@ commands = [
     Command(("紧贴", "紧紧贴着"), tightly),
     Command(("注意力涣散",), distracted),
     Command(("阿尼亚喜欢",), anyasuki, arg_num=1),
+    Command(("想什么",), thinkwhat),
 ]
 
 

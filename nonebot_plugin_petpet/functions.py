@@ -1391,3 +1391,13 @@ async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> Byt
         fill="white",
     )
     return save_jpg(frame)
+
+
+async def thinkwhat(users: List[UserInfo], **kwargs) -> BytesIO:
+    img = users[0].img
+    img = to_jpg(img).convert("RGBA")
+    bg = await load_image("thinkwhat/0.png")
+    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+    frame.paste(fit_size(img, (437, 315)), (569, 90))
+    frame.paste(bg, mask=bg)
+    return save_jpg(frame)
