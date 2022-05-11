@@ -324,17 +324,19 @@ async def support(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def always(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    always = await load_image("always/0.png")
-    w, h = img.size
-    h1 = int(h / w * 300)
-    h2 = int(h / w * 60)
-    height = h1 + h2 + 10
 
     async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
-        frame.paste(always, (0, h1 - 300 + int((h2 - 60) / 2)))
-        frame.paste(resize(img, (300, h1)), (0, 0))
-        frame.paste(resize(img, (60, h2)), (165, h1 + 5))
+        img_big = limit_size(img, (500, 0))
+        img_small = limit_size(img, (100, 0))
+        h1 = img_big.height
+        h2 = max(img_small.height, 80)
+        frame = Image.new("RGB", (500, h1 + h2 + 10), "white")
+        frame.paste(img_big)
+        frame.paste(img_small, (290, h1 + 5))
+        font = await load_font(DEFAULT_FONT, 60)
+        await draw_text(
+            frame, (45, h1 + h2 / 2 - 40), "要我一直        吗", font=font, fill="black"
+        )
         return frame
 
     return await make_jpg_or_gif(img, make)
@@ -342,31 +344,25 @@ async def always(users: List[UserInfo], **kwargs) -> BytesIO:
 
 async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
     img = users[0].img
-    bg = await load_image("loading/0.png")
+
+    img_big = to_jpg(img).convert("RGBA")
+    img_big = limit_size(img_big, (500, 0))
+    mask = Image.new("RGBA", img_big.size, (0, 0, 0, 128))
+    img_big.paste(mask, mask=mask)
+    h1 = img_big.height
     icon = await load_image("loading/1.png")
-    w, h = img.size
-    h1 = int(h / w * 300)
-    h2 = int(h / w * 60)
-    height = h1 + h2 + 10
-
-    def make_static(img: IMG) -> IMG:
-        img = to_jpg(img).convert("RGBA")
-        frame = Image.new("RGBA", (300, height), (255, 255, 255, 0))
-        frame.paste(bg, (0, h1 - 300 + int((h2 - 60) / 2)))
-        img = resize(img, (300, h1))
-        img = img.filter(ImageFilter.GaussianBlur(radius=2))
-        frame.paste(img, (0, 0))
-        mask = Image.new("RGBA", (300, h1), (0, 0, 0, 128))
-        frame.paste(mask, (0, 0), mask=mask)
-        frame.paste(icon, (100, int(h1 / 2) - 50), mask=icon)
-        return frame
-
-    frame = make_static(img)
+    img_big = img_big.filter(ImageFilter.GaussianBlur(radius=3))
+    img_big.paste(icon, (200, int(h1 / 2) - 50), mask=icon)
 
     async def make(img: IMG) -> IMG:
-        new_img = frame.copy()
-        new_img.paste(resize(img, (60, h2)), (60, h1 + 5))
-        return new_img
+        img_small = limit_size(img, (100, 0))
+        h2 = max(img_small.height, 80)
+        frame = Image.new("RGB", (500, h1 + h2 + 10), "white")
+        frame.paste(img_big)
+        frame.paste(img_small, (100, h1 + 5))
+        font = await load_font(DEFAULT_FONT, 60)
+        await draw_text(frame, (210, h1 + h2 / 2 - 40), "不出来", font=font, fill="black")
+        return frame
 
     return await make_jpg_or_gif(img, make)
 
