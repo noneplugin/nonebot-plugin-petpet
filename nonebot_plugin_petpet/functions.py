@@ -1371,18 +1371,18 @@ async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> Byt
     # Image
     img = users[0].img
     bg = await load_image("anyasuki/1.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame_w, frame_h = frame.size
     # Text
     fontname = DEFAULT_FONT
     text = args[0] if args else "阿尼亚喜欢这个"
-    fontsize = await fit_font_size(text, frame_w - 20, 40, fontname, 40, 10)
+    fontsize = await fit_font_size(text, 450, 40, fontname, 40, 10)
     if not fontsize:
         raise ValueError(TEXT_TOO_LONG)
     font = await load_font(fontname, fontsize)
     text_w, text_h = font.getsize(text)
     # Draw
     async def make(img: IMG) -> IMG:
+        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame_w, frame_h = frame.size
         frame.paste(fit_size(img, (305, 235)), (106, 72))
         frame.paste(bg, mask=bg)
         await draw_text(
