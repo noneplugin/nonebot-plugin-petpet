@@ -9,7 +9,7 @@
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/05/11/6BSiDuAft7o3k5U.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/05/18/E3ycagnb24ilQvZ.jpg" width="400" />
 </div>
 
 
@@ -88,3 +88,4 @@
 | 紧贴<br>紧紧贴着 | <img src="https://s2.loli.net/2022/04/20/FiBwc3ZxvVLObGP.gif" width="200" > |  |
 | 注意力涣散 | <img src="https://s2.loli.net/2022/05/11/mEtyxoZ3DfwBCn5.jpg" width="200" > |  |
 | 阿尼亚喜欢 | <img src="https://s2.loli.net/2022/05/11/U3ZMXHB1PduKckQ.jpg" width="200" > |  |
+| 想什么 | <img src="https://s2.loli.net/2022/05/18/ck1jNO2K8Qd6Lo3.jpg" width="200" > |  |
