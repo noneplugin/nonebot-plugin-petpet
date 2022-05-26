@@ -34,7 +34,7 @@ async def get_resource(path: str, name: str) -> bytes:
     file_path = data_path / path / name
     if not file_path.exists():
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        url = f"https://cdn.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@master/resources/{path}/{name}"
+        url = f"https://fastly.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@master/resources/{path}/{name}"
         data = await download_url(url)
         if data:
             async with aiofiles.open(str(file_path), "wb") as f:
