@@ -12,7 +12,7 @@ data_path = Path() / "data" / "petpet"
 
 
 def load_image(path: str) -> BuildImage:
-    return BuildImage.open(data_path / path).convert("RGBA")
+    return BuildImage.open(data_path / "images" / path).convert("RGBA")
 
 
 async def download_url(url: str) -> bytes:
@@ -38,7 +38,7 @@ async def download_avatar(user_id: str) -> bytes:
 
 
 async def download_resource(path: str) -> bytes:
-    url = f"https://fastly.jsdelivr.net/gh/MeetWq/nonebot-plugin-petpet@master/resources/{path}"
+    url = f"https://fastly.jsdelivr.net/gh/noneplugin/nonebot-plugin-petpet@v0.3.x/resources/{path}"
     return await download_url(url)
 
 
