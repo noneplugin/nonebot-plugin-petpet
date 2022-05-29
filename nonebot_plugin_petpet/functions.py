@@ -1,11 +1,14 @@
 import random
-from io import BytesIO
-from typing import List
+from collections import namedtuple
+from PIL import Image, ImageFilter
 from PIL.Image import Image as IMG
-from PIL import Image, ImageFilter, ImageDraw, ImageOps
+from typing import List, Dict, Optional
 
-from .models import UserInfo
-from .utils import *
+from nonebot_plugin_imageutils import BuildImage, Text2Image
+
+from .download import load_image
+from .utils import UserInfo, save_gif, make_jpg_or_gif, translate
+from .depends import Arg, Args, NoArg, User, Users, UserImg, UserImgs, Sender, SenderImg
 
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
@@ -14,92 +17,39 @@ REQUIRE_NAME = "找不到名字，加上名字再试吧~"
 REQUIRE_ARG = "该表情至少需要一个参数"
 
 
-async def operations(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    help_msg = "支持的操作：水平翻转、垂直翻转、黑白、旋转、反相、浮雕、轮廓、锐化"
+def universal(img: BuildImage = UserImg(), args: List[str] = Args(0, 10)):
     if not args:
-        raise ValueError(help_msg)
+        args = ["在此处添加文字"]
 
-    op = args[0]
-    if op == "倒放" and getattr(img, "is_animated", False):
-        duration = img.info["duration"] / 1000
-        frames = []
-        for i in range(img.n_frames):
-            img.seek(i)
-            frames.append(img.convert("RGB"))
-        frames.reverse()
-        return save_gif(frames, duration)
-
-    async def make(img: IMG) -> IMG:
-        if op == "水平翻转":
-            frame = img.transpose(Image.FLIP_LEFT_RIGHT)
-        elif op == "垂直翻转":
-            frame = img.transpose(Image.FLIP_TOP_BOTTOM)
-        elif op == "黑白":
-            frame = img.convert("L")
-        elif op == "旋转":
-            angle = int(args[1]) if args[1:] and args[1].isdigit() else 90
-            frame = rotate(img, int(angle))
-        elif op == "反相":
-            img = img.convert("RGB")
-            frame = ImageOps.invert(img)
-        elif op == "浮雕":
-            frame = img.filter(ImageFilter.EMBOSS)
-        elif op == "轮廓":
-            frame = img.filter(ImageFilter.CONTOUR)
-        elif op == "锐化":
-            frame = img.filter(ImageFilter.SHARPEN)
-        else:
-            raise ValueError(help_msg)
-        return frame
-
-    return await make_jpg_or_gif(img, make)
-
-
-async def universal(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    if not args:
-        args = ["万能表情"]
-
-    img_w, img_h = limit_size(img, (500, 500), FitSizeMode.INSIDE).size
-    fontname = DEFAULT_FONT
-    min_fontsize = 50
-    for a in args:
-        fontsize = await fit_font_size(a, img_w - 20, img_h, fontname, 50, 10)
-        if not fontsize:
-            raise ValueError(TEXT_TOO_LONG)
-        if fontsize < min_fontsize:
-            min_fontsize = fontsize
-
-    async def make(img: IMG) -> IMG:
-        img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
-        frames: List[IMG] = [img]
-
-        async def text_frame(text: str, fontsize: int):
-            font = await load_font(fontname, fontsize)
-            text_w, text_h = font.getsize(text)
-            frame = Image.new("RGB", (img_w, text_h + 5), "white")
-            await draw_text(
-                frame, ((img_w - text_w) / 2, 0), text, font=font, fill="black"
+    def make(img: BuildImage) -> BuildImage:
+        img = img.resize_width(500)
+        frames: List[BuildImage] = [img]
+        for arg in args:
+            text_img = BuildImage(
+                Text2Image.from_bbcode_text(arg, fontsize=45, align="center")
+                .wrap(480)
+                .to_image()
             )
-            frames.append(frame)
+            frames.append(text_img.resize_canvas((500, text_img.height)))
 
-        for a in args:
-            await text_frame(a, min_fontsize)
-
-        frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "white")
+        frame = BuildImage.new(
+            "RGBA", (500, sum((f.height for f in frames)) + 10), "white"
+        )
         current_h = 0
         for f in frames:
-            frame.paste(f, (0, current_h))
+            frame.paste(f, (0, current_h), alpha=True)
             current_h += f.height
         return frame
 
-    return await make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make)
 
 
-async def petpet(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = square(users[0].img)
-    frames = []
+def petpet(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
+    img = img.convert("RGBA").square()
+    if arg == "圆":
+        img = img.circle()
+
+    frames: List[IMG] = []
     locs = [
         (14, 20, 98, 98),
         (12, 33, 101, 85),
@@ -107,28 +57,29 @@ async def petpet(users: List[UserInfo], args: List[str] = [], **kwargs) -> Bytes
         (10, 33, 102, 84),
         (12, 20, 98, 98),
     ]
-    if args and "圆" in args[0]:
-        img = circle(img)
     for i in range(5):
-        frame = Image.new("RGBA", (112, 112), (255, 255, 255, 0))
+        hand = load_image(f"petpet/{i}.png")
+        frame = BuildImage.new("RGBA", hand.size, (255, 255, 255, 0))
         x, y, w, h = locs[i]
-        new_img = resize(img, (w, h))
-        frame.paste(new_img, (x, y), mask=new_img)
-        hand = await load_image(f"petpet/{i}.png")
-        frame.paste(hand, mask=hand)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), alpha=True)
+        frame.paste(hand, alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.06)
 
 
-async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
-    if len(users) >= 2:
-        self_img = users[0].img
-        user_img = users[1].img
+def kiss(
+    user_imgs: List[BuildImage] = UserImgs(1, 2),
+    sender_img: BuildImage = SenderImg(),
+    arg=NoArg(),
+):
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
     else:
-        self_img = sender.img
-        user_img = users[0].img
-    self_head = resize(circle(self_img), (40, 40))
-    user_head = resize(circle(user_img), (50, 50))
+        self_img = sender_img
+        user_img = user_imgs[0]
+    self_head = self_img.convert("RGBA").circle().resize((40, 40))
+    user_head = user_img.convert("RGBA").circle().resize((50, 50))
     # fmt: off
     user_locs = [
         (58, 90), (62, 95), (42, 100), (50, 100), (56, 100), (18, 120), (28, 110),
@@ -139,22 +90,28 @@ async def kiss(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
         (98, 55), (35, 65), (38, 100), (70, 80), (84, 65), (75, 65)
     ]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(13):
-        frame = await load_image(f"kiss/{i}.png")
-        frame.paste(user_head, user_locs[i], mask=user_head)
-        frame.paste(self_head, self_locs[i], mask=self_head)
-        frames.append(frame)
+        frame = load_image(f"kiss/{i}.png")
+        frame.paste(user_head, user_locs[i], alpha=True)
+        frame.paste(self_head, self_locs[i], alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.05)
 
 
-async def rub(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
-    if len(users) >= 2:
-        self_img = users[0].img
-        user_img = users[1].img
+def rub(
+    user_imgs: List[BuildImage] = UserImgs(1, 2),
+    sender_img: BuildImage = SenderImg(),
+    arg=NoArg(),
+):
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
     else:
-        self_img = sender.img
-        user_img = users[0].img
+        self_img = sender_img
+        user_img = user_imgs[0]
+    self_head = self_img.convert("RGBA").circle()
+    user_head = user_img.convert("RGBA").circle()
     # fmt: off
     user_locs = [
         (39, 91, 75, 75), (49, 101, 75, 75), (67, 98, 75, 75),
@@ -165,21 +122,21 @@ async def rub(users: List[UserInfo], sender: UserInfo, **kwargs) -> BytesIO:
         (65, 5, 75, 75, -20), (95, 57, 100, 55, -70), (109, 107, 65, 75, 0)
     ]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(6):
-        frame = await load_image(f"rub/{i}.png")
+        frame = load_image(f"rub/{i}.png")
         x, y, w, h = user_locs[i]
-        user_head = resize(circle(user_img), (w, h))
-        frame.paste(user_head, (x, y), mask=user_head)
+        frame.paste(user_head.resize((w, h)), (x, y), alpha=True)
         x, y, w, h, angle = self_locs[i]
-        self_head = rotate(resize(circle(self_img), (w, h)), angle)
-        frame.paste(self_head, (x, y), mask=self_head)
-        frames.append(frame)
+        frame.paste(
+            self_head.resize((w, h)).rotate(angle, expand=True), (x, y), alpha=True
+        )
+        frames.append(frame.image)
     return save_gif(frames, 0.05)
 
 
-async def play(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def play(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [
         (180, 60, 100, 100), (184, 75, 100, 100), (183, 98, 100, 100),
@@ -190,38 +147,33 @@ async def play(users: List[UserInfo], **kwargs) -> BytesIO:
         (182, 59, 98, 92), (183, 71, 90, 96), (180, 131, 92, 101)
     ]
     # fmt: on
-    raw_frames = []
-    for i in range(23):
-        raw_frame = await load_image(f"play/{i}.png")
-        raw_frames.append(raw_frame)
-    img_frames = []
+    raw_frames: List[BuildImage] = [load_image(f"play/{i}.png") for i in range(23)]
+    img_frames: List[BuildImage] = []
     for i in range(len(locs)):
-        frame = Image.new("RGBA", (480, 400), (255, 255, 255, 0))
+        frame = raw_frames[i]
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        raw_frame = raw_frames[i]
-        frame.paste(raw_frame, mask=raw_frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
         img_frames.append(frame)
-    frames = []
-    for i in range(2):
-        frames.extend(img_frames[0:12])
-    frames.extend(img_frames[0:8])
-    frames.extend(img_frames[12:18])
-    frames.extend(raw_frames[18:23])
+    frames = (
+        img_frames[0:12]
+        + img_frames[0:12]
+        + img_frames[0:8]
+        + img_frames[12:18]
+        + raw_frames[18:23]
+    )
+    frames = [frame.image for frame in frames]
     return save_gif(frames, 0.06)
 
 
-async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def pat(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     locs = [(11, 73, 106, 100), (8, 79, 112, 96)]
-    img_frames = []
+    img_frames: List[IMG] = []
     for i in range(10):
-        frame = Image.new("RGBA", (235, 196), (255, 255, 255, 0))
+        frame = load_image(f"pat/{i}.png")
         x, y, w, h = locs[1] if i == 2 else locs[0]
-        frame.paste(resize(img, (w, h)), (x, y))
-        raw_frame = await load_image(f"pat/{i}.png")
-        frame.paste(raw_frame, mask=raw_frame)
-        img_frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        img_frames.append(frame.image)
     # fmt: off
     seq = [0, 1, 2, 3, 1, 2, 3, 0, 1, 2, 3, 0, 0, 1, 2, 3, 0, 0, 0, 0, 4, 5, 5, 5, 6, 7, 8, 9]
     # fmt: on
@@ -229,58 +181,23 @@ async def pat(users: List[UserInfo], **kwargs) -> BytesIO:
     return save_gif(frames, 0.085)
 
 
-async def rip(
-    users: List[UserInfo], sender: UserInfo, args: List[str] = [], **kwargs
-) -> BytesIO:
-    if len(users) >= 2:
-        self_img = users[0].img
-        user_img = users[1].img
-    else:
-        self_img = sender.img
-        user_img = users[0].img
-
-    arg = "".join(args)
-    if "滑稽" in arg:
-        rip = await load_image("rip/0.png")
-    else:
-        rip = await load_image("rip/1.png")
-    text = arg.strip("滑稽").strip()
-
-    frame = Image.new("RGBA", rip.size, (255, 255, 255, 0))
-    left = rotate(fit_size(user_img, (385, 385)), 24)
-    right = rotate(fit_size(user_img, (385, 385)), -11)
-    frame.paste(left, (-5, 355))
-    frame.paste(right, (649, 310))
-    frame.paste(fit_size(self_img, (230, 230)), (408, 418))
-    frame.paste(rip, mask=rip)
-
-    if text:
-        fontname = BOLD_FONT
-        fontsize = await fit_font_size(text, rip.width - 50, 300, fontname, 150, 25)
-        if not fontsize:
-            raise ValueError(TEXT_TOO_LONG)
-        font = await load_font(fontname, fontsize)
-        text_w = font.getsize(text)[0]
-        await draw_text(
-            frame,
-            ((rip.width - text_w) / 2, 40),
-            text,
-            font=font,
-            fill="#FF0000",
-        )
-    return save_jpg(frame)
+def rip(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((385, 385))
+    frame = load_image("rip/0.png")
+    frame.paste(img.rotate(24, expand=True), (-5, 355), below=True)
+    frame.paste(img.rotate(-11, expand=True), (649, 310), below=True)
+    return frame.save_jpg()
 
 
-async def throw(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = resize(rotate(circle(img), random.randint(1, 360), expand=False), (143, 143))
-    frame = await load_image("throw/0.png")
-    frame.paste(img, (15, 178), mask=img)
-    return save_jpg(frame)
+def throw(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").circle().rotate(random.randint(1, 360)).resize((143, 143))
+    frame = load_image("throw/0.png")
+    frame.paste(img, (15, 178), alpha=True)
+    return frame.save_jpg()
 
 
-async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
+def throw_gif(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").circle()
     locs = [
         [(32, 32, 108, 36)],
         [(32, 32, 122, 36)],
@@ -291,233 +208,196 @@ async def throw_gif(users: List[UserInfo], **kwargs) -> BytesIO:
         [(35, 35, 259, 31)],
         [(175, 175, -50, 220)],
     ]
-    frames = []
+    frames: List[IMG] = []
     for i in range(8):
-        frame = await load_image(f"throw_gif/{i}.png")
+        frame = load_image(f"throw_gif/{i}.png")
         for w, h, x, y in locs[i]:
-            new_img = resize(circle(img), (w, h))
-            frame.paste(new_img, (x, y), mask=new_img)
-        frames.append(frame)
+            frame.paste(img.resize((w, h)), (x, y), alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.1)
 
 
-async def crawl(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = resize(circle(img), (100, 100))
-    crawl_total = 92
-    crawl_num = random.randint(1, crawl_total)
-    if args and args[0].isdigit() and 1 <= int(args[0]) <= crawl_total:
-        crawl_num = int(args[0])
-    frame = await load_image("crawl/{:02d}.jpg".format(crawl_num))
-    frame.paste(img, (0, 400), mask=img)
-    return save_jpg(frame)
+def crawl(img: BuildImage = UserImg(), arg: str = Arg()):
+    num = 0
+    total_num = 92
+    if arg.isdigit() and 1 <= int(arg) <= total_num:
+        num = int(arg)
+    else:
+        num = random.randint(1, total_num)
+
+    img = img.convert("RGBA").circle().resize((100, 100))
+    frame = load_image(f"crawl/{num:02d}.jpg")
+    frame.paste(img, (0, 400), alpha=True)
+    return frame.save_jpg()
 
 
-async def support(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    support = await load_image("support/0.png")
-    frame = Image.new("RGBA", support.size, (255, 255, 255, 0))
-    img = rotate(fit_size(img, (815, 815)), 23)
-    frame.paste(img, (-172, -17))
-    frame.paste(support, mask=support)
-    return save_jpg(frame)
+def support(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((815, 815)).rotate(23, expand=True)
+    frame = load_image("support/0.png")
+    frame.paste(img, (-172, -17), below=True)
+    return frame.save_jpg()
 
 
-async def always(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-
-    async def make(img: IMG) -> IMG:
-        img_big = limit_size(img, (500, 0))
-        img_small = limit_size(img, (100, 0))
+def always(img: BuildImage = UserImg(), arg=NoArg()):
+    def make(img: BuildImage) -> BuildImage:
+        img_big = img.resize_width(500)
+        img_small = img.resize_width(100)
         h1 = img_big.height
         h2 = max(img_small.height, 80)
-        frame = Image.new("RGB", (500, h1 + h2 + 10), "white")
-        frame.paste(img_big)
-        frame.paste(img_small, (290, h1 + 5))
-        font = await load_font(DEFAULT_FONT, 60)
-        await draw_text(
-            frame, (45, h1 + h2 / 2 - 40), "要我一直        吗", font=font, fill="black"
+        frame = BuildImage.new("RGBA", (500, h1 + h2 + 10), "white")
+        frame.paste(img_big, alpha=True).paste(img_small, (290, h1 + 5), alpha=True)
+        frame.draw_text(
+            (20, h1 + 5, 280, h1 + h2 + 5), "要我一直", halign="right", max_fontsize=60
+        )
+        frame.draw_text(
+            (400, h1 + 5, 480, h1 + h2 + 5), "吗", halign="left", max_fontsize=60
         )
         return frame
 
-    return await make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make)
 
 
-async def loading(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-
-    img_big = to_jpg(img).convert("RGBA")
-    img_big = limit_size(img_big, (500, 0))
-    mask = Image.new("RGBA", img_big.size, (0, 0, 0, 128))
-    img_big.paste(mask, mask=mask)
-    h1 = img_big.height
-    icon = await load_image("loading/1.png")
+def loading(img: BuildImage = UserImg(), arg=NoArg()):
+    img_big = img.convert("RGBA").resize_width(500)
     img_big = img_big.filter(ImageFilter.GaussianBlur(radius=3))
-    img_big.paste(icon, (200, int(h1 / 2) - 50), mask=icon)
+    h1 = img_big.height
+    mask = BuildImage.new("RGBA", img_big.size, (0, 0, 0, 128))
+    icon = load_image("loading/icon.png")
+    img_big.paste(mask, alpha=True).paste(icon, (200, int(h1 / 2) - 50), alpha=True)
 
-    async def make(img: IMG) -> IMG:
-        img_small = limit_size(img, (100, 0))
+    def make(img: BuildImage) -> BuildImage:
+        img_small = img.resize_width(100)
         h2 = max(img_small.height, 80)
-        frame = Image.new("RGB", (500, h1 + h2 + 10), "white")
-        frame.paste(img_big)
-        frame.paste(img_small, (100, h1 + 5))
-        font = await load_font(DEFAULT_FONT, 60)
-        await draw_text(frame, (210, h1 + h2 / 2 - 40), "不出来", font=font, fill="black")
+        frame = BuildImage.new("RGBA", (500, h1 + h2 + 10), "white")
+        frame.paste(img_big, alpha=True).paste(img_small, (100, h1 + 5), alpha=True)
+        frame.draw_text(
+            (210, h1 + 5, 480, h1 + h2 + 5), "不出来", halign="left", max_fontsize=60
+        )
         return frame
 
-    return await make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make)
 
 
-async def turn(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = circle(img)
-    frames = []
+def turn(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").circle()
+    frames: List[IMG] = []
     for i in range(0, 360, 10):
-        frame = Image.new("RGBA", (250, 250), (255, 255, 255, 0))
-        frame.paste(resize(rotate(img, i, False), (250, 250)), (0, 0))
-        frames.append(to_jpg(frame))
+        frame = BuildImage.new("RGBA", (250, 250), "white")
+        frame.paste(img.rotate(i).resize((250, 250)), alpha=True)
+        frames.append(frame.image)
     if random.randint(0, 1):
         frames.reverse()
     return save_gif(frames, 0.05)
 
 
-async def littleangel(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
+def littleangel(user: UserInfo = User(), arg: str = Arg()):
+    img = user.img.convert("RGBA").resize_width(500)
     img_w, img_h = img.size
+    frame = BuildImage.new("RGBA", (600, img_h + 230), "white")
+    frame.paste(img, (int(300 - img_w / 2), 110), alpha=True)
 
-    bg = Image.new("RGB", (600, img_h + 230), (255, 255, 255))
-    bg.paste(img, (int(300 - img_w / 2), 110))
-    fontname = BOLD_FONT
-
-    font = await load_font(fontname, 48)
     text = "非常可爱！简直就是小天使"
-    text_w, _ = font.getsize(text)
-    await draw_text(
-        bg, (300 - text_w / 2, img_h + 120), text, font=font, fill=(0, 0, 0)
+    frame.draw_text(
+        (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, bold=True
     )
 
-    font = await load_font(fontname, 26)
-    ta = "他" if users[0].gender == "male" else "她"
+    ta = "他" if user.gender == "male" else "她"
     text = f"{ta}没失踪也没怎么样  我只是觉得你们都该看一下"
-    text_w, _ = font.getsize(text)
-    await draw_text(
-        bg, (300 - text_w / 2, img_h + 180), text, font=font, fill=(0, 0, 0)
+    frame.draw_text(
+        (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, bold=True
     )
 
-    name = (args[0] if args else "") or users[0].name or ta
+    name = arg or user.name or ta
     text = f"请问你们看到{name}了吗?"
-    fontsize = await fit_font_size(text, 560, 110, fontname, 70, 25)
-    if not fontsize:
-        raise ValueError(NAME_TOO_LONG)
+    try:
+        frame.draw_text(
+            (20, 0, 580, 110), text, max_fontsize=70, min_fontsize=25, bold=True
+        )
+    except ValueError:
+        return NAME_TOO_LONG
 
-    font = await load_font(fontname, fontsize)
-    text_w, text_h = font.getsize(text)
-    x = 300 - text_w / 2
-    y = 55 - text_h / 2
-    await draw_text(bg, (x, y), text, font=font, fill=(0, 0, 0))
-    return save_jpg(bg)
+    return frame.save_jpg()
 
 
-async def dont_touch(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    frame = await load_image("dont_touch/0.png")
-    frame.paste(fit_size(img, (170, 170)), (23, 231))
-    return save_jpg(frame)
+def dont_touch(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((170, 170))
+    frame = load_image("dont_touch/0.png")
+    frame.paste(img, (23, 231), alpha=True)
+    return frame.save_jpg()
 
 
-async def alike(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    frame = await load_image("alike/0.png")
-    frame.paste(fit_size(img, (90, 90)), (131, 14))
-    return save_jpg(frame)
+def alike(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((90, 90))
+    frame = load_image("alike/0.png")
+    frame.paste(img, (131, 14), alpha=True)
+    return frame.save_jpg()
 
 
-async def roll(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (210, 210))
-    frames = []
+def roll(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((210, 210))
     # fmt: off
     locs = [
         (87, 77, 0), (96, 85, -45), (92, 79, -90), (92, 78, -135),
         (92, 75, -180), (92, 75, -225), (93, 76, -270), (90, 80, -315)
     ]
     # fmt: on
+    frames: List[IMG] = []
     for i in range(8):
-        frame = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
+        frame = load_image(f"roll/{i}.png")
         x, y, a = locs[i]
-        frame.paste(rotate(img, a, expand=False), (x, y))
-        bg = await load_image(f"roll/{i}.png")
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.rotate(a), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.1)
 
 
-async def play_game(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("play_game/1.png")
-    text = args[0] if args else "来玩休闲游戏啊"
-    fontname = DEFAULT_FONT
-    fontsize = await fit_font_size(text, 520, 110, fontname, 35, 25)
-    if not fontsize:
-        raise ValueError(TEXT_TOO_LONG)
-    font = await load_font(fontname, fontsize)
-    text_w = font.getsize(text)[0]
-
-    async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        points = [(0, 5), (227, 0), (216, 150), (0, 165)]
-        screen = rotate(perspective(fit_size(img, (220, 160)), points), 9)
-        frame.paste(screen, (161, 117))
-        frame.paste(bg, mask=bg)
-
-        await draw_text(
-            frame,
-            (263 - text_w / 2, 430),
+def play_game(img: BuildImage = UserImg(), arg: str = Arg()):
+    text = arg or "来玩休闲游戏啊"
+    frame = load_image("play_game/0.png")
+    try:
+        frame.draw_text(
+            (0, frame.height - 70, frame.width, frame.height),
             text,
-            font=font,
-            fill="#000000",
-            stroke_fill="#FFFFFF",
-            stroke_width=2,
+            max_fontsize=40,
+            min_fontsize=25,
+            stroke_fill="white",
+            stroke_ratio=0.06,
         )
-        return frame
+    except:
+        return TEXT_TOO_LONG
 
-    return await make_jpg_or_gif(img, make)
+    def make(img: BuildImage) -> BuildImage:
+        points = ((0, 5), (227, 0), (216, 150), (0, 165))
+        screen = img.resize((220, 160), keep_ratio=True).perspective(points)
+        return frame.copy().paste(screen.rotate(9, expand=True), (161, 117), below=True)
+
+    return make_jpg_or_gif(img, make)
 
 
-async def worship(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    points = [(0, -30), (135, 17), (135, 145), (0, 140)]
-    paint = perspective(fit_size(img, (150, 150)), points)
-    frames = []
+def worship(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA")
+    points = ((0, -30), (135, 17), (135, 145), (0, 140))
+    paint = img.square().resize((150, 150)).perspective(points)
+    frames: List[IMG] = []
     for i in range(10):
-        frame = Image.new("RGBA", (300, 169), (255, 255, 255, 0))
-        frame.paste(paint)
-        bg = await load_image(f"worship/{i}.png")
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame = load_image(f"worship/{i}.png")
+        frame.paste(paint, below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.04)
 
 
-async def eat(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = fit_size(users[0].img, (32, 32))
+def eat(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((32, 32))
     frames = []
     for i in range(3):
-        frame = Image.new("RGBA", (60, 67), (255, 255, 255, 0))
-        frame.paste(img, (1, 38))
-        bg = await load_image(f"eat/{i}.png")
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame = load_image(f"eat/{i}.png")
+        frame.paste(img, (1, 38), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.05)
 
 
-async def bite(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
-    raw_frames = []
-    for i in range(16):
-        raw_frame = await load_image(f"bite/{i}.png")
-        raw_frames.append(raw_frame)
-    frames = []
+def bite(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
+    frames: List[IMG] = []
     # fmt: off
     locs = [
         (90, 90, 105, 150), (90, 83, 96, 172), (90, 90, 106, 148),
@@ -525,613 +405,538 @@ async def bite(users: List[UserInfo], **kwargs) -> BytesIO:
     ]
     # fmt: on
     for i in range(6):
-        frame = Image.new("RGBA", (362, 364), (255, 255, 255, 0))
+        frame = load_image(f"bite/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        raw_frame = await load_image(f"bite/{i}.png")
-        frame.paste(raw_frame, mask=raw_frame)
-        frames.append(frame)
-    frames.extend(raw_frames[6:])
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
+    for i in range(6, 16):
+        frame = load_image(f"bite/{i}.png")
+        frames.append(frame.image)
     return save_gif(frames, 0.07)
 
 
-async def police(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("police/0.png")
-    frame = Image.new("RGBA", bg.size)
-    frame.paste(fit_size(img, (245, 245)), (224, 46))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def police(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((245, 245))
+    frame = load_image("police/0.png")
+    frame.paste(img, (224, 46), below=True)
+    return frame.save_jpg()
 
 
-async def police1(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("police/1.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(rotate(fit_size(img, (60, 75)), 16), (37, 291))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def police1(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((60, 75), keep_ratio=True).rotate(16, expand=True)
+    frame = load_image("police/1.png")
+    frame.paste(img, (37, 291), below=True)
+    return frame.save_jpg()
 
 
-async def ask(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (640, 0))
+def ask(user: UserInfo = User(), arg: str = Arg()):
+    img = user.img.resize_width(640)
     img_w, img_h = img.size
-    mask_h = 150
-    start_t = 180
-    gradient = Image.new("L", (1, img_h))
-    for y in range(img_h):
-        t = 0 if y < img_h - mask_h else img_h - y + start_t - mask_h
-        gradient.putpixel((0, y), t)
-    alpha = gradient.resize((img_w, img_h))
-    mask = Image.new("RGBA", (img_w, img_h))
-    mask.putalpha(alpha)
+    gradient_h = 150
+    gradient = BuildImage.new("RGBA", (img_w, gradient_h)).gradient_color(
+        (0, 0, 0, 220), (0, 0, 0, 30)
+    )
+    mask = BuildImage.new("RGBA", img.size)
+    mask.paste(gradient, (0, img_h - gradient_h), alpha=True)
     mask = mask.filter(ImageFilter.GaussianBlur(radius=3))
-    img = Image.alpha_composite(img, mask)
+    img.paste(mask, alpha=True)
 
-    name = (args[0] if args else "") or users[0].name
-    ta = "他" if users[0].gender == "male" else "她"
+    name = arg or user.name
+    ta = "他" if user.gender == "male" else "她"
     if not name:
-        raise ValueError(REQUIRE_NAME)
+        return REQUIRE_NAME
 
-    font = await load_font(BOLD_FONT, 25)
-    start_h = img_h - mask_h
-    start_w = 30
-    text_w = font.getsize(name)[0]
-    line_w = text_w + 200
-    await draw_text(
-        img,
-        (start_w + (line_w - text_w) / 2, start_h + 5),
-        name,
-        font=font,
+    start_w = 20
+    start_h = img_h - gradient_h + 5
+    text_img1 = Text2Image.from_text(f"{name}", 28, fill="orange", bold=True).to_image()
+    text_img2 = Text2Image.from_text(
+        f"{name}不知道哦。", 28, fill="white", bold=True
+    ).to_image()
+    img.paste(
+        text_img1,
+        (start_w + 40 + (text_img2.width - text_img1.width) // 2, start_h),
+        alpha=True,
+    )
+    img.paste(
+        text_img2,
+        (start_w + 40, start_h + text_img1.height + 10),
+        alpha=True,
+    )
+
+    line_h = start_h + text_img1.height + 5
+    img.draw_line(
+        (start_w, line_h, start_w + text_img2.width + 80, line_h),
         fill="orange",
-    )
-    draw = ImageDraw.Draw(img)
-    draw.line(
-        (start_w, start_h + 45, start_w + line_w, start_h + 45), fill="orange", width=2
-    )
-    text_w = font.getsize(f"{name}不知道哦")[0]
-    await draw_text(
-        img,
-        (start_w + (line_w - text_w) / 2, start_h + 50),
-        f"{name}不知道哦。",
-        font=font,
-        fill="white",
+        width=2,
     )
 
     sep_w = 30
     sep_h = 80
-    bg = Image.new("RGBA", (img_w + sep_w * 2, img_h + sep_h * 2), "white")
-    font = await load_font(DEFAULT_FONT, 35)
-    if font.getsize(name)[0] > 600:
-        raise ValueError(TEXT_TOO_LONG)
-    await draw_text(bg, (sep_w, 10), f"让{name}告诉你吧", font=font, fill="black")
-    await draw_text(
-        bg, (sep_w, sep_h + img_h + 10), f"啊这，{ta}说不知道", font=font, fill="black"
-    )
-    bg.paste(img, (sep_w, sep_h))
-    return save_jpg(bg)
+    frame = BuildImage.new("RGBA", (img_w + sep_w * 2, img_h + sep_h * 2), "white")
+    try:
+        frame.draw_text(
+            (sep_w, 0, img_w + sep_w, sep_h),
+            f"让{name}告诉你吧",
+            max_fontsize=35,
+            halign="left",
+        )
+        frame.draw_text(
+            (sep_w, img_h + sep_h, img_w + sep_w, img_h + sep_h * 2),
+            f"啊这，{ta}说不知道",
+            max_fontsize=35,
+            halign="left",
+        )
+    except ValueError:
+        return NAME_TOO_LONG
+    frame.paste(img, (sep_w, sep_h))
+    return frame.save_jpg()
 
 
-async def prpr(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("prpr/0.png")
+def prpr(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("prpr/0.png")
 
-    async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        points = [(0, 19), (236, 0), (287, 264), (66, 351)]
-        screen = perspective(fit_size(img, (330, 330)), points)
-        frame.paste(screen, (56, 284))
-        frame.paste(bg, mask=bg)
-        return frame
+    def make(img: BuildImage) -> BuildImage:
+        points = ((0, 19), (236, 0), (287, 264), (66, 351))
+        screen = img.resize((330, 330), keep_ratio=True).perspective(points)
+        return frame.copy().paste(screen, (56, 284), below=True)
 
-    return await make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make)
 
 
-async def twist(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (78, 78))
-    frames = []
+def twist(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((78, 78))
     # fmt: off
     locs = [
         (25, 66, 0), (25, 66, 60), (23, 68, 120),
         (20, 69, 180), (22, 68, 240), (25, 66, 300)
     ]
     # fmt: on
+    frames: List[IMG] = []
     for i in range(5):
-        frame = Image.new("RGBA", (166, 168), (255, 255, 255, 0))
+        frame = load_image(f"twist/{i}.png")
         x, y, a = locs[i]
-        frame.paste(rotate(img, a, expand=False), (x, y))
-        bg = await load_image(f"twist/{i}.png")
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.rotate(a), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.1)
 
 
-async def wallpaper(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("wallpaper/0.png")
+def wallpaper(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("wallpaper/0.png")
 
-    async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame.paste(fit_size(img, (775, 496)), (260, 580))
-        frame.paste(bg, mask=bg)
-        return frame
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((775, 496), keep_ratio=True), (260, 580), below=True
+        )
 
-    return await make_jpg_or_gif(img, make, gif_zoom=0.5)
+    return make_jpg_or_gif(img, make, gif_zoom=0.5)
 
 
-async def china_flag(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("china_flag/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(fit_size(img, bg.size))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def china_flag(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("china_flag/0.png")
+    frame.paste(img.convert("RGBA").resize(frame.size, keep_ratio=True), below=True)
+    return frame.save_jpg()
 
 
-async def make_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (1000, 0))
-    img_w, img_h = img.size
+def make_friend(user: UserInfo = User(), arg: str = Arg()):
+    img = user.img.convert("RGBA")
 
-    bg = await load_image("make_friend/0.png")
-    frame = img.copy()
-    frame.paste(rotate(limit_size(img, (250, 0)), 9), (743, img_h - 155))
-    frame.paste(rotate(resize(square(img), (55, 55)), 9), (836, img_h - 278))
-    frame.paste(bg, (0, img_h - 1000), mask=bg)
-    font = await load_font(DEFAULT_FONT, 40)
-
-    name = (args[0] if args else "") or users[0].name
-    if not name:
-        raise ValueError(REQUIRE_NAME)
-    text_frame = Image.new("RGBA", (500, 50))
-    await draw_text(text_frame, (0, -10), name, font=font, fill="#FFFFFF")
-    text_frame = rotate(resize(text_frame, (250, 25)), 9)
-    frame.paste(text_frame, (710, img_h - 340), mask=text_frame)
-    return save_jpg(frame)
-
-
-async def back_to_work(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("back_to_work/1.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    new_img = fit_size(img, (220, 310), direction=FitSizeDir.NORTH)
-    frame.paste(rotate(new_img, 25), (56, 32))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
-
-
-async def perfect(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    frame = await load_image("perfect/0.png")
-    new_img = fit_size(img, (310, 460), mode=FitSizeMode.INSIDE)
-    frame.paste(new_img, (313, 64), mask=new_img)
-    return save_jpg(frame)
-
-
-async def follow(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = resize(circle(img), (200, 200))
-
-    font = await load_font(DEFAULT_FONT, 60)
-    ta = "女同" if users[0].gender == "female" else "男同"
-    name = (args[0] if args else "") or users[0].name or ta
-    text_name = name
-    text_name_w, text_name_h = font.getsize(text_name)
-    text_follow = "关注了你"
-    text_width = max(text_name_w, font.getsize(text_follow)[0])
-    if text_width >= 1000:
-        raise ValueError(NAME_TOO_LONG)
-
-    frame = Image.new("RGBA", (300 + text_width + 50, 300), (255, 255, 255, 0))
-    frame.paste(img, (50, 50), mask=img)
-    text_frame = Image.new("RGBA", (text_width + 50, 300), (255, 255, 255, 0))
-    await draw_text(
-        text_frame, (0, 135 - text_name_h), text_name, font=font, fill="black"
+    bg = load_image("make_friend/0.png")
+    frame = img.resize_width(1000)
+    frame.paste(
+        img.resize_width(250).rotate(9, expand=True),
+        (743, frame.height - 155),
+        alpha=True,
     )
-    await draw_text(text_frame, (0, 145), text_follow, font=font, fill="grey")
-    frame.paste(text_frame, (300, 0), mask=text_frame)
+    frame.paste(
+        img.square().resize((55, 55)).rotate(9, expand=True),
+        (836, frame.height - 278),
+        alpha=True,
+    )
+    frame.paste(bg, (0, frame.height - 1000), alpha=True)
 
-    return save_jpg(frame)
+    name = arg or user.name
+    if not name:
+        return REQUIRE_NAME
+
+    text_img = Text2Image.from_text(name, 20, fill="white").to_image()
+    if text_img.width > 230:
+        return NAME_TOO_LONG
+
+    text_img = BuildImage(text_img).rotate(9, expand=True)
+    frame.paste(text_img, (710, frame.height - 308), alpha=True)
+    return frame.save_jpg()
 
 
-async def my_friend(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
+def back_to_work(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("back_to_work/0.png")
+    img = img.convert("RGBA").resize((220, 310), keep_ratio=True, direction="north")
+    frame.paste(img.rotate(25, expand=True), (56, 32), below=True)
+    return frame.save_jpg()
+
+
+def perfect(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("perfect/0.png")
+    img = img.convert("RGBA").resize((310, 460), keep_ratio=True, inside=True)
+    frame.paste(img, (313, 64), alpha=True)
+    return frame.save_jpg()
+
+
+def follow(user: UserInfo = User(), arg: str = Arg()):
+    img = user.img.circle().resize((200, 200))
+
+    ta = "女同" if user.gender == "female" else "男同"
+    name = arg or user.name or ta
+    name_img = Text2Image.from_text(name, 60).to_image()
+    follow_img = Text2Image.from_text("关注了你", 60, fill="grey").to_image()
+    text_width = max(name_img.width, follow_img.width)
+    if text_width >= 1000:
+        return NAME_TOO_LONG
+
+    frame = BuildImage.new("RGBA", (300 + text_width + 50, 300), (255, 255, 255, 0))
+    frame.paste(img, (50, 50), alpha=True)
+    frame.paste(name_img, (300, 135 - name_img.height), alpha=True)
+    frame.paste(follow_img, (300, 145), alpha=True)
+    return frame.save_jpg()
+
+
+def my_friend(
+    user: Optional[UserInfo] = User(),
+    sender: UserInfo = Sender(),
+    args: List[str] = Args(0, 10),
+):
+    if not user:
+        user = sender
     if not args:
-        raise ValueError(REQUIRE_ARG)
-    elif len(args) <= 1:
-        name = users[0].name or "朋友"
-        texts = args
-    else:
-        name = args[0] or "朋友"
-        texts = args[1:]
+        return REQUIRE_ARG
+    name = user.name or "朋友"
+    texts = args
+    img = user.img.convert("RGBA").circle().resize((100, 100))
 
-    name_font = await load_font(DEFAULT_FONT, 25)
-    text_font = await load_font(DEFAULT_FONT, 40)
-    name_w, name_h = name_font.getsize(name)
+    name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
+    name_w, name_h = name_img.size
     if name_w >= 700:
         raise ValueError(NAME_TOO_LONG)
 
-    corner1 = await load_image("my_friend/corner1.png")
-    corner2 = await load_image("my_friend/corner2.png")
-    corner3 = await load_image("my_friend/corner3.png")
-    corner4 = await load_image("my_friend/corner4.png")
-    label = await load_image("my_friend/2.png")
-    img = resize(circle(img), (100, 100))
+    corner1 = load_image("my_friend/corner1.png")
+    corner2 = load_image("my_friend/corner2.png")
+    corner3 = load_image("my_friend/corner3.png")
+    corner4 = load_image("my_friend/corner4.png")
+    label = load_image("my_friend/label.png")
 
-    async def make_dialog(text: str) -> IMG:
-        text = "\n".join(wrap_text(text, text_font, 700))
-        text_w, text_h = text_font.getsize_multiline(text)
+    def make_dialog(text: str) -> BuildImage:
+        text_img = Text2Image.from_text(text, 40).wrap(700).to_image()
+        text_w, text_h = text_img.size
         box_w = max(text_w, name_w + 15) + 140
         box_h = max(text_h + 103, 150)
-        box = Image.new("RGBA", (box_w, box_h))
+        box = BuildImage.new("RGBA", (box_w, box_h))
         box.paste(corner1, (0, 0))
         box.paste(corner2, (0, box_h - 75))
         box.paste(corner3, (text_w + 70, 0))
         box.paste(corner4, (text_w + 70, box_h - 75))
-        box.paste(Image.new("RGBA", (text_w, box_h - 40), "#ffffff"), (70, 20))
-        box.paste(Image.new("RGBA", (text_w + 88, box_h - 150), "#ffffff"), (27, 75))
+        box.paste(BuildImage.new("RGBA", (text_w, box_h - 40), "white"), (70, 20))
+        box.paste(BuildImage.new("RGBA", (text_w + 88, box_h - 150), "white"), (27, 75))
+        box.paste(text_img, (70, 16 + (box_h - 40 - text_h) // 2), alpha=True)
 
-        await draw_text(
-            box,
-            (70, 15 + (box_h - 40 - text_h) / 2),
-            text,
-            font=text_font,
-            fill="#000000",
-        )
-        dialog = Image.new("RGBA", (box.width + 130, box.height + 60), "#eaedf4")
-        dialog.paste(img, (20, 20), mask=img)
-        dialog.paste(box, (130, 60), mask=box)
+        dialog = BuildImage.new("RGBA", (box.width + 130, box.height + 60), "#eaedf4")
+        dialog.paste(img, (20, 20), alpha=True)
+        dialog.paste(box, (130, 60), alpha=True)
         dialog.paste(label, (160, 25))
-        await draw_text(
-            dialog, (260, 22 + (35 - name_h) / 2), name, font=name_font, fill="#868894"
-        )
+        dialog.paste(name_img, (260, 22 + (35 - name_h) // 2), alpha=True)
         return dialog
 
-    dialogs = [await make_dialog(text) for text in texts]
+    dialogs = [make_dialog(text) for text in texts]
     frame_w = max((dialog.width for dialog in dialogs))
     frame_h = sum((dialog.height for dialog in dialogs))
-    frame = Image.new("RGBA", (frame_w, frame_h), "#eaedf4")
+    frame = BuildImage.new("RGBA", (frame_w, frame_h), "#eaedf4")
     current_h = 0
     for dialog in dialogs:
         frame.paste(dialog, (0, current_h))
         current_h += dialog.height
-    return save_jpg(frame)
+    return frame.save_jpg()
 
 
-async def paint(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("paint/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(rotate(fit_size(img, (117, 135)), 4), (95, 107))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def paint(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((117, 135), keep_ratio=True)
+    frame = load_image("paint/0.png")
+    frame.paste(img.rotate(4, expand=True), (95, 107), below=True)
+    return frame.save_jpg()
 
 
-async def shock(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (300, 300))
-    frames = []
+def shock(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((300, 300))
+    frames: List[IMG] = []
     for i in range(30):
         frames.append(
-            rotate(
-                motion_blur(img, random.randint(-90, 90), random.randint(0, 90)),
-                random.randint(-20, 20),
-                expand=False,
-            )
+            img.motion_blur(random.randint(-90, 90), random.randint(0, 50))
+            .rotate(random.randint(-20, 20))
+            .image
         )
     return save_gif(frames, 0.01)
 
 
-async def coupon(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("coupon/0.png")
-    new_img = rotate(resize(circle(img), (60, 60)), 22)
-    bg.paste(new_img, (164, 85), mask=new_img)
+def coupon(user: UserInfo = User(), arg: str = Arg()):
+    text = arg or f"{user.name}陪睡券" + "\n（永久有效）"
+    text_img = BuildImage.new("RGBA", (250, 100))
+    try:
+        text_img.draw_text(
+            (0, 0, text_img.width, text_img.height),
+            text,
+            lines_align="center",
+            max_fontsize=30,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
 
-    font = await load_font(DEFAULT_FONT, 30)
-    text_img = Image.new("RGBA", (250, 100))
-    text = f"{users[0].name}陪睡券" if not args else args[0]
-    text += "\n（永久有效）" if len(args) <= 1 else f"\n{args[1]}"
-    text_w = font.getsize_multiline(text)[0]
-    if text_w > text_img.width:
-        raise ValueError(TEXT_TOO_LONG)
-
-    await draw_text(
-        text_img,
-        ((text_img.width - text_w) / 2, 0),
-        text,
-        font=font,
-        align="center",
-        fill="#000000",
-    )
-    text_img = rotate(text_img, 22)
-    bg.paste(text_img, (94, 108), mask=text_img)
-    return save_jpg(bg)
+    frame = load_image("coupon/0.png")
+    img = user.img.convert("RGBA").circle().resize((60, 60)).rotate(22, expand=True)
+    frame.paste(img, (164, 85), alpha=True)
+    frame.paste(text_img.rotate(22, expand=True), (94, 108), alpha=True)
+    return frame.save_jpg()
 
 
-async def listen_music(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = circle(img)
-    bg = await load_image("listen_music/0.png")
-    frames = []
+def listen_music(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA")
+    frame = load_image("listen_music/0.png")
+    frames: List[IMG] = []
     for i in range(0, 360, 10):
-        frame = Image.new("RGBA", (414, 399))
-        temp_img = resize(rotate(img, -i, False), (215, 215))
-        frame.paste(temp_img, (100, 100), mask=temp_img)
-        frame.paste(bg, (0, 0), mask=bg)
-        frames.append(to_jpg(frame))
+        frames.append(
+            frame.copy()
+            .paste(img.rotate(-i).resize((215, 215)), (100, 100), below=True)
+            .image
+        )
     return save_gif(frames, 0.05)
 
 
-async def dianzhongdian(
-    users: List[UserInfo], args: List[str] = [], **kwargs
-) -> BytesIO:
-    img = users[0].img
+async def dianzhongdian(img: BuildImage = UserImg(), arg: str = Arg()):
+    if not arg:
+        return REQUIRE_ARG
 
-    if args and args[0] == "彩":
-        args = args[1:]
-    else:
-        img = img.convert("L")
-    if not args:
-        raise ValueError(REQUIRE_ARG)
-
-    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
-    img_w, img_h = img.size
-    frames: List[IMG] = [img]
-
-    async def text_frame(text: str, max_fontsize: int, min_fontsize: int) -> int:
-        fontname = DEFAULT_FONT
-        fontsize = await fit_font_size(
-            text, img_w - 20, img_h, fontname, max_fontsize, min_fontsize
+    trans = await translate(arg)
+    img = img.convert("L").resize_width(500)
+    text_img1 = BuildImage.new("RGBA", (500, 60))
+    text_img2 = BuildImage.new("RGBA", (500, 35))
+    try:
+        text_img1.draw_text(
+            (20, 0, text_img1.width - 20, text_img1.height),
+            arg,
+            max_fontsize=50,
+            min_fontsize=25,
+            fill="white",
         )
-        if not fontsize:
-            raise ValueError(TEXT_TOO_LONG)
-        font = await load_font(fontname, fontsize)
-        text_w, text_h = font.getsize(text)
-        frame = Image.new("RGB", (img_w, text_h + 5), "#000000")
-        await draw_text(frame, ((img_w - text_w) / 2, 0), text, font=font, fill="white")
-        frames.append(frame)
-        return fontsize
+        text_img2.draw_text(
+            (20, 0, text_img2.width - 20, text_img2.height),
+            trans,
+            max_fontsize=25,
+            min_fontsize=10,
+            fill="white",
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
 
-    fontsize = await text_frame(args[0], 50, 10)
-    text = args[1] if len(args) > 1 else await translate(args[0])
-    if text:
-        fontsize = max(int(fontsize / 2), 10)
-        await text_frame(text, fontsize, 10)
-
-    frame = Image.new("RGB", (img_w, sum((f.height for f in frames)) + 10), "#000000")
-    current_h = 0
-    for f in frames:
-        frame.paste(f, (0, current_h))
-        current_h += f.height
-    return save_jpg(frame)
+    frame = BuildImage.new("RGBA", (500, img.height + 100), "black")
+    frame.paste(img, alpha=True)
+    frame.paste(text_img1, (0, img.height), alpha=True)
+    frame.paste(text_img2, (0, img.height + 60), alpha=True)
+    return frame.save_jpg()
 
 
-async def funny_mirror(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (500, 500))
-    frames = [img]
+def funny_mirror(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((500, 500))
+    frames: List[IMG] = [img.image]
     coeffs = [0.01, 0.03, 0.05, 0.08, 0.12, 0.17, 0.23, 0.3, 0.4, 0.6]
     borders = [25, 52, 67, 83, 97, 108, 118, 128, 138, 148]
     for i in range(10):
         new_size = 500 - borders[i] * 2
-        frames.append(
-            resize(
-                cut_size(distort(img, (coeffs[i], 0, 0, 0)), (new_size, new_size)),
-                (500, 500),
-            )
-        )
+        new_img = img.distort((coeffs[i], 0, 0, 0)).resize_canvas((new_size, new_size))
+        frames.append(new_img.resize((500, 500)).image)
     frames.extend(frames[::-1])
     return save_gif(frames, 0.05)
 
 
-async def love_you(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
-    frames = []
+def love_you(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
+    frames: List[IMG] = []
     locs = [(68, 65, 70, 70), (63, 59, 80, 80)]
     for i in range(2):
-        heart = await load_image(f"love_you/{i}.png")
-        frame = Image.new("RGBA", heart.size, (255, 255, 255, 0))
+        heart = load_image(f"love_you/{i}.png")
+        frame = BuildImage.new("RGBA", heart.size, "white")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(heart, mask=heart)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), alpha=True).paste(heart, alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.2)
 
 
-async def symmetric(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (500, 500), FitSizeMode.INSIDE)
+def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", "右"])):
+    img = img.convert("RGBA").resize_width(500)
     img_w, img_h = img.size
 
-    boxes = {
-        "left": {
-            "mode": Image.FLIP_LEFT_RIGHT,
-            "frame_box": (img_w // 2 * 2, img_h),
-            "first_box": (0, 0, img_w // 2, img_h),
-            "first_position": (0, 0),
-            "second_box": (img_w // 2, 0, img_w // 2 * 2, img_h),
-            "second_position": (img_w // 2, 0),
-        },
-        "right": {
-            "mode": Image.FLIP_LEFT_RIGHT,
-            "frame_box": (img_w // 2 * 2, img_h),
-            "first_box": (img_w // 2, 0, img_w // 2 * 2, img_h),
-            "first_position": (img_w // 2, 0),
-            "second_box": (0, 0, img_w // 2, img_h),
-            "second_position": (0, 0),
-        },
-        "top": {
-            "mode": Image.FLIP_TOP_BOTTOM,
-            "frame_box": (img_w, img_h // 2 * 2),
-            "first_box": (0, 0, img_w, img_h // 2),
-            "first_position": (0, 0),
-            "second_box": (0, img_h // 2, img_w, img_h // 2 * 2),
-            "second_position": (0, img_h // 2),
-        },
-        "bottom": {
-            "mode": Image.FLIP_TOP_BOTTOM,
-            "frame_box": (img_w, img_h // 2 * 2),
-            "first_box": (0, img_h // 2, img_w, img_h // 2 * 2),
-            "first_position": (0, img_h // 2),
-            "second_box": (0, 0, img_w, img_h // 2),
-            "second_position": (0, 0),
-        },
+    Mode = namedtuple(
+        "Mode", ["method", "frame_size", "size1", "pos1", "size2", "pos2"]
+    )
+    modes: Dict[str, Mode] = {
+        "left": Mode(
+            Image.FLIP_LEFT_RIGHT,
+            (img_w // 2 * 2, img_h),
+            (0, 0, img_w // 2, img_h),
+            (0, 0),
+            (img_w // 2, 0, img_w // 2 * 2, img_h),
+            (img_w // 2, 0),
+        ),
+        "right": Mode(
+            Image.FLIP_LEFT_RIGHT,
+            (img_w // 2 * 2, img_h),
+            (img_w // 2, 0, img_w // 2 * 2, img_h),
+            (img_w // 2, 0),
+            (0, 0, img_w // 2, img_h),
+            (0, 0),
+        ),
+        "top": Mode(
+            Image.FLIP_TOP_BOTTOM,
+            (img_w, img_h // 2 * 2),
+            (0, 0, img_w, img_h // 2),
+            (0, 0),
+            (0, img_h // 2, img_w, img_h // 2 * 2),
+            (0, img_h // 2),
+        ),
+        "bottom": Mode(
+            Image.FLIP_TOP_BOTTOM,
+            (img_w, img_h // 2 * 2),
+            (0, img_h // 2, img_w, img_h // 2 * 2),
+            (0, img_h // 2),
+            (0, 0, img_w, img_h // 2),
+            (0, 0),
+        ),
     }
 
-    mode = "left"
-    if args:
-        if "右" in args[0]:
-            mode = "right"
-        elif "上" in args[0]:
-            mode = "top"
-        elif "下" in args[0]:
-            mode = "bottom"
+    mode = modes["left"]
+    if arg == "右":
+        mode = modes["right"]
+    elif arg == "上":
+        mode = modes["top"]
+    elif arg == "下":
+        mode = modes["bottom"]
 
     first = img
-    second = img.transpose(boxes[mode]["mode"])
-    frame = Image.new("RGBA", boxes[mode]["frame_box"], (255, 255, 255, 0))
-
-    first = first.crop(boxes[mode]["first_box"])
-    frame.paste(first, boxes[mode]["first_position"])
-    second = second.crop(boxes[mode]["second_box"])
-    frame.paste(second, boxes[mode]["second_position"])
-
-    return save_jpg(frame)
+    second = img.transpose(mode.method)
+    frame = BuildImage.new("RGBA", mode.frame_size)
+    frame.paste(first.crop(mode.size1), mode.pos1)
+    frame.paste(second.crop(mode.size2), mode.pos2)
+    return frame.save_jpg()
 
 
-async def safe_sense(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (215, 343))
-    frame = await load_image(f"safe_sense/0.png")
+def safe_sense(user: UserInfo = User(), arg: str = Arg()):
+    img = user.img.convert("RGBA").resize((215, 343), keep_ratio=True)
+    frame = load_image(f"safe_sense/0.png")
     frame.paste(img, (215, 135))
 
-    ta = "她" if users[0].gender == "female" else "他"
-    texts = ["你给我的安全感", f"远不及{ta}的万分之一"] if len(args) < 2 else args
-    text = "\n".join(texts[:2])
-
-    fontname = DEFAULT_FONT
-    fontsize = await fit_font_size(text, 400, 100, fontname, 70, 10)
-    if not fontsize:
-        raise ValueError(TEXT_TOO_LONG)
-    font = await load_font(fontname, fontsize)
-    text_w, text_h = font.getsize_multiline(text)
-    await draw_text(
-        frame,
-        ((frame.width - text_w) / 2, 30 + (45 - text_h) / 2),
-        text,
-        font=font,
-        fill="black",
-        align="center",
-    )
-    return save_jpg(frame)
+    ta = "他" if user.gender == "male" else "她"
+    text = arg or f"你给我的安全感\n远不及{ta}的万分之一"
+    try:
+        frame.draw_text((30, 0, 400, 130), text, max_fontsize=50, lines_align="center")
+    except ValueError:
+        return TEXT_TOO_LONG
+    return frame.save_jpg()
 
 
-async def always_like(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    img = users[0].img
+def always_like(users: List[UserInfo] = Users(1, 6), args: List[str] = Args(0, 6)):
+    img = users[0].img.convert("RGBA")
     name = (args[0] if args else "") or users[0].name
     if not name:
-        raise ValueError(REQUIRE_NAME)
-    text = "我永远喜欢" + name
-    fontname = BOLD_FONT
-    fontsize = await fit_font_size(text, 800, 100, fontname, 70, 30)
-    if not fontsize:
-        raise ValueError(NAME_TOO_LONG)
+        return REQUIRE_NAME
+    text = f"我永远喜欢{name}"
+
+    frame = load_image(f"always_like/0.png")
+    frame.paste(
+        img.resize((350, 400), keep_ratio=True, inside=True), (25, 35), alpha=True
+    )
+    try:
+        frame.draw_text(
+            (20, 470, frame.width - 20, 570),
+            text,
+            max_fontsize=70,
+            min_fontsize=30,
+            bold=True,
+        )
+    except ValueError:
+        return NAME_TOO_LONG
 
     def random_color():
         return random.choice(
             ["red", "darkorange", "gold", "darkgreen", "blue", "cyan", "purple"]
         )
 
-    frame = await load_image(f"always_like/0.png")
-    frame.paste(fit_size(img, (350, 400), FitSizeMode.INSIDE), (25, 35))
-    font = await load_font(fontname, fontsize)
-    text_w, text_h = font.getsize(text)
-    draw = ImageDraw.Draw(frame)
-    start_w = (frame.width - text_w) / 2
-    start_h = 470 + (100 - text_h) / 2
-    await draw_text(frame, (start_w, start_h), text, font=font, fill="black")
     if len(users) > 1:
-        line_h = start_h + text_h / 5 * 3
-        draw.line(
-            (start_w + font.getsize("我永远喜欢")[0], line_h, start_w + text_w, line_h),
-            fill=random_color(),
-            width=10,
+        text_w = Text2Image.from_text(text, 70).to_image().width
+        ratio = min((frame.width - 40) / text_w, 1)
+        text_w *= ratio
+        name_w = Text2Image.from_text(name, 70).to_image().width * ratio
+        start_w = text_w - name_w + (frame.width - text_w) // 2
+        frame.draw_line(
+            (start_w, 525, start_w + name_w, 525), fill=random_color(), width=10
         )
 
-    current_h = start_h
+    current_h = 400
     for i, user in enumerate(users[1:], start=1):
-        img = to_jpg(user.img).convert("RGBA")
-        new_img = fit_size(img, (350, 400), FitSizeMode.INSIDE)
+        img = user.img.convert("RGBA")
         frame.paste(
-            new_img,
+            img.resize((350, 400), keep_ratio=True, inside=True),
             (10 + random.randint(0, 50), 20 + random.randint(0, 70)),
-            mask=new_img,
+            alpha=True,
         )
         name = (args[i] if len(args) > i else "") or user.name
         if not name:
-            raise ValueError("找不到对应的名字，名字数须与目标数一致")
-        fontsize = await fit_font_size(name, 400, 100, fontname, 70, 30)
-        if not fontsize:
-            raise ValueError(NAME_TOO_LONG)
-        font = await load_font(fontname, fontsize)
-        text_w, text_h = font.getsize(name)
-        current_h -= text_h - 20
-        if current_h < 10:
-            raise ValueError("你喜欢的人太多啦")
-        start_w = 400 + (430 - text_w) / 2
-        await draw_text(frame, (start_w, current_h), name, font=font, fill="black")
+            return "找不到对应的名字，名字数须与目标数一致"
+        try:
+            frame.draw_text(
+                (400, current_h, frame.width - 20, current_h + 80),
+                name,
+                max_fontsize=70,
+                min_fontsize=30,
+                bold=True,
+            )
+        except ValueError:
+            return NAME_TOO_LONG
+
         if len(users) > i + 1:
-            line_h = current_h + text_h / 5 * 3
-            draw.line(
-                (start_w, line_h, start_w + text_w, line_h),
+            name_w = min(Text2Image.from_text(name, 70).to_image().width, 380)
+            start_w = 400 + (410 - name_w) // 2
+            line_h = current_h + 40
+            frame.draw_line(
+                (start_w, line_h, start_w + name_w, line_h),
                 fill=random_color(),
                 width=10,
             )
-    return save_jpg(frame)
+        current_h -= 70
+    return frame.save_jpg()
 
 
-async def interview(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    if len(users) >= 2:
-        self_img = users[0].img
-        user_img = users[1].img
+def interview(imgs: List[BuildImage] = UserImgs(1, 2), arg: str = Arg()):
+    if len(imgs) >= 2:
+        self_img = imgs[0]
+        user_img = imgs[1]
     else:
-        self_img = to_jpg(await load_image("interview/huaji.png"))
-        user_img = users[0].img
-    self_img = fit_size(self_img, (124, 124))
-    user_img = fit_size(user_img, (124, 124))
+        self_img = load_image("interview/huaji.png")
+        user_img = imgs[0]
+    self_img = self_img.convert("RGBA").square().resize((124, 124))
+    user_img = user_img.convert("RGBA").square().resize((124, 124))
 
-    frame = Image.new("RGB", (600, 310), "white")
-    microphone = await load_image("interview/microphone.png")
-    frame.paste(microphone, (330, 103), mask=microphone)
-    frame.paste(self_img, (419, 40))
-    frame.paste(user_img, (57, 40))
-
-    text = args[0] if args else "采访大佬经验"
-    fontname = DEFAULT_FONT
-    fontsize = await fit_font_size(text, 550, 100, fontname, 50, 20)
-    if not fontsize:
-        raise ValueError(TEXT_TOO_LONG)
-    font = await load_font(fontname, fontsize)
-    text_w, text_h = font.getsize(text)
-    await draw_text(
-        frame,
-        ((600 - text_w) / 2, 200 + (100 - text_h) / 2),
-        text,
-        font=font,
-        fill="black",
-    )
-    return save_jpg(frame)
+    frame = BuildImage.new("RGBA", (600, 310), "white")
+    microphone = load_image("interview/microphone.png")
+    frame.paste(microphone, (330, 103), alpha=True)
+    frame.paste(self_img, (419, 40), alpha=True)
+    frame.paste(user_img, (57, 40), alpha=True)
+    try:
+        frame.draw_text(
+            (0, 200, 600, 310), arg or "采访大佬经验", max_fontsize=50, min_fontsize=20
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    return frame.save_jpg()
 
 
-async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = limit_size(img, (260, 230))
-    x = int((260 - img.width) / 2)
-    y = int((230 - img.height) / 2)
-    frames = []
+def punch(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((260, 260))
+    frames: List[IMG] = []
     # fmt: off
     locs = [
         (-50, 20), (-40, 10), (-30, 0), (-20, -10), (-10, -10), (0, 0),
@@ -1139,118 +944,100 @@ async def punch(users: List[UserInfo], **kwargs) -> BytesIO:
     ]
     # fmt: on
     for i in range(13):
-        frame = Image.new("RGBA", (260, 230), (255, 255, 255, 0))
-        dx, dy = locs[i]
-        frame.paste(img, (x + dx, y + dy))
-        fist = await load_image(f"punch/{i}.png")
-        frame.paste(fist, mask=fist)
-        frames.append(frame)
+        fist = load_image(f"punch/{i}.png")
+        frame = BuildImage.new("RGBA", fist.size, "white")
+        x, y = locs[i]
+        frame.paste(img, (x, y - 15), alpha=True).paste(fist, alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.03)
 
 
-async def cyan(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (500, 500))
+def cyan(img: BuildImage = UserImg(), arg=NoArg()):
     color = (78, 114, 184)
-    img = color_mask(img, color)
-    font = await load_font(BOLD_FONT, 80)
-    await draw_text(
-        img,
-        (400, 50),
+    frame = img.convert("RGB").square().resize((500, 500)).color_mask(color)
+    frame.draw_text(
+        (400, 40, 480, 280),
         "群\n青",
-        font=font,
+        max_fontsize=80,
+        bold=True,
         fill="white",
-        stroke_width=2,
+        stroke_ratio=0.025,
         stroke_fill=color,
-    )
-    font = await load_font(DEFAULT_FONT, 40)
-    await draw_text(
-        img,
-        (310, 270),
+    ).draw_text(
+        (300, 270, 480, 350),
         "YOASOBI",
-        font=font,
+        halign="right",
+        max_fontsize=40,
         fill="white",
-        stroke_width=2,
+        stroke_ratio=0.06,
         stroke_fill=color,
     )
-    return save_jpg(img)
+    return frame.save_jpg()
 
 
-async def pound(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def pound(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [
         (135, 240, 138, 47), (135, 240, 138, 47), (150, 190, 105, 95), (150, 190, 105, 95),
         (148, 188, 106, 98), (146, 196, 110, 88), (145, 223, 112, 61), (145, 223, 112, 61)
     ]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(8):
-        bg = await load_image(f"pound/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame = load_image(f"pound/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.05)
 
 
-async def thump(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def thump(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [(65, 128, 77, 72), (67, 128, 73, 72), (54, 139, 94, 61), (57, 135, 86, 65)]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(4):
-        bg = await load_image(f"thump/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame = load_image(f"thump/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.04)
 
 
-async def need(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("need/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(fit_size(img, (115, 115)), (327, 232))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def need(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((115, 115))
+    frame = load_image("need/0.png")
+    frame.paste(img, (327, 232), below=True)
+    return frame.save_jpg()
 
 
-async def cover_face(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("cover_face/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    points = [(15, 11), (448, 0), (445, 452), (0, 461)]
-    screen = perspective(fit_size(img, (450, 450)), points)
-    frame.paste(screen, (120, 154))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def cover_face(img: BuildImage = UserImg(), arg=NoArg()):
+    points = ((15, 15), (448, 0), (445, 456), (0, 465))
+    img = img.convert("RGBA").square().resize((450, 450)).perspective(points)
+    frame = load_image("cover_face/0.png")
+    frame.paste(img, (120, 150), below=True)
+    return frame.save_jpg()
 
 
-async def knock(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def knock(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [(60, 308, 210, 195), (60, 308, 210, 198), (45, 330, 250, 172), (58, 320, 218, 180),
             (60, 310, 215, 193), (40, 320, 250, 285), (48, 308, 226, 192), (51, 301, 223, 200)]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(8):
-        bg = await load_image(f"knock/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame = load_image(f"knock/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.04)
 
 
-async def garbage(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (79, 79))
+def garbage(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((79, 79))
     # fmt: off
     locs = (
         [] + [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10
@@ -1258,152 +1045,123 @@ async def garbage(users: List[UserInfo], **kwargs) -> BytesIO:
            (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]
     )
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(25):
-        bg = await load_image(f"garbage/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame.paste(img, locs[i])
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame = load_image(f"garbage/{i}.png")
+        frame.paste(img, locs[i], below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.04)
 
 
-async def whyatme(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("whyatme/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(fit_size(img, (265, 265)), (42, 13))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def whyatme(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((265, 265), keep_ratio=True)
+    frame = load_image("whyatme/0.png")
+    frame.paste(img, (42, 13), below=True)
+    return frame.save_jpg()
 
 
-async def decent_kiss(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("decent_kiss/0.png")
-    frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-    frame.paste(fit_size(img, (589, 340)), (0, 91))
-    frame.paste(bg, mask=bg)
-    return save_jpg(frame)
+def decent_kiss(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((589, 340), keep_ratio=True)
+    frame = load_image("decent_kiss/0.png")
+    frame.paste(img, (0, 91), below=True)
+    return frame.save_jpg()
 
 
-async def jiujiu(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (75, 51))
-    frames = []
+def jiujiu(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((75, 51), keep_ratio=True)
+    frames: List[IMG] = []
     for i in range(8):
-        bg = await load_image(f"jiujiu/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame.paste(img)
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame = load_image(f"jiujiu/{i}.png")
+        frame.paste(img, below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.06)
 
 
-async def suck(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def suck(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [(82, 100, 130, 119), (82, 94, 126, 125), (82, 120, 128, 99), (81, 164, 132, 55),
             (79, 163, 132, 55), (82, 140, 127, 79), (83, 152, 125, 67), (75, 157, 140, 62),
             (72, 165, 144, 54), (80, 132, 128, 87), (81, 127, 127, 92), (79, 111, 132, 108)]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(12):
-        bg = await load_image(f"suck/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        bg = load_image(f"suck/{i}.png")
+        frame = BuildImage.new("RGBA", bg.size, "white")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), alpha=True).paste(bg, alpha=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.08)
 
 
-async def hammer(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = square(users[0].img)
+def hammer(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
     # fmt: off
     locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92), (46, 182, 184, 100),
             (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(7):
-        bg = await load_image(f"hammer/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame = load_image(f"hammer/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.07)
 
 
-async def tightly(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (640, 400))
+def tightly(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((640, 400), keep_ratio=True)
     # fmt: off
     locs = [(39, 169, 267, 141), (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135),
             (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135), (28, 176, 293, 134),
             (5, 215, 333, 96), (10, 210, 321, 102), (3, 210, 330, 104), (4, 210, 328, 102), (4, 212, 328, 100),
             (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (29, 195, 285, 120)]
     # fmt: on
-    frames = []
+    frames: List[IMG] = []
     for i in range(20):
-        bg = await load_image(f"tightly/{i}.png")
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
+        frame = load_image(f"tightly/{i}.png")
         x, y, w, h = locs[i]
-        frame.paste(resize(img, (w, h)), (x, y))
-        frame.paste(bg, mask=bg)
-        frames.append(frame)
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
     return save_gif(frames, 0.08)
 
 
-async def distracted(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    img = fit_size(img, (500, 500))
-    color_mask = await load_image("distracted/1.png")
-    img.paste(color_mask, (0, 0), mask=color_mask)
-    frame = await load_image("distracted/0.png")
-    img.paste(frame, (140, 320), mask=frame)
-    return save_jpg(img)
+def distracted(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((500, 500))
+    frame = load_image("distracted/1.png")
+    label = load_image("distracted/0.png")
+    frame.paste(img, below=True).paste(label, (140, 320), alpha=True)
+    return frame.save_jpg()
 
 
-async def anyasuki(users: List[UserInfo], args: List[str] = [], **kwargs) -> BytesIO:
-    # Image
-    img = users[0].img
-    bg = await load_image("anyasuki/1.png")
-    # Text
-    fontname = DEFAULT_FONT
-    text = args[0] if args else "阿尼亚喜欢这个"
-    fontsize = await fit_font_size(text, 450, 40, fontname, 40, 10)
-    if not fontsize:
-        raise ValueError(TEXT_TOO_LONG)
-    font = await load_font(fontname, fontsize)
-    text_w, text_h = font.getsize(text)
-    # Draw
-    async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame_w, frame_h = frame.size
-        frame.paste(fit_size(img, (305, 235)), (106, 72))
-        frame.paste(bg, mask=bg)
-        await draw_text(
-            frame,
-            ((frame_w - text_w) / 2, frame_h - text_h / 2 - 22),
-            text,
-            font=font,
+def anyasuki(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("anyasuki/0.png")
+    try:
+        frame.draw_text(
+            (2, frame.height - 50, frame.width - 20, frame.height),
+            arg or "阿尼亚喜欢这个",
+            max_fontsize=40,
             fill="white",
             stroke_fill="black",
-            stroke_width=1,
+            stroke_ratio=0.06,
         )
-        return frame
+    except ValueError:
+        return TEXT_TOO_LONG
 
-    return await make_jpg_or_gif(img, make)
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((305, 235), keep_ratio=True), (106, 72), below=True
+        )
+
+    return make_jpg_or_gif(img, make)
 
 
-async def thinkwhat(users: List[UserInfo], **kwargs) -> BytesIO:
-    img = users[0].img
-    bg = await load_image("thinkwhat/0.png")
+def thinkwhat(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("thinkwhat/0.png")
 
-    async def make(img: IMG) -> IMG:
-        frame = Image.new("RGBA", bg.size, (255, 255, 255, 0))
-        frame.paste(fit_size(img, (534, 493)), (530, 0))
-        frame.paste(bg, mask=bg)
-        return frame
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((534, 493), keep_ratio=True), (530, 0), below=True
+        )
 
-    return await make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make)

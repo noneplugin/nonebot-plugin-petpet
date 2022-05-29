@@ -1,58 +1,52 @@
-from io import BytesIO
-from typing import List
-
-from .download import download_url, download_avatar
-from .utils import to_image
-from .models import UserInfo, Command
+from .utils import Command
 from .functions import *
 
 commands = [
-    Command(("图片操作",), operations, allow_gif=True, arg_num=2),
-    Command(("万能表情",), universal, allow_gif=True, arg_num=10),
-    Command(("摸", "摸摸", "摸头", "摸摸头", "rua"), petpet, arg_num=1),
+    Command(("万能表情", "空白表情"), universal),
+    Command(("摸", "摸摸", "摸头", "摸摸头", "rua"), petpet),
     Command(("亲", "亲亲"), kiss),
     Command(("贴", "贴贴", "蹭", "蹭蹭"), rub),
     Command(("顶", "玩"), play),
     Command(("拍",), pat),
-    Command(("撕",), rip, arg_num=2),
+    Command(("撕",), rip),
     Command(("丢", "扔"), throw),
     Command(("抛", "掷"), throw_gif),
-    Command(("爬",), crawl, arg_num=1),
+    Command(("爬",), crawl),
     Command(("精神支柱",), support),
-    Command(("一直",), always, allow_gif=True),
-    Command(("加载中",), loading, allow_gif=True),
+    Command(("一直",), always),
+    Command(("加载中",), loading),
     Command(("转",), turn),
-    Command(("小天使",), littleangel, arg_num=1),
+    Command(("小天使",), littleangel),
     Command(("不要靠近",), dont_touch),
     Command(("一样",), alike),
     Command(("滚",), roll),
-    Command(("玩游戏", "来玩游戏"), play_game, allow_gif=True, arg_num=1),
+    Command(("玩游戏", "来玩游戏"), play_game),
     Command(("膜", "膜拜"), worship),
     Command(("吃",), eat),
     Command(("啃",), bite),
     Command(("出警",), police),
     Command(("警察",), police1),
-    Command(("问问", "去问问"), ask, arg_num=1),
-    Command(("舔", "舔屏", "prpr"), prpr, allow_gif=True),
+    Command(("问问", "去问问"), ask),
+    Command(("舔", "舔屏", "prpr"), prpr),
     Command(("搓",), twist),
-    Command(("墙纸",), wallpaper, allow_gif=True),
+    Command(("墙纸",), wallpaper),
     Command(("国旗",), china_flag),
-    Command(("交个朋友",), make_friend, arg_num=1),
+    Command(("交个朋友",), make_friend),
     Command(("继续干活", "打工人"), back_to_work),
     Command(("完美", "完美的"), perfect),
-    Command(("关注",), follow, arg_num=1),
-    Command(("我朋友说", "我有个朋友说"), my_friend, arg_num=10),
+    Command(("关注",), follow),
+    Command(("我朋友说", "我有个朋友说"), my_friend),
     Command(("这像画吗",), paint),
     Command(("震惊",), shock),
-    Command(("兑换券",), coupon, arg_num=2),
+    Command(("兑换券",), coupon),
     Command(("听音乐",), listen_music),
-    Command(("典中典",), dianzhongdian, arg_num=3),
+    Command(("典中典", "黑白草图"), dianzhongdian),
     Command(("哈哈镜",), funny_mirror),
     Command(("永远爱你",), love_you),
-    Command(("对称",), symmetric, arg_num=1),
-    Command(("安全感",), safe_sense, arg_num=2),
-    Command(("永远喜欢", "我永远喜欢"), always_like, arg_num=10),
-    Command(("采访",), interview, arg_num=1),
+    Command(("对称",), symmetric),
+    Command(("安全感",), safe_sense),
+    Command(("永远喜欢", "我永远喜欢"), always_like),
+    Command(("采访",), interview),
     Command(("打拳",), punch),
     Command(("群青",), cyan),
     Command(("捣",), pound),
@@ -68,26 +62,6 @@ commands = [
     Command(("锤",), hammer),
     Command(("紧贴", "紧紧贴着"), tightly),
     Command(("注意力涣散",), distracted),
-    Command(("阿尼亚喜欢",), anyasuki, arg_num=1, allow_gif=True),
-    Command(("想什么",), thinkwhat, allow_gif=True),
+    Command(("阿尼亚喜欢",), anyasuki),
+    Command(("想什么",), thinkwhat),
 ]
-
-
-async def download_image(user: UserInfo, allow_gif: bool = False):
-    img = None
-    if user.qq:
-        img = await download_avatar(user.qq)
-    elif user.img_url:
-        img = await download_url(user.img_url)
-
-    if img:
-        user.img = to_image(img, allow_gif)
-
-
-async def make_image(
-    command: Command, sender: UserInfo, users: List[UserInfo], args: List[str] = []
-) -> BytesIO:
-    await download_image(sender, command.allow_gif)
-    for user in users:
-        await download_image(user, command.allow_gif)
-    return await command.func(users, sender=sender, args=args)
