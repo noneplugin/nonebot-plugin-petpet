@@ -38,7 +38,7 @@ async def download_avatar(user_id: str) -> bytes:
 
 
 async def download_resource(path: str) -> bytes:
-    url = f"https://fastly.jsdelivr.net/gh/noneplugin/nonebot-plugin-petpet@v0.3.x/resources/{path}"
+    url = f"https://raw.fastgit.org/noneplugin/nonebot-plugin-petpet/v0.3.x/resources/{path}"
     return await download_url(url)
 
 

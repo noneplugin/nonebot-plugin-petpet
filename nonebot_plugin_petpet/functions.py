@@ -964,7 +964,7 @@ def cyan(img: BuildImage = UserImg(), arg=NoArg()):
         stroke_ratio=0.025,
         stroke_fill=color,
     ).draw_text(
-        (300, 270, 480, 350),
+        (200, 270, 480, 350),
         "YOASOBI",
         halign="right",
         max_fontsize=40,
