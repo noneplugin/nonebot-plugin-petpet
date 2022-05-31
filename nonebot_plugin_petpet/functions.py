@@ -1166,18 +1166,32 @@ def thinkwhat(img: BuildImage = UserImg(), arg=NoArg()):
 
     return make_jpg_or_gif(img, make)
 
-def keepaway(img: BuildImage = UserImg(), arg=NoArg()):
-    frame = BuildImage(Image.new('RGB', (400, 290,), (255,255,255)))
-    img = img.convert("RGB").square().resize((100, 100))
-    img_r = img.transpose(0)
+
+def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg=NoArg()):
+    def trans(img: BuildImage, n: int) -> BuildImage:
+        img = img.convert("RGBA").square().resize((100, 100))
+        if n < 4:
+            return img.rotate(n * 90)
+        else:
+            return img.transpose(Image.FLIP_LEFT_RIGHT).rotate((n - 4) * 90)
+
+    def paste(img: BuildImage):
+        nonlocal count
+        y = 90 if count < 4 else 190
+        frame.paste(img, ((count % 4) * 100, y))
+        count += 1
+
+    frame = BuildImage.new("RGB", (400, 290), "white")
     frame.draw_text(
-        (10, 10, 220, 80),
-        "如何提高社交质量 : \n远离以下头像的人",
-        max_fontsize=21,
-        valign = 'L'
+        (10, 10, 220, 80), "如何提高社交质量 : \n远离以下头像的人", max_fontsize=21, halign="left"
     )
-    for i in range(4):
-        frame.paste(img.rotate(i*90),((i%4)*100, 90 ))
-        frame.paste(img_r.rotate(-1*i*90),((i%4)*100, 190 ))
+    count = 0
+    num_per_user = 8 // len(imgs)
+    for img in imgs:
+        for n in range(num_per_user):
+            paste(trans(img, n))
+    num_left = 8 - num_per_user * len(imgs)
+    for n in range(num_left):
+        paste(trans(imgs[-1], n + num_per_user))
 
     return frame.save_jpg()
