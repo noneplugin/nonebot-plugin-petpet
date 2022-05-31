@@ -1202,3 +1202,20 @@ def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg=NoArg()):
         paste(trans(imgs[-1], n + num_per_user))
 
     return frame.save_jpg()
+
+
+def marriage(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize_height(1080)
+    img_w, img_h = img.size
+    if img_w > 1500:
+        img_w = 1500
+    elif img_w < 800:
+        img_h = int(img_h * img_w / 800)
+        img_w = 800
+    frame = img.resize_canvas((img_w, img_h)).resize_height(1080)
+    left = load_image("marriage/0.png")
+    right = load_image("marriage/1.png")
+    frame.paste(left, alpha=True).paste(
+        right, (frame.width - right.width, 0), alpha=True
+    )
+    return frame.save_jpg()

@@ -65,4 +65,5 @@ commands = [
     Command(("阿尼亚喜欢",), anyasuki),
     Command(("想什么",), thinkwhat),
     Command(("远离",), keepaway),
+    Command(("结婚申请", "结婚登记"), marriage),
 ]
