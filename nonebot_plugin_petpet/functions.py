@@ -355,7 +355,7 @@ def play_game(img: BuildImage = UserImg(), arg: str = Arg()):
     frame = load_image("play_game/0.png")
     try:
         frame.draw_text(
-            (0, frame.height - 70, frame.width, frame.height),
+            (20, frame.height - 70, frame.width - 20, frame.height),
             text,
             max_fontsize=40,
             min_fontsize=25,
@@ -675,7 +675,7 @@ def shock(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def coupon(user: UserInfo = User(), arg: str = Arg()):
-    text = arg or f"{user.name}陪睡券" + "\n（永久有效）"
+    text = (arg or f"{user.name}陪睡券") + "\n（永久有效）"
     text_img = BuildImage.new("RGBA", (250, 100))
     try:
         text_img.draw_text(
@@ -683,6 +683,7 @@ def coupon(user: UserInfo = User(), arg: str = Arg()):
             text,
             lines_align="center",
             max_fontsize=30,
+            min_fontsize=15,
         )
     except ValueError:
         return TEXT_TOO_LONG
@@ -832,7 +833,13 @@ def safe_sense(user: UserInfo = User(), arg: str = Arg()):
     ta = "他" if user.gender == "male" else "她"
     text = arg or f"你给我的安全感\n远不及{ta}的万分之一"
     try:
-        frame.draw_text((30, 0, 400, 130), text, max_fontsize=50, lines_align="center")
+        frame.draw_text(
+            (30, 0, 400, 130),
+            text,
+            max_fontsize=50,
+            allow_wrap=True,
+            lines_align="center",
+        )
     except ValueError:
         return TEXT_TOO_LONG
     return frame.save_jpg()
@@ -927,7 +934,7 @@ def interview(imgs: List[BuildImage] = UserImgs(1, 2), arg: str = Arg()):
     frame.paste(user_img, (57, 40), alpha=True)
     try:
         frame.draw_text(
-            (0, 200, 600, 310), arg or "采访大佬经验", max_fontsize=50, min_fontsize=20
+            (20, 200, 580, 310), arg or "采访大佬经验", max_fontsize=50, min_fontsize=20
         )
     except ValueError:
         return TEXT_TOO_LONG
