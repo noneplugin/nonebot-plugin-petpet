@@ -1165,3 +1165,19 @@ def thinkwhat(img: BuildImage = UserImg(), arg=NoArg()):
         )
 
     return make_jpg_or_gif(img, make)
+
+def keepaway(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = BuildImage(Image.new('RGB', (400, 290,), (255,255,255)))
+    img = img.convert("RGB").square().resize((100, 100))
+    img_r = img.transpose(0)
+    frame.draw_text(
+        (10, 10, 220, 80),
+        "如何提高社交质量 : \n远离以下头像的人",
+        max_fontsize=21,
+        valign = 'L'
+    )
+    for i in range(4):
+        frame.paste(img.rotate(i*90),((i%4)*100, 90 ))
+        frame.paste(img_r.rotate(-1*i*90),((i%4)*100, 190 ))
+
+    return frame.save_jpg()
