@@ -2,7 +2,7 @@ import shlex
 from io import BytesIO
 from typing import List, Optional
 from nonebot.typing import T_State
-from nonebot.params import CommandArg, State, Depends
+from nonebot.params import State, Depends, RegexDict
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -29,12 +29,14 @@ def is_qq(msg: str):
 
 def split_msg():
     def dependency(
-        event: MessageEvent, state: T_State = State(), msg: Message = CommandArg()
+        event: MessageEvent, state: T_State = State(), arg: dict = RegexDict()
     ):
         def _is_at_me_seg(segment: MessageSegment):
             return segment.type == "at" and str(segment.data.get("qq", "")) == str(
                 event.self_id
             )
+
+        msg = Message(arg["msg"])
 
         if event.to_me:
             raw_msg = Message(event.raw_message)
@@ -195,6 +197,13 @@ def Args(min_num: int = 1, max_num: int = 1):
         if len(args) > max_num or len(args) < min_num:
             return
         return args
+
+    return Depends(dependency)
+
+
+def RegexArg(key: str):
+    async def dependency(arg: dict = RegexDict()):
+        return arg.get(key, None)
 
     return Depends(dependency)
 

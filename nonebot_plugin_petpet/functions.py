@@ -8,7 +8,7 @@ from nonebot_plugin_imageutils import BuildImage, Text2Image
 
 from .download import load_image
 from .utils import UserInfo, save_gif, make_jpg_or_gif, translate
-from .depends import Arg, Args, NoArg, User, Users, UserImg, UserImgs, Sender, SenderImg
+from .depends import *
 
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
@@ -602,19 +602,20 @@ def follow(user: UserInfo = User(), arg: str = Arg()):
 def my_friend(
     user: Optional[UserInfo] = User(),
     sender: UserInfo = Sender(),
+    name: str = RegexArg("name"),
     args: List[str] = Args(0, 10),
 ):
     if not user:
         user = sender
     if not args:
         return REQUIRE_ARG
-    name = user.name or "朋友"
+    name = name.strip() or user.name or "朋友"
     texts = args
     img = user.img.convert("RGBA").circle().resize((100, 100))
 
     name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
     name_w, name_h = name_img.size
-    if name_w >= 700:
+    if name_w >= 600:
         raise ValueError(NAME_TOO_LONG)
 
     corner1 = load_image("my_friend/corner1.png")
@@ -624,7 +625,7 @@ def my_friend(
     label = load_image("my_friend/label.png")
 
     def make_dialog(text: str) -> BuildImage:
-        text_img = Text2Image.from_text(text, 40).wrap(700).to_image()
+        text_img = Text2Image.from_text(text, 40).wrap(600).to_image()
         text_w, text_h = text_img.size
         box_w = max(text_w, name_w + 15) + 140
         box_h = max(text_h + 103, 150)
@@ -635,7 +636,7 @@ def my_friend(
         box.paste(corner4, (text_w + 70, box_h - 75))
         box.paste(BuildImage.new("RGBA", (text_w, box_h - 40), "white"), (70, 20))
         box.paste(BuildImage.new("RGBA", (text_w + 88, box_h - 150), "white"), (27, 75))
-        box.paste(text_img, (70, 16 + (box_h - 40 - text_h) // 2), alpha=True)
+        box.paste(text_img, (70, 17 + (box_h - 40 - text_h) // 2), alpha=True)
 
         dialog = BuildImage.new("RGBA", (box.width + 130, box.height + 60), "#eaedf4")
         dialog.paste(img, (20, 20), alpha=True)
@@ -968,7 +969,7 @@ def cyan(img: BuildImage = UserImg(), arg=NoArg()):
         max_fontsize=80,
         bold=True,
         fill="white",
-        stroke_ratio=0.025,
+        stroke_ratio=0.04,
         stroke_fill=color,
     ).draw_text(
         (200, 270, 480, 350),

@@ -1,3 +1,4 @@
+import re
 import math
 import httpx
 import imageio
@@ -23,7 +24,7 @@ class UserInfo:
 
 @dataclass
 class Command:
-    keywords: Tuple[str, ...]
+    keyword: str
     func: Callable
 
 
@@ -86,9 +87,20 @@ async def translate(text: str) -> str:
 
 @run_sync
 def help_image(commands: List[Command]) -> BytesIO:
+    def simplify_keyword(keyword: str) -> str:
+        keyword = re.sub(r"\(\?\:(.*?)\)", lambda m: m.group(1), keyword)
+        keyword = re.sub(
+            r"\(\?P\<(.*?)\>.*?\)", lambda m: "{" + m.group(1) + "}", keyword
+        )
+        keyword = keyword.replace("|", "/")
+        return keyword
+
     def cmd_text(cmds: List[Command], start: int = 1) -> str:
         return "\n".join(
-            [f"{i + start}. " + "/".join(cmd.keywords) for i, cmd in enumerate(cmds)]
+            [
+                f"{i + start}. " + simplify_keyword(cmd.keyword)
+                for i, cmd in enumerate(cmds)
+            ]
         )
 
     text1 = "摸头等头像相关表情制作\n触发方式：指令 + @某人 / qq号 / 自己 / [图片]\n支持的指令："
