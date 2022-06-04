@@ -1219,3 +1219,10 @@ def marriage(img: BuildImage = UserImg(), arg=NoArg()):
         right, (frame.width - right.width, 0), alpha=True
     )
     return frame.save_jpg()
+
+
+def painter(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((240, 345), keep_ratio=True)
+    frame = load_image("painter/0.png")
+    frame.paste(img, (125, 91), below=True)
+    return frame.save_jpg()
