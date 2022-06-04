@@ -1,4 +1,3 @@
-import re
 import math
 import httpx
 import imageio
@@ -24,8 +23,13 @@ class UserInfo:
 
 @dataclass
 class Command:
-    keyword: str
     func: Callable
+    keywords: Tuple[str, ...]
+    pattern: str = ""
+
+    def __post_init__(self):
+        if not self.pattern:
+            self.pattern = "|".join(self.keywords)
 
 
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:
@@ -87,20 +91,9 @@ async def translate(text: str) -> str:
 
 @run_sync
 def help_image(commands: List[Command]) -> BytesIO:
-    def simplify_keyword(keyword: str) -> str:
-        keyword = re.sub(r"\(\?\:(.*?)\)", lambda m: m.group(1), keyword)
-        keyword = re.sub(
-            r"\(\?P\<(.*?)\>.*?\)", lambda m: "{" + m.group(1) + "}", keyword
-        )
-        keyword = keyword.replace("|", "/")
-        return keyword
-
     def cmd_text(cmds: List[Command], start: int = 1) -> str:
         return "\n".join(
-            [
-                f"{i + start}. " + simplify_keyword(cmd.keyword)
-                for i, cmd in enumerate(cmds)
-            ]
+            [f"{i + start}. " + "/".join(cmd.keywords) for i, cmd in enumerate(cmds)]
         )
 
     text1 = "摸头等头像相关表情制作\n触发方式：指令 + @某人 / qq号 / 自己 / [图片]\n支持的指令："

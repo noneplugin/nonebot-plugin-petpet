@@ -1,18 +1,16 @@
-import re
 from io import BytesIO
 from typing import Union
 
-from nonebot import get_driver
 from nonebot.params import Depends
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler
-from nonebot import on_command, require, on_regex
+from nonebot import on_command, require, on_message
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 require("nonebot_plugin_imageutils")
 
-from .depends import split_msg
 from .data_source import commands
+from .depends import split_msg, regex
 from .utils import Command, help_image
 
 __help__plugin_name__ = "petpet"
@@ -52,11 +50,8 @@ def create_matchers():
         return handle
 
     for command in commands:
-        start = "|".join(get_driver().config.command_start)
-        regex = rf"^(?:{start})(?:{command.keyword})(?P<msg>.*)"
-        on_regex(
-            regex,
-            flags=re.S,
+        on_message(
+            regex(command.pattern),
             block=True,
             priority=12,
         ).append_handler(handler(command), parameterless=[split_msg()])

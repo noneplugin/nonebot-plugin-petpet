@@ -1,8 +1,12 @@
+import re
 import shlex
 from io import BytesIO
 from typing import List, Optional
+
+from nonebot.rule import Rule
+from nonebot import get_driver
 from nonebot.typing import T_State
-from nonebot.params import State, Depends, RegexDict
+from nonebot.params import State, Depends
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -21,6 +25,34 @@ from .download import download_url, download_avatar
 USERS_KEY = "USERS"
 SENDER_KEY = "SENDER"
 ARGS_KEY = "ARGS"
+REGEX_DICT = "REGEX_DICT"
+REGEX_ARG = "REGEX_ARG"
+
+
+def regex(pattern: str) -> Rule:
+    def checker(event: MessageEvent, state: T_State = State()) -> bool:
+        msg = event.get_message()
+        msg_seg: MessageSegment = msg[0]
+        if not msg_seg.is_text():
+            return False
+
+        seg_text = str(msg_seg).lstrip()
+        start = "|".join(get_driver().config.command_start)
+        matched = re.match(rf"(?:{start})(?:{pattern})", seg_text, re.IGNORECASE)
+        if not matched:
+            return False
+
+        new_msg = msg.copy()
+        seg_text = seg_text[matched.end() :].lstrip()
+        if seg_text:
+            new_msg[0].data["text"] = seg_text
+        else:
+            new_msg.pop(0)
+        state[REGEX_DICT] = matched.groupdict()
+        state[REGEX_ARG] = new_msg
+        return True
+
+    return Rule(checker)
 
 
 def is_qq(msg: str):
@@ -28,15 +60,13 @@ def is_qq(msg: str):
 
 
 def split_msg():
-    def dependency(
-        event: MessageEvent, state: T_State = State(), arg: dict = RegexDict()
-    ):
+    def dependency(event: MessageEvent, state: T_State = State()):
         def _is_at_me_seg(segment: MessageSegment):
             return segment.type == "at" and str(segment.data.get("qq", "")) == str(
                 event.self_id
             )
 
-        msg = Message(arg["msg"])
+        msg: Message = state["REGEX_ARG"]
 
         if event.to_me:
             raw_msg = Message(event.raw_message)
@@ -202,7 +232,8 @@ def Args(min_num: int = 1, max_num: int = 1):
 
 
 def RegexArg(key: str):
-    async def dependency(arg: dict = RegexDict()):
+    async def dependency(state: T_State = State()):
+        arg: dict = state[REGEX_DICT]
         return arg.get(key, None)
 
     return Depends(dependency)
