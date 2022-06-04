@@ -1212,7 +1212,6 @@ def marriage(img: BuildImage = UserImg(), arg=NoArg()):
         img_w = 1500
     elif img_w < 800:
         img_h = int(img_h * img_w / 800)
-        img_w = 800
     frame = img.resize_canvas((img_w, img_h)).resize_height(1080)
     left = load_image("marriage/0.png")
     right = load_image("marriage/1.png")
