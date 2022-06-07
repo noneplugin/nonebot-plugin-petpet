@@ -42,6 +42,7 @@ async def operations(users: List[UserInfo], args: List[str] = [], **kwargs) -> B
             angle = int(args[1]) if args[1:] and args[1].isdigit() else 90
             frame = rotate(img, int(angle))
         elif op == "反相":
+            img = img.convert("RGB")
             frame = ImageOps.invert(img)
         elif op == "浮雕":
             frame = img.filter(ImageFilter.EMBOSS)
