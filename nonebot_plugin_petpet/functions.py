@@ -10,6 +10,7 @@ from .download import load_image
 from .utils import UserInfo, save_gif, make_jpg_or_gif, translate
 from .depends import *
 
+from datetime import datetime
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -1226,3 +1227,44 @@ def painter(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("painter/0.png")
     frame.paste(img, (125, 91), below=True)
     return frame.save_jpg()
+
+
+async def youguystalk(
+    users: List[UserInfo] = Users(), sender: UserInfo = User(), arg: str = Arg()
+) -> BytesIO:
+    def single_msg(user: UserInfo, text: str):
+        text_img = Text2Image.from_text(f"{text}", 50).to_image()
+        if text_img.width > 900:
+            raise ValueError(TEXT_TOO_LONG)
+        user_name_img = Text2Image.from_text(f"{user.name}", 40).to_image()
+        time = datetime.now().strftime("%H:%M")
+        time_img = Text2Image.from_text(f"{time}", 40, fill="gray").to_image()
+        bg = Image.new("RGBA", (1079, 200), (248, 249, 251, 255))
+        bg.alpha_composite(
+            user.img.convert("RGBA").circle().resize((100, 100)).image, (50, 50)
+        )
+        bg.alpha_composite(user_name_img, (175, 45))
+        bg.alpha_composite(time_img, (200 + user_name_img.width, 50))
+        bg.alpha_composite(text_img, (175, 100))
+        return bg
+
+    text = arg or "你们说话啊"
+    bg0 = Image.new("RGB", (1079, 1000))
+    bg1 = load_image("youguystalk/1.jpg")
+    self_img = sender.img.convert("RGBA").circle().resize((75, 75))
+    bg1.paste(self_img, (15, 40), alpha=True)
+    for i in range(5):
+        index = i % len(users)
+        msg_img = single_msg(users[index], text)
+        bg0.paste(msg_img, (0, 200 * i))
+    bg0twice = Image.new("RGB", (bg0.width, bg0.height * 2))
+    bg0twice.paste(bg0)
+    bg0twice.paste(bg0, (0, bg0.height))
+    frames = []
+    for i in range(50):
+        frame = Image.new("RGB", (1079, 1192), "white")
+        frame.paste(bg0twice, (0, -20 * i))
+        frame.paste(bg1.image, (0, 1000))
+        frames.append(frame)
+
+    return save_gif(frames, 0.08)

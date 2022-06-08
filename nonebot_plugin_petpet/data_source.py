@@ -67,4 +67,5 @@ commands = [
     Command(keepaway, ("远离",)),
     Command(marriage, ("结婚申请", "结婚登记")),
     Command(painter, ("小画家",)),
+    Command(youguystalk, ("你们说话啊",)),
 ]
