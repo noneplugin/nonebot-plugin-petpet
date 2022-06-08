@@ -1230,7 +1230,7 @@ def painter(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 async def youguystalk(
-    users: List[UserInfo] = Users(1, 5), sender: UserInfo = User(), arg: str = Arg()
+    users: List[UserInfo] = Users(1, 5), sender: UserInfo = Sender(), arg: str = Arg()
 ) -> BytesIO:
     def single_msg(user: UserInfo, text: str):
         text_img = Text2Image.from_text(f"{text}", 50).to_image()
