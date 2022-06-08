@@ -298,20 +298,20 @@ def littleangel(user: UserInfo = User(), arg: str = Arg()):
 
     text = "非常可爱！简直就是小天使"
     frame.draw_text(
-        (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, bold=True
+        (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, weight="bold"
     )
 
     ta = "他" if user.gender == "male" else "她"
     text = f"{ta}没失踪也没怎么样  我只是觉得你们都该看一下"
     frame.draw_text(
-        (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, bold=True
+        (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, weight="bold"
     )
 
     name = arg or user.name or ta
     text = f"请问你们看到{name}了吗?"
     try:
         frame.draw_text(
-            (20, 0, 580, 110), text, max_fontsize=70, min_fontsize=25, bold=True
+            (20, 0, 580, 110), text, max_fontsize=70, min_fontsize=25, weight="bold"
         )
     except ValueError:
         return NAME_TOO_LONG
@@ -448,9 +448,11 @@ def ask(user: UserInfo = User(), arg: str = Arg()):
 
     start_w = 20
     start_h = img_h - gradient_h + 5
-    text_img1 = Text2Image.from_text(f"{name}", 28, fill="orange", bold=True).to_image()
+    text_img1 = Text2Image.from_text(
+        f"{name}", 28, fill="orange", weight="bold"
+    ).to_image()
     text_img2 = Text2Image.from_text(
-        f"{name}不知道哦。", 28, fill="white", bold=True
+        f"{name}不知道哦。", 28, fill="white", weight="bold"
     ).to_image()
     img.paste(
         text_img1,
@@ -863,7 +865,7 @@ def always_like(users: List[UserInfo] = Users(1, 6), args: List[str] = Args(0, 6
             text,
             max_fontsize=70,
             min_fontsize=30,
-            bold=True,
+            weight="bold",
         )
     except ValueError:
         return NAME_TOO_LONG
@@ -900,7 +902,7 @@ def always_like(users: List[UserInfo] = Users(1, 6), args: List[str] = Args(0, 6
                 name,
                 max_fontsize=70,
                 min_fontsize=30,
-                bold=True,
+                weight="bold",
             )
         except ValueError:
             return NAME_TOO_LONG
@@ -967,7 +969,7 @@ def cyan(img: BuildImage = UserImg(), arg=NoArg()):
         (400, 40, 480, 280),
         "群\n青",
         max_fontsize=80,
-        bold=True,
+        weight="bold",
         fill="white",
         stroke_ratio=0.04,
         stroke_fill=color,
