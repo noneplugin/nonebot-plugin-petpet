@@ -1229,7 +1229,7 @@ def painter(img: BuildImage = UserImg(), arg=NoArg()):
     return frame.save_jpg()
 
 
-async def youguystalk(
+async def repeat(
     users: List[UserInfo] = Users(1, 5), sender: UserInfo = Sender(), arg: str = Arg()
 ) -> BytesIO:
     def single_msg(user: UserInfo, text: str):
@@ -1248,9 +1248,9 @@ async def youguystalk(
         bg.alpha_composite(text_img, (175, 100))
         return bg
 
-    text = arg or "你们说话啊"
+    text = arg or "救命啊"
     bg0 = Image.new("RGB", (1079, 1000))
-    bg1 = load_image("youguystalk/1.jpg")
+    bg1 = load_image("repeat/1.jpg")
     self_img = sender.img.convert("RGBA").circle().resize((75, 75))
     bg1.paste(self_img, (15, 40), alpha=True)
     for i in range(5):
