@@ -10,6 +10,7 @@ from .download import load_image
 from .utils import UserInfo, save_gif, make_jpg_or_gif, translate
 from .depends import *
 
+from datetime import datetime
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -298,20 +299,20 @@ def littleangel(user: UserInfo = User(), arg: str = Arg()):
 
     text = "非常可爱！简直就是小天使"
     frame.draw_text(
-        (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, bold=True
+        (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, weight="bold"
     )
 
     ta = "他" if user.gender == "male" else "她"
     text = f"{ta}没失踪也没怎么样  我只是觉得你们都该看一下"
     frame.draw_text(
-        (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, bold=True
+        (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, weight="bold"
     )
 
     name = arg or user.name or ta
     text = f"请问你们看到{name}了吗?"
     try:
         frame.draw_text(
-            (20, 0, 580, 110), text, max_fontsize=70, min_fontsize=25, bold=True
+            (20, 0, 580, 110), text, max_fontsize=70, min_fontsize=25, weight="bold"
         )
     except ValueError:
         return NAME_TOO_LONG
@@ -448,9 +449,11 @@ def ask(user: UserInfo = User(), arg: str = Arg()):
 
     start_w = 20
     start_h = img_h - gradient_h + 5
-    text_img1 = Text2Image.from_text(f"{name}", 28, fill="orange", bold=True).to_image()
+    text_img1 = Text2Image.from_text(
+        f"{name}", 28, fill="orange", weight="bold"
+    ).to_image()
     text_img2 = Text2Image.from_text(
-        f"{name}不知道哦。", 28, fill="white", bold=True
+        f"{name}不知道哦。", 28, fill="white", weight="bold"
     ).to_image()
     img.paste(
         text_img1,
@@ -863,7 +866,7 @@ def always_like(users: List[UserInfo] = Users(1, 6), args: List[str] = Args(0, 6
             text,
             max_fontsize=70,
             min_fontsize=30,
-            bold=True,
+            weight="bold",
         )
     except ValueError:
         return NAME_TOO_LONG
@@ -900,7 +903,7 @@ def always_like(users: List[UserInfo] = Users(1, 6), args: List[str] = Args(0, 6
                 name,
                 max_fontsize=70,
                 min_fontsize=30,
-                bold=True,
+                weight="bold",
             )
         except ValueError:
             return NAME_TOO_LONG
@@ -967,7 +970,7 @@ def cyan(img: BuildImage = UserImg(), arg=NoArg()):
         (400, 40, 480, 280),
         "群\n青",
         max_fontsize=80,
-        bold=True,
+        weight="bold",
         fill="white",
         stroke_ratio=0.04,
         stroke_fill=color,
@@ -1228,4 +1231,44 @@ def painter(img: BuildImage = UserImg(), arg=NoArg()):
         return frame.copy().paste(
             img.resize((240, 345), keep_ratio=True, direction="north"), (125, 91), below=True
         )
+    return make_jpg_or_gif(img, make)
+
+	
+async def repeat(
+    users: List[UserInfo] = Users(1, 5), sender: UserInfo = Sender(), arg: str = Arg()
+) -> BytesIO:
+    def single_msg(user: UserInfo, text: str):
+        text_img = Text2Image.from_text(f"{text}", 50).to_image()
+        if text_img.width > 900:
+            raise ValueError(TEXT_TOO_LONG)
+        user_name_img = Text2Image.from_text(f"{user.name}", 40).to_image()
+        time = datetime.now().strftime("%H:%M")
+        time_img = Text2Image.from_text(f"{time}", 40, fill="gray").to_image()
+        bg = Image.new("RGBA", (1079, 200), (248, 249, 251, 255))
+        return frame.copy().paste(
+            img.resize((240, 345), keep_ratio=True, direction="north"), (125, 91), below=True
+        bg.alpha_composite(user_name_img, (175, 45))
+        bg.alpha_composite(time_img, (200 + user_name_img.width, 50))
+        bg.alpha_composite(text_img, (175, 100))
+        return bg
+
+    text = arg or "救命啊"
+    bg0 = Image.new("RGB", (1079, 1000))
+    bg1 = load_image("repeat/1.jpg")
+    self_img = sender.img.convert("RGBA").circle().resize((75, 75))
+    bg1.paste(self_img, (15, 40), alpha=True)
+    for i in range(5):
+        index = i % len(users)
+        msg_img = single_msg(users[index], text)
+        bg0.paste(msg_img, (0, 200 * i))
+    bg0twice = Image.new("RGB", (bg0.width, bg0.height * 2))
+    bg0twice.paste(bg0)
+    bg0twice.paste(bg0, (0, bg0.height))
+    frames = []
+    for i in range(50):
+        frame = Image.new("RGB", (1079, 1192), "white")
+        frame.paste(bg0twice, (0, -20 * i))
+        frame.paste(bg1.image, (0, 1000))
+        frames.append(frame)
+
     return make_jpg_or_gif(img, make)
