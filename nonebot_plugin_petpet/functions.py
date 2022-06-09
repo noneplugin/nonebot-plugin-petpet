@@ -1222,7 +1222,10 @@ def marriage(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def painter(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((240, 345), keep_ratio=True)
     frame = load_image("painter/0.png")
-    frame.paste(img, (125, 91), below=True)
-    return frame.save_jpg()
+
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((240, 345), keep_ratio=True, direction="north"), (125, 91), below=True
+        )
+    return make_jpg_or_gif(img, make)
