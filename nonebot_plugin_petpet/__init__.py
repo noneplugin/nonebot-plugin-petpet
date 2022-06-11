@@ -43,6 +43,7 @@ def create_matchers():
         async def handle(
             matcher: Matcher, res: Union[str, BytesIO] = Depends(command.func)
         ):
+            matcher.stop_propagation()
             if isinstance(res, str):
                 await matcher.finish(res)
             await matcher.finish(MessageSegment.image(res))
@@ -52,7 +53,7 @@ def create_matchers():
     for command in commands:
         on_message(
             regex(command.pattern),
-            block=True,
+            block=False,
             priority=12,
         ).append_handler(handler(command), parameterless=[split_msg()])
 
