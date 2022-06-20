@@ -69,7 +69,7 @@ def split_msg():
         msg: Message = state["REGEX_ARG"]
 
         if event.to_me:
-            raw_msg = Message(event.raw_message)
+            raw_msg = event.original_message
             i = -1
             last_msg_seg = raw_msg[i]
             if (
