@@ -2,6 +2,29 @@
 
 [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关的表情包
 
+### 安装
+
+- 使用 nb-cli
+
+```
+nb plugin install nonebot_plugin_petpet
+```
+
+- 使用 pip
+
+```
+pip install nonebot_plugin_petpet
+```
+
+#### 字体和资源
+
+插件使用 [nonebot-plugin-imageutils](https://github.com/noneplugin/nonebot-plugin-imageutils) 插件来绘制文字，字体配置可参考该插件的说明
+
+插件在启动时会检查并下载图片资源，初次使用时需等待资源下载完成
+
+可以手动下载 `resources` 下的 `images` 文件夹，放置于机器人运行目录下的 `data/petpet/` 文件夹中
+
+
 ### 使用
 
 **以下命令需要加[命令前缀](https://v2.nonebot.dev/docs/api/config#Config-command_start) (默认为`/`)，可自行设置为空**
@@ -11,15 +34,6 @@
 <div align="left">
   <img src="https://s2.loli.net/2022/06/09/lCOujwopgJPxD97.jpg" width="400" />
 </div>
-
-
-#### 字体和资源
-
-插件使用 [nonebot-plugin-imageutils](https://github.com/noneplugin/nonebot-plugin-imageutils) 插件来绘制文字，字体配置可参考该插件的说明
-
-插件在启动时会检查并下载图片资源，初次使用时需等待资源下载完成
-
-可以手动下载 `resources` 下的 `images` 文件夹，放置于机器人运行目录下的 `data/petpet/` 文件夹中
 
 
 #### 触发方式
