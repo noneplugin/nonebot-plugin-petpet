@@ -264,7 +264,7 @@ def loading(img: BuildImage = UserImg(), arg=NoArg()):
     img_big = img.convert("RGBA").resize_width(500)
     img_big = img_big.filter(ImageFilter.GaussianBlur(radius=3))
     h1 = img_big.height
-    mask = BuildImage.new("RGBA", img_big.size, (0, 0, 0, 128))
+    mask = BuildImage.new("RGBA", img_big.size, (0, 0, 0, 64))
     icon = load_image("loading/icon.png")
     img_big.paste(mask, alpha=True).paste(icon, (200, int(h1 / 2) - 50), alpha=True)
 
@@ -1229,7 +1229,7 @@ def marriage(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def painter(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((240, 345), keep_ratio=True)
+    img = img.convert("RGBA").resize((240, 345), keep_ratio=True, direction="north")
     frame = load_image("painter/0.png")
     frame.paste(img, (125, 91), below=True)
     return frame.save_jpg()
