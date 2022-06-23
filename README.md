@@ -112,5 +112,5 @@ pip install nonebot_plugin_petpet
 | 想什么 | <img src="https://s2.loli.net/2022/05/18/ck1jNO2K8Qd6Lo3.jpg" width="200" > | 支持gif |
 | 远离 | <img src="https://s2.loli.net/2022/05/31/lqyOu25WPTsGBcb.jpg" width="200" > | 可指定多个目标 |
 | 结婚申请<br>结婚登记 | <img src="https://s2.loli.net/2022/05/31/tZR3ls7cBrdGHTL.jpg" width="200" > |  |
-| 小画家 | <img src="https://s2.loli.net/2022/06/09/bDA6mlUuo3k52nI.jpg" width="200" > |  |
+| 小画家 | <img src="https://s2.loli.net/2022/06/23/KCD73EbgqzWFxr4.jpg" width="200" > |  |
 | 复读 | <img src="https://s2.loli.net/2022/06/08/nU2dAe3GiVR7Y8I.gif" width="200" > | 复读内容默认为“救命啊”<br>可指定多个目标 |
