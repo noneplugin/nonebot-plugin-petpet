@@ -246,7 +246,9 @@ def always(img: BuildImage = UserImg(), arg=NoArg()):
         h1 = img_big.height
         h2 = max(img_small.height, 80)
         frame = BuildImage.new("RGBA", (500, h1 + h2 + 10), "white")
-        frame.paste(img_big, alpha=True).paste(img_small, (290, h1 + 5), alpha=True)
+        frame.paste(img_big, alpha=True).paste(
+            img_small, (290, h1 + 5 + (h2 - img_small.height) // 2), alpha=True
+        )
         frame.draw_text(
             (20, h1 + 5, 280, h1 + h2 + 5), "要我一直", halign="right", max_fontsize=60
         )
@@ -270,7 +272,9 @@ def loading(img: BuildImage = UserImg(), arg=NoArg()):
         img_small = img.resize_width(100)
         h2 = max(img_small.height, 80)
         frame = BuildImage.new("RGBA", (500, h1 + h2 + 10), "white")
-        frame.paste(img_big, alpha=True).paste(img_small, (100, h1 + 5), alpha=True)
+        frame.paste(img_big, alpha=True).paste(
+            img_small, (100, h1 + 5 + (h2 - img_small.height) // 2), alpha=True
+        )
         frame.draw_text(
             (210, h1 + 5, 480, h1 + h2 + 5), "不出来", halign="left", max_fontsize=60
         )
