@@ -68,4 +68,5 @@ commands = [
     Command(marriage, ("结婚申请", "结婚登记")),
     Command(painter, ("小画家",)),
     Command(repeat, ("复读",)),
+    Command(anti_kidnap, ("防诱拐",)),
 ]
