@@ -1274,3 +1274,12 @@ def repeat(
         frames.append(frame.image)
 
     return save_gif(frames, 0.08)
+
+
+def anti_kidnap(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").circle().resize((450, 450))
+    bg = load_image("anti_kidnap/0.png")
+    frame = BuildImage.new("RGBA", bg.size, "white")
+    frame.paste(img, (30, 78))
+    frame.paste(bg, alpha=True)
+    return frame.save_jpg()
