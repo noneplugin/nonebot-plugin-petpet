@@ -49,8 +49,7 @@ class MemeManager:
             if not meme:
                 results[name] = ActionResult.NOTFOUND
                 continue
-            name = meme.name
-            config = self.__meme_list[name]
+            config = self.__meme_list[meme.name]
             if user_id not in config.black_list:
                 config.black_list.append(user_id)
             if user_id in config.white_list:
@@ -68,12 +67,26 @@ class MemeManager:
             if not meme:
                 results[name] = ActionResult.NOTFOUND
                 continue
-            name = meme.name
-            config = self.__meme_list[name]
+            config = self.__meme_list[meme.name]
             if user_id not in config.white_list:
                 config.white_list.append(user_id)
             if user_id in config.black_list:
                 config.black_list.remove(user_id)
+            results[name] = ActionResult.SUCCESS
+        self.__dump()
+        return results
+
+    def change_mode(
+        self, mode: MemeMode, meme_names: List[str] = []
+    ) -> Dict[str, ActionResult]:
+        results = {}
+        for name in meme_names:
+            meme = self.find(name)
+            if not meme:
+                results[name] = ActionResult.NOTFOUND
+                continue
+            config = self.__meme_list[meme.name]
+            config.mode = mode
             results[name] = ActionResult.SUCCESS
         self.__dump()
         return results
