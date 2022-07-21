@@ -1,4 +1,3 @@
-import math
 import httpx
 import imageio
 from io import BytesIO
@@ -7,8 +6,7 @@ from PIL.Image import Image as IMG
 from typing_extensions import Literal
 from typing import Callable, List, Tuple, Protocol
 
-from nonebot.utils import run_sync
-from nonebot_plugin_imageutils import BuildImage, Text2Image
+from nonebot_plugin_imageutils import BuildImage
 
 
 @dataclass
@@ -88,26 +86,3 @@ async def translate(text: str) -> str:
         return result["translateResult"][0][0]["tgt"]
     except:
         return ""
-
-
-@run_sync
-def help_image(memes: List[Meme]) -> BytesIO:
-    def cmd_text(cmds: List[Meme], start: int = 1) -> str:
-        return "\n".join(
-            [f"{i + start}. " + "/".join(cmd.keywords) for i, cmd in enumerate(cmds)]
-        )
-
-    text1 = "摸头等头像相关表情制作\n触发方式：指令 + @某人 / qq号 / 自己 / [图片]\n支持的指令："
-    idx = math.ceil(len(memes) / 2)
-    text2 = cmd_text(memes[:idx])
-    text3 = cmd_text(memes[idx:], start=idx + 1)
-    img1 = Text2Image.from_text(text1, 30, weight="bold").to_image(padding=(20, 10))
-    img2 = Text2Image.from_text(text2, 30).to_image(padding=(20, 10))
-    img3 = Text2Image.from_text(text3, 30).to_image(padding=(20, 10))
-    w = max(img1.width, img2.width + img3.width)
-    h = img1.height + max(img2.height, img2.height)
-    img = BuildImage.new("RGBA", (w, h), "white")
-    img.paste(img1, alpha=True)
-    img.paste(img2, (0, img1.height), alpha=True)
-    img.paste(img3, (img2.width, img1.height), alpha=True)
-    return img.save_jpg()

@@ -1,8 +1,10 @@
+import math
 from io import BytesIO
-from typing import Union
+from typing import List, Union
 from typing_extensions import Literal
 
 from nonebot.params import Depends
+from nonebot.utils import run_sync
 from nonebot.matcher import Matcher
 from nonebot.typing import T_Handler
 from nonebot.params import CommandArg
@@ -22,11 +24,12 @@ from nonebot.adapters.onebot.v11.permission import (
 )
 
 require("nonebot_plugin_imageutils")
+from nonebot_plugin_imageutils import BuildImage, Text2Image
 
+from .utils import Meme
 from .data_source import memes
-from .utils import Meme, help_image
-from .manager import meme_manager, ActionResult, MemeMode
 from .depends import split_msg, regex
+from .manager import meme_manager, ActionResult, MemeMode
 
 
 __plugin_meta__ = PluginMetadata(
@@ -51,11 +54,31 @@ block_cmd_gl = on_command("全局禁用表情", block=True, priority=12, permiss
 unblock_cmd_gl = on_command("全局启用表情", block=True, priority=12, permission=PERM_GLOBAL)
 
 
-@help_cmd.handle()
-async def _():
-    img = await help_image(memes)
-    if img:
-        await help_cmd.finish(MessageSegment.image(img))
+@run_sync
+def help_image(user_id: str, memes: List[Meme]) -> BytesIO:
+    def cmd_text(memes: List[Meme], start: int = 1) -> str:
+        texts = []
+        for i, meme in enumerate(memes):
+            text = f"{i + start}. " + "/".join(meme.keywords)
+            if not meme_manager.check(user_id, meme):
+                text = f"[color=lightgrey]{text}[/color]"
+            texts.append(text)
+        return "\n".join(texts)
+
+    text1 = "摸头等头像相关表情制作\n触发方式：指令 + @某人 / qq号 / 自己 / [图片]\n支持的指令："
+    idx = math.ceil(len(memes) / 2)
+    text2 = cmd_text(memes[:idx])
+    text3 = cmd_text(memes[idx:], start=idx + 1)
+    img1 = Text2Image.from_text(text1, 30, weight="bold").to_image(padding=(20, 10))
+    img2 = Text2Image.from_bbcode_text(text2, 30).to_image(padding=(20, 10))
+    img3 = Text2Image.from_bbcode_text(text3, 30).to_image(padding=(20, 10))
+    w = max(img1.width, img2.width + img3.width)
+    h = img1.height + max(img2.height, img2.height)
+    img = BuildImage.new("RGBA", (w, h), "white")
+    img.paste(img1, alpha=True)
+    img.paste(img2, (0, img1.height), alpha=True)
+    img.paste(img3, (img2.width, img1.height), alpha=True)
+    return img.save_jpg()
 
 
 def get_user_id():
@@ -74,6 +97,13 @@ def check_flag(meme: Meme):
         return meme_manager.check(user_id, meme)
 
     return Depends(dependency)
+
+
+@help_cmd.handle()
+async def _(user_id: str = get_user_id()):
+    img = await help_image(user_id, memes)
+    if img:
+        await help_cmd.finish(MessageSegment.image(img))
 
 
 @block_cmd.handle()
