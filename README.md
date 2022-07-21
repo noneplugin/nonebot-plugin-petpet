@@ -37,7 +37,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/06/09/lCOujwopgJPxD97.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/07/22/vClbGSgDBdk4ZYc.jpg" width="400" />
 </div>
 
 
@@ -48,6 +48,20 @@ pip install nonebot_plugin_petpet
 - 指令 + 图片，如：/爬 [图片]
 
 前三种触发方式会使用目标qq的头像作为图片
+
+
+#### 表情包开关
+
+群主 / 管理员 / 超级用户 可以启用或禁用某些表情包
+
+发送 `启用表情/禁用表情 [表情名]`，如：`禁用表情 摸`、`启用表情 petpet 贴 爬`
+
+超级用户 可以设置某个表情包的管控模式（黑名单/白名单）
+
+发送 `全局启用表情 [表情名]` 可将表情设为黑名单模式；
+
+发送 `全局禁用表情 [表情名]` 可将表情设为白名单模式；
+
 
 #### 支持的指令
 
