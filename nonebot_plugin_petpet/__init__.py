@@ -10,9 +10,11 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 
 require("nonebot_plugin_imageutils")
 
-from .data_source import commands
+from .data_source import memes
+from .manager import meme_manager
+from .utils import Meme, help_image
 from .depends import split_msg, regex
-from .utils import Command, help_image
+
 
 __plugin_meta__ = PluginMetadata(
     name="头像表情包",
@@ -32,15 +34,15 @@ help_cmd = on_command("头像表情包", aliases={"头像相关表情包", "头�
 
 @help_cmd.handle()
 async def _():
-    img = await help_image(commands)
+    img = await help_image(memes)
     if img:
         await help_cmd.finish(MessageSegment.image(img))
 
 
 def create_matchers():
-    def handler(command: Command) -> T_Handler:
+    def handler(meme: Meme) -> T_Handler:
         async def handle(
-            matcher: Matcher, res: Union[str, BytesIO] = Depends(command.func)
+            matcher: Matcher, res: Union[str, BytesIO] = Depends(meme.func)
         ):
             matcher.stop_propagation()
             if isinstance(res, str):
@@ -49,12 +51,12 @@ def create_matchers():
 
         return handle
 
-    for command in commands:
+    for meme in memes:
         on_message(
-            regex(command.pattern),
+            regex(meme.pattern),
             block=False,
             priority=12,
-        ).append_handler(handler(command), parameterless=[split_msg()])
+        ).append_handler(handler(meme), parameterless=[split_msg()])
 
 
 create_matchers()
