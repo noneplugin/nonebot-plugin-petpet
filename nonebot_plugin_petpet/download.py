@@ -7,6 +7,7 @@ from nonebot.log import logger
 from nonebot import get_driver
 
 from nonebot_plugin_imageutils import BuildImage
+from nonebot_plugin_imageutils.fonts import add_font
 
 data_path = Path() / "data" / "petpet"
 
@@ -37,9 +38,12 @@ async def download_avatar(user_id: str) -> bytes:
     return data
 
 
+def resource_url(path: str) -> str:
+    return f"https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-petpet/v0.3.x/resources/{path}"
+
+
 async def download_resource(path: str) -> bytes:
-    url = f"https://fastly.jsdelivr.net/gh/noneplugin/nonebot-plugin-petpet@vv0.3.x/resources/{path}"
-    return await download_url(url)
+    return await download_url(resource_url(path))
 
 
 async def check_resources():
@@ -63,6 +67,7 @@ async def check_resources():
                 f.write(data)
         except Exception as e:
             logger.warning(str(e))
+    await add_font("consola.ttf", resource_url("fonts/consola.ttf"))
 
 
 driver = get_driver()

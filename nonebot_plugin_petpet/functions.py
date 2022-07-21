@@ -1,10 +1,11 @@
 import random
 from datetime import datetime
 from collections import namedtuple
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageDraw
 from PIL.Image import Image as IMG
 from typing import List, Dict, Optional
 
+from nonebot_plugin_imageutils.fonts import Font
 from nonebot_plugin_imageutils import BuildImage, Text2Image
 
 from .download import load_image
@@ -1283,3 +1284,28 @@ def anti_kidnap(img: BuildImage = UserImg(), arg=NoArg()):
     frame.paste(img, (30, 78))
     frame.paste(bg, alpha=True)
     return frame.save_jpg()
+
+
+def charpic(img: BuildImage = UserImg(), arg=NoArg()):
+    str_map = "@@$$&B88QMMGW##EE93SPPDOOU**==()+^,\"--''.  "
+    num = len(str_map)
+    font = Font.find("Consolas").load_font(15)
+
+    def make(img: BuildImage) -> BuildImage:
+        img = img.convert("L").resize_width(150)
+        img = img.resize((img.width, img.height // 2))
+        lines = []
+        for y in range(img.height):
+            line = ""
+            for x in range(img.width):
+                gray = img.image.getpixel((x, y))
+                line += str_map[int(num * gray / 256)]
+            lines.append(line)
+        text = "\n".join(lines)
+        w, h = font.getsize_multiline(text)
+        text_img = Image.new("RGB", (w, h), "white")
+        draw = ImageDraw.Draw(text_img)
+        draw.multiline_text((0, 0), text, font=font, fill="black")
+        return BuildImage(text_img)
+
+    return make_jpg_or_gif(img, make)

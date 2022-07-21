@@ -69,4 +69,5 @@ commands = [
     Command(painter, ("小画家",)),
     Command(repeat, ("复读",)),
     Command(anti_kidnap, ("防诱拐",)),
+    Command(charpic, ("字符画",)),
 ]
