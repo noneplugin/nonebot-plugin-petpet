@@ -39,7 +39,7 @@ async def download_avatar(user_id: str) -> bytes:
 
 
 def resource_url(path: str) -> str:
-    return f"https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-petpet/v0.3.x/resources/{path}"
+    return f"https://raw.githubusercontent.com/MigangBot/zhenxun_plugin_petpet/v0.3.x/resources/{path}"
 
 
 async def download_resource(path: str) -> bytes:

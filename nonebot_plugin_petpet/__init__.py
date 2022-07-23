@@ -44,6 +44,39 @@ __plugin_meta__ = PluginMetadata(
     },
 )
 
+__zx_plugin_name__ = "头像表情包"
+__plugin_usage__ = """
+usage：
+    触发方式：指令 + @user/qq/自己/图片
+    发送“头像表情包”查看支持的指令
+    指令：
+        摸 @任何人
+        摸 qq号
+        摸 自己
+        摸 [图片]
+    群管理指令：
+        启用表情 xxx
+        禁用表情 xxx
+""".strip()
+__plugin_superuser_usage__ = """
+usage:
+    全局启用/禁用表情
+    指令：
+        全局禁用表情 xxx
+        全局启用表情 xxx
+""".strip()
+__plugin_des__ = "生成各种表情"
+__plugin_type__ = ("好玩的",)
+__plugin_cmd__ = ["头像表情包", "禁用表情", "启用表情", "全局禁用表情 [_superuser]", "全局启用表情 [_superuser]"]
+__plugin_version__ = 0.4
+__plugin_author__ = "migang & meetwq"
+__plugin_settings__ = {
+    "level": 5,
+    "default_status": True,
+    "limit_superuser": False,
+    "cmd": [],
+}
+
 PERM_EDIT = GROUP_ADMIN | GROUP_OWNER | PRIVATE_FRIEND | SUPERUSER
 PERM_GLOBAL = SUPERUSER
 
