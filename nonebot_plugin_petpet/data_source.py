@@ -70,4 +70,5 @@ memes = [
     Meme("repeat", repeat, ("复读",)),
     Meme("anti_kidnap", anti_kidnap, ("防诱拐",)),
     Meme("charpic", charpic, ("字符画",)),
+    Meme("mywife",mywife,("这是我的老婆",))
 ]

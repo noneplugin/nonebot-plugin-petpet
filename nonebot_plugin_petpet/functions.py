@@ -1309,3 +1309,10 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
         return BuildImage(text_img)
 
     return make_jpg_or_gif(img, make)
+
+
+def mywife(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((405, 406), keep_ratio=True)
+    frame = load_image("mywife/0.png")
+    frame.paste(img, (7, 73), below=True)
+    return frame.save_jpg()
