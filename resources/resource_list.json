@@ -800,6 +800,10 @@
         "hash": "9538d1dd1e7e3befadacc26bbb511754"
     },
     {
+        "path": "images/mywife/0.png",
+        "hash": "c6fd08ac07edee816f25a4713758f428"
+    },
+    {
         "path": "images/need/0.png",
         "hash": "1b1b6fb05731056fc52d9afd3b4877b9"
     },
@@ -1390,9 +1394,5 @@
     {
         "path": "images/worship/9.png",
         "hash": "3861aae5494bd34ce6937d6224c48915"
-    },
-    {
-        "path": "images/mywife/0.png",
-        "hash": "b7d3ecbf575e0748db5bb00991feff3f"
     }
 ]
