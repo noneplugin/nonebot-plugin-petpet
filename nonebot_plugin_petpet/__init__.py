@@ -32,17 +32,17 @@ from .depends import split_msg, regex
 from .manager import meme_manager, ActionResult, MemeMode
 
 
-__plugin_meta__ = PluginMetadata(
-    name="头像表情包",
-    description="摸头等头像相关表情制作",
-    usage="触发方式：指令 + @user/qq/自己/图片\n发送“头像表情包”查看支持的指令",
-    extra={
-        "unique_name": "petpet",
-        "example": "摸 @小Q\n摸 114514\n摸 自己\n摸 [图片]",
-        "author": "meetwq <meetwq@gmail.com>",
-        "version": "0.3.8",
-    },
-)
+# __plugin_meta__ = PluginMetadata(
+#     name="头像表情包",
+#     description="摸头等头像相关表情制作",
+#     usage="触发方式：指令 + @user/qq/自己/图片\n发送“头像表情包”查看支持的指令",
+#     extra={
+#         "unique_name": "petpet",
+#         "example": "摸 @小Q\n摸 114514\n摸 自己\n摸 [图片]",
+#         "author": "meetwq <meetwq@gmail.com>",
+#         "version": "0.3.8",
+#     },
+# )
 
 __zx_plugin_name__ = "头像表情包"
 __plugin_usage__ = """
