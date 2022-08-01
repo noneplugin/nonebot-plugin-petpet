@@ -624,7 +624,7 @@ def my_friend(
     name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
     name_w, name_h = name_img.size
     if name_w >= 600:
-        raise ValueError(NAME_TOO_LONG)
+        return NAME_TOO_LONG
 
     corner1 = load_image("my_friend/corner1.png")
     corner2 = load_image("my_friend/corner2.png")
@@ -1312,15 +1312,11 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def mywife(
-    user: UserInfo = User(), 
+    user: UserInfo = User(),
     ta: str = RegexArg("ta"),
     name: str = RegexArg("name"),
+    arg=NoArg(),
 ):
-    """
-    img = img.convert("RGBA").resize((405, 406), keep_ratio=True)
-    frame = load_image("mywife/0.png")
-    frame.paste(img, (7, 73), below=True)
-    """
     ta = ta.strip() or "我"
     name = name.strip() or "老婆"
 
@@ -1332,21 +1328,32 @@ def mywife(
     try:
         text = f"如果你的{name}长这样"
         frame.draw_text(
-            (27, 12, 27 + 596, 12 + 79), text, 
-            max_fontsize=100, min_fontsize=50, 
-            allow_wrap=True, lines_align="center", weight="bold"
+            (27, 12, 27 + 596, 12 + 79),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            lines_align="center",
+            weight="bold",
         )
         text = f"那么这就不是你的{name}\n这是{ta}的{name}"
         frame.draw_text(
-            (27, img_h + 120, 27 + 593, img_h + 120 + 135), text, 
-            max_fontsize=100, min_fontsize=50, 
-            allow_wrap=True, weight="bold"
+            (27, img_h + 120, 27 + 593, img_h + 120 + 135),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            weight="bold",
         )
         text = f"滚去找你\n自己的{name}去"
         frame.draw_text(
-            (27, img_h + 295, 27 + 374, img_h + 295 + 135), text, 
-            max_fontsize=100, min_fontsize=50, 
-            allow_wrap=True, lines_align="center", weight="bold"
+            (27, img_h + 295, 27 + 374, img_h + 295 + 135),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            lines_align="center",
+            weight="bold",
         )
     except ValueError:
         return NAME_TOO_LONG
