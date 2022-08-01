@@ -183,11 +183,22 @@ def pat(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.085)
 
 
-def rip(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").square().resize((385, 385))
-    frame = load_image("rip/0.png")
-    frame.paste(img.rotate(24, expand=True), (-5, 355), below=True)
-    frame.paste(img.rotate(-11, expand=True), (649, 310), below=True)
+def rip(user_imgs: List[BuildImage] = UserImgs(1, 2), arg=NoArg()):
+    if len(user_imgs) >= 2:
+        frame = load_image("rip/1.png")
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
+    else:
+        frame = load_image("rip/0.png")
+        self_img = None
+        user_img = user_imgs[0]
+
+    user_img = user_img.convert("RGBA").square().resize((385, 385))
+    if self_img:
+        self_img = self_img.convert("RGBA").square().resize((230, 230))
+        frame.paste(self_img, (408, 418), below=True)
+    frame.paste(user_img.rotate(24, expand=True), (-5, 355), below=True)
+    frame.paste(user_img.rotate(-11, expand=True), (649, 310), below=True)
     return frame.save_jpg()
 
 

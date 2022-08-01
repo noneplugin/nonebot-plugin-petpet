@@ -804,6 +804,10 @@
         "hash": "c6fd08ac07edee816f25a4713758f428"
     },
     {
+        "path": "images/mywife/1.png",
+        "hash": "d4f0dca879deb9a02a732c921c6a8abb"
+    },
+    {
         "path": "images/need/0.png",
         "hash": "1b1b6fb05731056fc52d9afd3b4877b9"
     },
@@ -1078,6 +1082,10 @@
     {
         "path": "images/rip/0.png",
         "hash": "ce5cab4dddc51f7c1627e5d135dc6336"
+    },
+    {
+        "path": "images/rip/1.png",
+        "hash": "91cfac98b3e2857988c727c03ce76418"
     },
     {
         "path": "images/roll/0.png",
