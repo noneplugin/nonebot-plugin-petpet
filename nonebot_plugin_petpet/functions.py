@@ -1311,8 +1311,47 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
-def mywife(img: BuildImage = UserImg(), arg=NoArg()):
+def mywife(
+    user: UserInfo = User(), 
+    ta: str = RegexArg("ta"),
+    name: str = RegexArg("name"),
+):
+    """
     img = img.convert("RGBA").resize((405, 406), keep_ratio=True)
     frame = load_image("mywife/0.png")
     frame.paste(img, (7, 73), below=True)
+    """
+    ta = ta.strip() or "我"
+    name = name.strip() or "老婆"
+
+    img = user.img.convert("RGBA").resize_width(400)
+    img_w, img_h = img.size
+    frame = BuildImage.new("RGBA", (650, img_h + 500), "white")
+    frame.paste(img, (int(325 - img_w / 2), 105), alpha=True)
+
+    try:
+        text = f"如果你的{name}长这样"
+        frame.draw_text(
+            (27, 12, 27 + 596, 12 + 79), text, 
+            max_fontsize=100, min_fontsize=50, 
+            allow_wrap=True, lines_align="center", weight="bold"
+        )
+        text = f"那么这就不是你的{name}\n这是{ta}的{name}"
+        frame.draw_text(
+            (27, img_h + 120, 27 + 593, img_h + 120 + 135), text, 
+            max_fontsize=100, min_fontsize=50, 
+            allow_wrap=True, weight="bold"
+        )
+        text = f"滚去找你\n自己的{name}去"
+        frame.draw_text(
+            (27, img_h + 295, 27 + 374, img_h + 295 + 135), text, 
+            max_fontsize=100, min_fontsize=50, 
+            allow_wrap=True, lines_align="center", weight="bold"
+        )
+    except ValueError:
+        return NAME_TOO_LONG
+
+    img_point = load_image("mywife/1.png").resize_width(200)
+    frame.paste(img_point, (421, img_h + 270))
+
     return frame.save_jpg()
