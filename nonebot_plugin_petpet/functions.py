@@ -183,11 +183,22 @@ def pat(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.085)
 
 
-def rip(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").square().resize((385, 385))
-    frame = load_image("rip/0.png")
-    frame.paste(img.rotate(24, expand=True), (-5, 355), below=True)
-    frame.paste(img.rotate(-11, expand=True), (649, 310), below=True)
+def rip(user_imgs: List[BuildImage] = UserImgs(1, 2), arg=NoArg()):
+    if len(user_imgs) >= 2:
+        frame = load_image("rip/1.png")
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
+    else:
+        frame = load_image("rip/0.png")
+        self_img = None
+        user_img = user_imgs[0]
+
+    user_img = user_img.convert("RGBA").square().resize((385, 385))
+    if self_img:
+        self_img = self_img.convert("RGBA").square().resize((230, 230))
+        frame.paste(self_img, (408, 418), below=True)
+    frame.paste(user_img.rotate(24, expand=True), (-5, 355), below=True)
+    frame.paste(user_img.rotate(-11, expand=True), (649, 310), below=True)
     return frame.save_jpg()
 
 
@@ -624,7 +635,7 @@ def my_friend(
     name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
     name_w, name_h = name_img.size
     if name_w >= 600:
-        raise ValueError(NAME_TOO_LONG)
+        return NAME_TOO_LONG
 
     corner1 = load_image("my_friend/corner1.png")
     corner2 = load_image("my_friend/corner2.png")
@@ -1311,8 +1322,54 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
-def mywife(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((405, 406), keep_ratio=True)
-    frame = load_image("mywife/0.png")
-    frame.paste(img, (7, 73), below=True)
+def mywife(
+    user: UserInfo = User(),
+    ta: str = RegexArg("ta"),
+    name: str = RegexArg("name"),
+    arg=NoArg(),
+):
+    ta = ta.strip() or "我"
+    name = name.strip() or "老婆"
+
+    img = user.img.convert("RGBA").resize_width(400)
+    img_w, img_h = img.size
+    frame = BuildImage.new("RGBA", (650, img_h + 500), "white")
+    frame.paste(img, (int(325 - img_w / 2), 105), alpha=True)
+
+    try:
+        text = f"如果你的{name}长这样"
+        frame.draw_text(
+            (27, 12, 27 + 596, 12 + 79),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            lines_align="center",
+            weight="bold",
+        )
+        text = f"那么这就不是你的{name}\n这是{ta}的{name}"
+        frame.draw_text(
+            (27, img_h + 120, 27 + 593, img_h + 120 + 135),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            weight="bold",
+        )
+        text = f"滚去找你\n自己的{name}去"
+        frame.draw_text(
+            (27, img_h + 295, 27 + 374, img_h + 295 + 135),
+            text,
+            max_fontsize=100,
+            min_fontsize=50,
+            allow_wrap=True,
+            lines_align="center",
+            weight="bold",
+        )
+    except ValueError:
+        return NAME_TOO_LONG
+
+    img_point = load_image("mywife/1.png").resize_width(200)
+    frame.paste(img_point, (421, img_h + 270))
+
     return frame.save_jpg()
