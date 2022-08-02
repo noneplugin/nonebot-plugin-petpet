@@ -1211,7 +1211,7 @@ def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg: str = Arg()):
     text = arg or "如何提高社交质量 : \n远离以下头像的人"
     frame = BuildImage.new("RGB", (400, 290), "white")
     frame.draw_text(
-        (10, 10, 390, 80), text, max_fontsize=21, halign="left"
+        (10, 10, 390, 80), text, max_fontsize=40, halign="left"
     )
     count = 0
     num_per_user = 8 // len(imgs)
