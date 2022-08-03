@@ -1165,7 +1165,7 @@ def anyasuki(img: BuildImage = UserImg(), arg: str = Arg()):
     frame = load_image("anyasuki/0.png")
     try:
         frame.draw_text(
-            (2, frame.height - 50, frame.width - 20, frame.height),
+            (5, frame.height - 60, frame.width - 5, frame.height - 10),
             arg or "阿尼亚喜欢这个",
             max_fontsize=40,
             fill="white",
@@ -1194,7 +1194,7 @@ def thinkwhat(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
-def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg=NoArg()):
+def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg: str = Arg()):
     def trans(img: BuildImage, n: int) -> BuildImage:
         img = img.convert("RGBA").square().resize((100, 100))
         if n < 4:
@@ -1208,9 +1208,10 @@ def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg=NoArg()):
         frame.paste(img, ((count % 4) * 100, y))
         count += 1
 
+    text = arg or "如何提高社交质量 : \n远离以下头像的人"
     frame = BuildImage.new("RGB", (400, 290), "white")
     frame.draw_text(
-        (10, 10, 220, 80), "如何提高社交质量 : \n远离以下头像的人", max_fontsize=21, halign="left"
+        (10, 10, 390, 80), text, max_fontsize=40, halign="left"
     )
     count = 0
     num_per_user = 8 // len(imgs)
