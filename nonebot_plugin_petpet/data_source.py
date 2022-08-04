@@ -33,6 +33,7 @@ memes = [
     Meme("china_flag", china_flag, ("国旗",)),
     Meme("make_friend", make_friend, ("交个朋友",)),
     Meme("back_to_work", back_to_work, ("继续干活", "打工人")),
+    Meme("back_to_work_1", back_to_work_1, ("打工莹", "搬砖莹")),
     Meme("perfect", perfect, ("完美",), r"完美的?"),
     Meme("follow", follow, ("关注",)),
     Meme("my_friend", my_friend, ("我朋友{name}说",), r"我(?:有个)?朋友(?P<name>.*?)说"),
