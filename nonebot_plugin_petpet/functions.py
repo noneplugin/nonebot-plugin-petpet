@@ -592,6 +592,12 @@ def back_to_work(img: BuildImage = UserImg(), arg=NoArg()):
     frame.paste(img.rotate(25, expand=True), (56, 32), below=True)
     return frame.save_jpg()
 
+def back_to_work_1(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("back_to_work/1.png")
+    img = img.convert("RGBA").resize((220, 310), keep_ratio=True, direction="north")
+    frame.paste(img.rotate(25, expand=True), (56, 32), below=True)
+    return frame.save_jpg()
+
 
 def perfect(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("perfect/0.png")
