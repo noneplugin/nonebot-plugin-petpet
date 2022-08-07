@@ -1379,7 +1379,7 @@ def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
         avatar = img.convert("RGBA").resize((540, 360), keep_ratio=True)
         bg = load_image("walnutpad/0.png")
         frame = BuildImage.new("RGBA", bg.size, "white")
-        frame.paste(avatar, (368, 25), alpha=True)
+        frame.paste(avatar, (368, int(248 - avatar.height / 2)), alpha=True)
         frame.paste(bg, alpha=True)
         return frame
 
