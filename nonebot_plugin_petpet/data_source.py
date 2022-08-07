@@ -71,4 +71,5 @@ memes = [
     Meme("anti_kidnap", anti_kidnap, ("防诱拐",)),
     Meme("charpic", charpic, ("字符画",)),
     Meme("mywife", mywife, ("这是我的老婆",), r"这是(?P<ta>\S+)的(?P<name>\S+)"),
+    Meme("walnutpad", walnutpad, ("胡桃平板",)),
 ]
