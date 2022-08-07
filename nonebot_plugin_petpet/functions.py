@@ -1210,9 +1210,7 @@ def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg: str = Arg()):
 
     text = arg or "如何提高社交质量 : \n远离以下头像的人"
     frame = BuildImage.new("RGB", (400, 290), "white")
-    frame.draw_text(
-        (10, 10, 390, 80), text, max_fontsize=40, halign="left"
-    )
+    frame.draw_text((10, 10, 390, 80), text, max_fontsize=40, halign="left")
     count = 0
     num_per_user = 8 // len(imgs)
     for img in imgs:
@@ -1374,3 +1372,15 @@ def mywife(
     frame.paste(img_point, (421, img_h + 270))
 
     return frame.save_jpg()
+
+
+def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
+    def make(img: BuildImage) -> BuildImage:
+        avatar = img.convert("RGBA").resize((540, 360), keep_ratio=True)
+        bg = load_image("walnutpad/0.png")
+        frame = BuildImage.new("RGBA", bg.size, "white")
+        frame.paste(avatar, (368, int(248 - avatar.height / 2)), alpha=True)
+        frame.paste(bg, alpha=True)
+        return frame
+
+    return make_jpg_or_gif(img, make)
