@@ -149,7 +149,7 @@ def play(img: BuildImage = UserImg(), arg=NoArg()):
         (182, 59, 98, 92), (183, 71, 90, 96), (180, 131, 92, 101)
     ]
     # fmt: on
-    raw_frames: List[BuildImage] = [load_image(f"play/{i}.png") for i in range(23)]
+    raw_frames: List[BuildImage] = [load_image(f"play/{i}.png") for i in range(38)]
     img_frames: List[BuildImage] = []
     for i in range(len(locs)):
         frame = raw_frames[i]
@@ -161,7 +161,7 @@ def play(img: BuildImage = UserImg(), arg=NoArg()):
         + img_frames[0:12]
         + img_frames[0:8]
         + img_frames[12:18]
-        + raw_frames[18:23]
+        + raw_frames[18:38]
     )
     frames = [frame.image for frame in frames]
     return save_gif(frames, 0.06)
