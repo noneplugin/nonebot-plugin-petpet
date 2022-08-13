@@ -948,8 +948,68 @@
         "hash": "d1e23a1e2f3f67a68f13d514222e8288"
     },
     {
+        "path": "images/play/23.png",
+        "hash": "027cfd72da7425411f4fbfb45af76e75"
+    },
+    {
+        "path": "images/play/24.png",
+        "hash": "ca73fe22c80e4d12f07854456e67500d"
+    },
+    {
+        "path": "images/play/25.png",
+        "hash": "79a133301b5aadd29c00ae351eb70258"
+    },
+    {
+        "path": "images/play/26.png",
+        "hash": "be4252f16c83933f0f843dbe65c41df1"
+    },
+    {
+        "path": "images/play/27.png",
+        "hash": "ca73fe22c80e4d12f07854456e67500d"
+    },
+    {
+        "path": "images/play/28.png",
+        "hash": "668b9f971b27685a1fcc06bc6d27d661"
+    },
+    {
+        "path": "images/play/29.png",
+        "hash": "027cfd72da7425411f4fbfb45af76e75"
+    },
+    {
         "path": "images/play/3.png",
         "hash": "1f5064e766aa07cbd0bcc6014e04a363"
+    },
+    {
+        "path": "images/play/30.png",
+        "hash": "79a133301b5aadd29c00ae351eb70258"
+    },
+    {
+        "path": "images/play/31.png",
+        "hash": "be4252f16c83933f0f843dbe65c41df1"
+    },
+    {
+        "path": "images/play/32.png",
+        "hash": "668b9f971b27685a1fcc06bc6d27d661"
+    },
+    {
+        "path": "images/play/33.png",
+        "hash": "027cfd72da7425411f4fbfb45af76e75"
+    },
+    {
+        "path": "images/play/34.png",
+        "hash": "79a133301b5aadd29c00ae351eb70258"
+    },
+    {
+        "path": "images/play/35.png",
+        "hash": "be4252f16c83933f0f843dbe65c41df1"
+    },
+    {
+        "path": "images/play/36.png",
+        "hash": "f15c1afc1766b284662e2972caff927e"
+    },
+    {
+        "path": "images/play/37.png",
+        "hash": "ca73fe22c80e4d12f07854456e67500d"
     },
     {
         "path": "images/play/4.png",
@@ -1358,6 +1418,10 @@
     {
         "path": "images/wallpaper/0.png",
         "hash": "923b30b63e20465d93ca11a9c0968c4c"
+    },
+    {
+        "path": "images/walnutpad/0.png",
+        "hash": "1868d25967cc950d811b0218d313b42e"
     },
     {
         "path": "images/whyatme/0.png",

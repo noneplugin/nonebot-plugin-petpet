@@ -149,7 +149,7 @@ def play(img: BuildImage = UserImg(), arg=NoArg()):
         (182, 59, 98, 92), (183, 71, 90, 96), (180, 131, 92, 101)
     ]
     # fmt: on
-    raw_frames: List[BuildImage] = [load_image(f"play/{i}.png") for i in range(23)]
+    raw_frames: List[BuildImage] = [load_image(f"play/{i}.png") for i in range(38)]
     img_frames: List[BuildImage] = []
     for i in range(len(locs)):
         frame = raw_frames[i]
@@ -161,7 +161,7 @@ def play(img: BuildImage = UserImg(), arg=NoArg()):
         + img_frames[0:12]
         + img_frames[0:8]
         + img_frames[12:18]
-        + raw_frames[18:23]
+        + raw_frames[18:38]
     )
     frames = [frame.image for frame in frames]
     return save_gif(frames, 0.06)
@@ -1210,9 +1210,7 @@ def keepaway(imgs: List[BuildImage] = UserImgs(1, 8), arg: str = Arg()):
 
     text = arg or "如何提高社交质量 : \n远离以下头像的人"
     frame = BuildImage.new("RGB", (400, 290), "white")
-    frame.draw_text(
-        (10, 10, 390, 80), text, max_fontsize=40, halign="left"
-    )
+    frame.draw_text((10, 10, 390, 80), text, max_fontsize=40, halign="left")
     count = 0
     num_per_user = 8 // len(imgs)
     for img in imgs:
@@ -1374,3 +1372,15 @@ def mywife(
     frame.paste(img_point, (421, img_h + 270))
 
     return frame.save_jpg()
+
+
+def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
+    def make(img: BuildImage) -> BuildImage:
+        avatar = img.convert("RGBA").resize((540, 360), keep_ratio=True)
+        bg = load_image("walnutpad/0.png")
+        frame = BuildImage.new("RGBA", bg.size, "white")
+        frame.paste(avatar, (368, int(248 - avatar.height / 2)), alpha=True)
+        frame.paste(bg, alpha=True)
+        return frame
+
+    return make_jpg_or_gif(img, make)
