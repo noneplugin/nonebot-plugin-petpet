@@ -1375,36 +1375,33 @@ def mywife(
 
 
 def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("walnutpad/0.png")
+
     def make(img: BuildImage) -> BuildImage:
-        avatar = img.convert("RGBA").resize((540, 360), keep_ratio=True)
-        bg = load_image("walnutpad/0.png")
-        frame = BuildImage.new("RGBA", bg.size, "white")
-        frame.paste(avatar, (368, int(248 - avatar.height / 2)), alpha=True)
-        frame.paste(bg, alpha=True)
-        return frame
+        return frame.copy().paste(
+            img.resize((540, 360), keep_ratio=True), (368, 65), below=True
+        )
 
     return make_jpg_or_gif(img, make)
 
 
-def teach(img: BuildImage = UserImg(), args: List[str] = Args(1, 3)):
+def teach(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("teach/0.png").resize_width(960).convert("RGBA")
+    try:
+        frame.draw_text(
+            (10, frame.height - 80, frame.width - 10, frame.height - 5),
+            arg,
+            max_fontsize=45,
+            fill="white",
+            stroke_fill="black",
+            stroke_ratio=0.06,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+
     def make(img: BuildImage) -> BuildImage:
-        img = img.resize((287, 210), keep_ratio=True).convert("RGBA")
-        char = load_image("teach/0.png").resize_width(500).convert("RGBA")
-        bg = BuildImage.new("RGBA", char.size)
-        bg.paste(img, (163, int(137 - img.height / 2)))
-        bg.paste(char, alpha=True)
-        text_img = BuildImage(
-            Text2Image.from_bbcode_text(
-                " ".join(args), fontsize=30, align="center", fill="white"
-            )
-            .wrap(480)
-            .to_image()
+        return frame.copy().paste(
+            img.resize((550, 395), keep_ratio=True), (313, 60), below=True
         )
-        bg.paste(
-            text_img,
-            (int(bg.width / 2 - text_img.width / 2), bg.height - text_img.height),
-            alpha=True,
-        )
-        return bg
 
     return make_jpg_or_gif(img, make)

@@ -64,15 +64,16 @@ def make_jpg_or_gif(
             index = (int(i * ratio) for i in range(gif_max_frames))
             duration *= ratio
 
-        frames = []
+        frames: List[IMG] = []
         for i in index:
             image.seek(i)
             new_img = func(BuildImage(image).convert("RGBA"))
-            frames.append(
-                new_img.resize(
-                    (int(new_img.width * gif_zoom), int(new_img.height * gif_zoom))
-                ).image
+            new_img = new_img.resize(
+                (int(new_img.width * gif_zoom), int(new_img.height * gif_zoom))
             )
+            bg = BuildImage.new("RGBA", new_img.size, "white")
+            bg.paste(new_img, alpha=True)
+            frames.append(bg.image)
         return save_gif(frames, duration)
 
 
