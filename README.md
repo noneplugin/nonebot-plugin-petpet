@@ -71,7 +71,7 @@ pip install nonebot_plugin_petpet
 | 摸<br>摸摸<br>摸头<br>摸摸头<br>rua | <img src="https://s2.loli.net/2022/02/23/oNGVO4iuCk73g8S.gif" width="200" /> | 可使用参数“圆”让头像为圆形<br>如：摸头圆 自己 |
 | 亲<br>亲亲 | <img src="https://s2.loli.net/2022/02/23/RuoiqP8plJBgw9K.gif" width="200" /> | 可指定一个或两个目标<br>若为一个则为 发送人 亲 目标<br>若为两个则为 目标1 亲 目标2<br>如：亲 114514 自己 |
 | 贴<br>贴贴<br>蹭<br>蹭蹭 | <img src="https://s2.loli.net/2022/02/23/QDCE5YZIfroavub.gif" width="200" /> | 可指定一个或两个目标<br>类似 亲 |
-| 顶<br>玩 | <img src="https://s2.loli.net/2022/02/23/YwxA7fFgWyshuZX.gif" width="200" /> |  |
+| 顶<br>玩 | <img src="https://s2.loli.net/2022/08/16/WVotKxjqupdCJAS.gif" width="200" /> |  |
 | 拍 | <img src="https://s2.loli.net/2022/02/23/5mv6pFJMNtzHhcl.gif" width="200" /> |  |
 | 撕 | <img src="https://s2.loli.net/2022/05/29/FDcam9ROPkqvwxH.jpg" width="200" > |  |
 | 丢<br>扔 | <img src="https://s2.loli.net/2022/02/23/LlDrSGYdpcqEINu.jpg" width="200" /> |  |
@@ -127,14 +127,14 @@ pip install nonebot_plugin_petpet
 | 锤 | <img src="https://s2.loli.net/2022/04/20/ajXFm95tHRM6CzZ.gif" width="200" > |  |
 | 紧贴<br>紧紧贴着 | <img src="https://s2.loli.net/2022/04/20/FiBwc3ZxvVLObGP.gif" width="200" > |  |
 | 注意力涣散 | <img src="https://s2.loli.net/2022/05/11/mEtyxoZ3DfwBCn5.jpg" width="200" > |  |
-| 阿尼亚喜欢 | <img src="https://s2.loli.net/2022/05/11/U3ZMXHB1PduKckQ.jpg" width="200" > | 支持gif |
+| 阿尼亚喜欢 | <img src="https://s2.loli.net/2022/08/16/PNCZxzqvV9uDFEf.jpg" width="200" > | 支持gif |
 | 想什么 | <img src="https://s2.loli.net/2022/05/18/ck1jNO2K8Qd6Lo3.jpg" width="200" > | 支持gif |
 | 远离 | <img src="https://s2.loli.net/2022/05/31/lqyOu25WPTsGBcb.jpg" width="200" > | 可指定多个目标 |
 | 结婚申请<br>结婚登记 | <img src="https://s2.loli.net/2022/05/31/tZR3ls7cBrdGHTL.jpg" width="200" > |  |
 | 小画家 | <img src="https://s2.loli.net/2022/06/23/KCD73EbgqzWFxr4.jpg" width="200" > |  |
-| 复读 | <img src="https://s2.loli.net/2022/06/08/nU2dAe3GiVR7Y8I.gif" width="200" > | 复读内容默认为“救命啊”<br>可指定多个目标 |
+| 复读 | <img src="https://s2.loli.net/2022/08/16/E6vgRCt3MSLfAWU.gif" width="200" > | 复读内容默认为“救命啊”<br>可指定多个目标 |
 | 防诱拐 | <img src="https://s2.loli.net/2022/07/21/ve6lcYaiV4wfhHg.jpg" width="200" > |  |
 | 字符画 | <img src="https://s2.loli.net/2022/07/21/R58eG7mVZWPp1Cy.jpg" width="200" > | 支持gif |
-| 这是我的老婆 | <img src="https://s2.loli.net/2022/07/27/zudkiJvTcS9ybrx.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
+| 这是我的老婆 | <img src="https://s2.loli.net/2022/08/16/7wPht5rp6sk1ZCq.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
 | 胡桃平板 | <img src="https://s2.loli.net/2022/08/16/Mc5HvfB6ywqLQiV.jpg" width="200" > | 支持gif |
 | 讲课<br>敲黑板 | <img src="https://s2.loli.net/2022/08/16/VpdIHsteKocgRzP.jpg" width="200" > | 支持gif |
