@@ -1384,3 +1384,27 @@ def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
         return frame
 
     return make_jpg_or_gif(img, make)
+
+
+def teach(img: BuildImage = UserImg(), args: List[str] = Args(1, 3)):
+    def make(img: BuildImage) -> BuildImage:
+        img = img.resize((287, 210), keep_ratio=True).convert("RGBA")
+        char = load_image("teach/0.png").resize_width(500).convert("RGBA")
+        bg = BuildImage.new("RGBA", char.size)
+        bg.paste(img, (163, int(137 - img.height / 2)))
+        bg.paste(char, alpha=True)
+        text_img = BuildImage(
+            Text2Image.from_bbcode_text(
+                " ".join(args), fontsize=30, align="center", fill="white"
+            )
+            .wrap(480)
+            .to_image()
+        )
+        bg.paste(
+            text_img,
+            (int(bg.width / 2 - text_img.width / 2), bg.height - text_img.height),
+            alpha=True,
+        )
+        return bg
+
+    return make_jpg_or_gif(img, make)
