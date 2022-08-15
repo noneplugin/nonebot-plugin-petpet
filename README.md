@@ -37,7 +37,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/07/22/vClbGSgDBdk4ZYc.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/08/16/XqgcomEMGWBuwpV.jpg" width="400" />
 </div>
 
 
@@ -100,7 +100,7 @@ pip install nonebot_plugin_petpet
 | 继续干活<br>打工人 | <img src="https://s2.loli.net/2022/04/20/LIak2BsJ9Dd5O7l.jpg" width="200" > |  |
 | 完美<br>完美的 | <img src="https://s2.loli.net/2022/03/10/lUS1nmPAKIYtwih.jpg" width="200" /> |  |
 | 关注 | <img src="https://s2.loli.net/2022/03/12/FlpjRWCte72ozqs.jpg" width="200" > | 名字为qq昵称，可指定名字 |
-| 我朋友说<br>我有个朋友说 | <img src="https://s2.loli.net/2022/03/12/cBk4aG3RwIoYbMF.jpg" width="200" > | 默认使用发送者的头像<br>如：我朋友说 来份涩图 |
+| 我朋友说<br>我有个朋友说 | <img src="https://s2.loli.net/2022/03/12/cBk4aG3RwIoYbMF.jpg" width="200" > | 没有图片则使用发送者的头像<br>可指定名字<br>如“我朋友张三说 来份涩图” |
 | 这像画吗 | <img src="https://s2.loli.net/2022/03/12/PiSAM1T6EvxXWgD.jpg" width="200" > |  |
 | 震惊 | <img src="https://s2.loli.net/2022/03/12/4krO6y53bKzYpUg.gif" width="200" > |  |
 | 兑换券 | <img src="https://s2.loli.net/2022/03/12/6tS7dDaprb1sUxj.jpg" width="200" > | 默认文字为：qq昵称 + 陪睡券<br>可指定文字 |
@@ -135,4 +135,6 @@ pip install nonebot_plugin_petpet
 | 复读 | <img src="https://s2.loli.net/2022/06/08/nU2dAe3GiVR7Y8I.gif" width="200" > | 复读内容默认为“救命啊”<br>可指定多个目标 |
 | 防诱拐 | <img src="https://s2.loli.net/2022/07/21/ve6lcYaiV4wfhHg.jpg" width="200" > |  |
 | 字符画 | <img src="https://s2.loli.net/2022/07/21/R58eG7mVZWPp1Cy.jpg" width="200" > | 支持gif |
-| 这是我的老婆 | <img src="https://s2.loli.net/2022/07/27/zudkiJvTcS9ybrx.jpg" width="200" > |  |
+| 这是我的老婆 | <img src="https://s2.loli.net/2022/07/27/zudkiJvTcS9ybrx.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
+| 胡桃平板 | <img src="https://s2.loli.net/2022/08/16/Mc5HvfB6ywqLQiV.jpg" width="200" > | 支持gif |
+| 讲课<br>敲黑板 | <img src="https://s2.loli.net/2022/08/16/VpdIHsteKocgRzP.jpg" width="200" > | 支持gif |
