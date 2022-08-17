@@ -74,4 +74,8 @@ memes = [
     Meme("walnutpad", walnutpad, ("胡桃平板",)),
     Meme("teach", teach, ("讲课", "敲黑板",)),
     Meme("addition", addition, ("上瘾","毒瘾发作",)),
+    Meme("bubble_tea", bubble_tea, ("奶茶",)),
+    Meme("gun", gun, ("枪",)),
+    Meme("stretch", stretch, ("双手","伸展",)),
+    Meme("grab", grab, ("抓",)),
 ]
