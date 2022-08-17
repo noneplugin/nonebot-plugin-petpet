@@ -1405,3 +1405,28 @@ def teach(img: BuildImage = UserImg(), arg: str = Arg()):
         )
 
     return make_jpg_or_gif(img, make)
+
+
+def addition(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("addiction/0.png")
+
+    if arg:
+        expand_frame = BuildImage.new("RGBA", (246, 286), "white")
+        expand_frame.paste(frame, (0, 0))
+        try:
+            expand_frame.draw_text(
+                (10, 246, 236, 286),
+                arg,
+                max_fontsize=45,
+                lines_align="center",
+            )
+        except ValueError:
+            return TEXT_TOO_LONG
+        frame = expand_frame
+
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((70, 70), keep_ratio=True), (0, 0)
+        )
+
+    return make_jpg_or_gif(img, make)
