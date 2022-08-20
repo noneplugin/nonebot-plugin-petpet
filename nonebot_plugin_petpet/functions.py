@@ -1430,3 +1430,86 @@ def addition(img: BuildImage = UserImg(), arg: str = Arg()):
         )
 
     return make_jpg_or_gif(img, make)
+def do_or_not(
+    user_imgs: List[BuildImage] = UserImgs(1, 2),
+    sender_img: BuildImage = SenderImg(),
+    args: List[str] = Args(0, 10)):
+    if not args:
+        args = ["任务","爱"]
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[1]
+        user_img = user_imgs[0]
+    else:
+        self_img = sender_img
+        user_img = user_imgs[0]
+
+    self_head = self_img.convert("RGBA").resize((81,81))
+    user_head = user_img.convert("RGBA").resize((81,81))
+    te1_m = Text2Image.from_text(args[0]+'做不做', 25, fill="white",fontname= 'simhei.tff').to_image()
+    te2_m = Text2Image.from_text(args[1]+"做不做", 25, fill="white",fontname= 'simhei.tff').to_image()
+    te3_m = Text2Image.from_text('不做', 25, fill="white",fontname= 'simhei.tff').to_image()
+    te4_m = Text2Image.from_text('做', 25, fill="white",fontname= 'simhei.tff').to_image()
+    text_img1 = BuildImage.new("RGBA", (te1_m.width+40, 81),'#95EC69')
+    text_img2 = BuildImage.new("RGBA", (te2_m.width+40, 81),'#95EC69')
+    text_img3 = BuildImage.new("RGBA", (te3_m.width+40, 81),'white')
+    text_img4 = BuildImage.new("RGBA", (te4_m.width+40, 81),'white')
+    try:
+        text_img1.draw_text(
+            (20, 20, text_img1.width - 20, text_img1.height- 20),
+            args[0]+'做不做',
+            max_fontsize=25,
+            min_fontsize=25,
+            fill="black",
+        )
+        text_img2.draw_text(
+            (20, 20, text_img2.width - 20, text_img2.height - 20),
+            args[1]+'做不做',
+            max_fontsize=25,
+            min_fontsize=25,
+            fill="black",
+        )
+        text_img3.draw_text(
+            (20, 20, text_img3.width - 20, text_img2.height - 20),
+            '不做',
+            max_fontsize=25,
+            min_fontsize=25,
+            fill="black",
+        )
+        text_img4.draw_text(
+            (20, 20, text_img4.width - 20, text_img2.height - 20),
+            '做',
+            max_fontsize=25,
+            min_fontsize=25,
+            fill="black",
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    frame = load_image(f"do_or_not/time.png")
+    sl = load_image(f'do_or_not/user_left.png')
+    sr = load_image(f'do_or_not/user_right.png')
+    ul = load_image(f'do_or_not/sender_left.png')
+    ur = load_image(f'do_or_not/sender_right.png')
+    img = BuildImage.new("RGBA", (750, 610), "#EBEBEB")
+    frame.paste(img, (0, 80), alpha=True)
+
+    frame.paste(self_head, (643 , 114),alpha=True)
+    frame.paste(text_img1, (615-text_img1.width, 114), alpha=True)
+    frame.paste(sl, (615-text_img1.width-sl.width, 114), alpha=True)
+    frame.paste(sr, (643-sr.width, 114), alpha=True)
+
+    frame.paste(user_head, (25 , 222),alpha=True)
+    frame.paste(ul, (110, 222), alpha=True)
+    frame.paste(text_img3, (110+ul.width, 222), alpha=True)
+    frame.paste(ur, (110+ul.width+text_img3.width, 222), alpha=True)
+
+    frame.paste(self_head, (643 , 330),alpha=True)
+    frame.paste(text_img2, (615-text_img2.width, 330), alpha=True)
+    frame.paste(sl, (615-text_img2.width-sl.width, 330), alpha=True)
+    frame.paste(sr, (643-sr.width, 330), alpha=True)
+
+    frame.paste(user_head, (25 , 438),alpha=True)
+    frame.paste(ul, (110, 438), alpha=True)
+    frame.paste(text_img4, (110+ul.width, 438), alpha=True)
+    frame.paste(ur, (110+ul.width+text_img4.width, 438), alpha=True)
+
+    return frame.save_jpg()
