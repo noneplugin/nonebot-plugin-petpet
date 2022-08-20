@@ -74,4 +74,5 @@ memes = [
     Meme("walnutpad", walnutpad, ("胡桃平板",)),
     Meme("teach", teach, ("讲课", "敲黑板",)),
     Meme("addition", addition, ("上瘾","毒瘾发作",)),
+    Meme("do_or_not", do_or_not,("做不做",)),
 ]
