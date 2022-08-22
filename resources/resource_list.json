@@ -1,5 +1,9 @@
 [
     {
+        "path": "images/addiction/0.png",
+        "hash": "228c787301e5cb41e631b60437eca454"
+    },
+    {
         "path": "images/alike/0.png",
         "hash": "a3eeb0a3ff0ec24a9e2cf1655b8ccd71"
     },
@@ -598,6 +602,10 @@
     {
         "path": "images/garbage/9.png",
         "hash": "6749dad6bd2ade275a157a205ef6b860"
+    },
+    {
+        "path": "images/gun/0.png",
+        "hash": "23e223aba69b4c42cd04dcae58aec254"
     },
     {
         "path": "images/hammer/0.png",
