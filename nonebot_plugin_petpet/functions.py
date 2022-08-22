@@ -1430,3 +1430,35 @@ def addition(img: BuildImage = UserImg(), arg: str = Arg()):
         )
 
     return make_jpg_or_gif(img, make)
+
+
+def bubble_tea(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("bubble_tea/0.png")
+    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
+    frame = img
+
+    return frame.save_jpg()
+
+
+def gun(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("gun/0.png")
+    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
+    frame = img
+
+    return frame.save_jpg()
+
+
+def stretch(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("stretch/0.png")
+    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
+    frame = img
+
+    return frame.save_jpg()
+
+
+def grab(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("grab/0.png")
+    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
+    frame = img
+
+    return frame.save_jpg()
