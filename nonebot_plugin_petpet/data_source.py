@@ -75,6 +75,6 @@ memes = [
     Meme("teach", teach, ("讲课", "敲黑板")),
     Meme("addition", addition, ("上瘾", "毒瘾发作")),
     Meme("gun", gun, ("手枪",)),
-    Meme("blood_pressure", blood_pressure, ("血压上来了",)),
+    Meme("blood_pressure", blood_pressure, ("高血压",)),
     Meme("read_book", read_book, ("看书",)),
 ]

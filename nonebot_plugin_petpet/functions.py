@@ -1456,9 +1456,11 @@ def read_book(img: BuildImage = UserImg(), arg: str = Arg()):
         try:
             frame.draw_text(
                 (870, 1500, 1110, 2280),
-                "\n".join(list(arg)),
+                arg,
                 max_fontsize=200,
-                min_fontsize=100,
+                min_fontsize=70,
+                allow_wrap=True,
+                fill="white",
                 weight="bold",
             )
         except:
