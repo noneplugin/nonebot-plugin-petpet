@@ -1434,3 +1434,14 @@ def gun(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("gun/0.png")
     frame.paste(img.resize((500, 500), keep_ratio=True), below=True)
     return frame.save_jpg()
+
+
+def blood_pressure(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("blood_pressure/0.png")
+
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((414, 450), keep_ratio=True), (16, 17), below=True
+        )
+
+    return make_jpg_or_gif(img, make)
