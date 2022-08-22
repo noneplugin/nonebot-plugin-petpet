@@ -1445,3 +1445,22 @@ def blood_pressure(img: BuildImage = UserImg(), arg=NoArg()):
         )
 
     return make_jpg_or_gif(img, make)
+
+
+def read_book(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("read_book/0.png")
+    points = ((0, 108), (1092, 0), (1023, 1134), (29, 1134))
+    cover = img.resize((1000, 1100), keep_ratio=True).perspective(points)
+    frame.paste(cover, (1138, 1172), below=True)
+    if arg:
+        try:
+            frame.draw_text(
+                (870, 1500, 1110, 2280),
+                "\n".join(list(arg)),
+                max_fontsize=200,
+                min_fontsize=100,
+                weight="bold",
+            )
+        except:
+            return TEXT_TOO_LONG
+    return frame.save_jpg()
