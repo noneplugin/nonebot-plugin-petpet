@@ -1466,3 +1466,62 @@ def read_book(img: BuildImage = UserImg(), arg: str = Arg()):
         except:
             return TEXT_TOO_LONG
     return frame.save_jpg()
+
+async def wechat(
+    user_imgs: List[BuildImage] = UserImgs(1, 2),
+    sender_img: BuildImage = SenderImg(),
+    args: List[str] = Args(0, 99)):
+    if len(args) < 4:
+        for i in range(len(args),4):
+            args_info =["任务做不做","不做","爱做不做","做"]
+            args.append(args_info[i])
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[1]
+        user_img = user_imgs[0]
+    else:
+        self_img = sender_img
+        user_img = user_imgs[0]
+
+    self_head = self_img.convert("RGBA").resize((81,81))
+    user_head = user_img.convert("RGBA").resize((81,81))
+    d_len = len(args)
+    frame = BuildImage.new("RGBA", (750,305+81*d_len+27*(d_len-1)), "#EBEBEB")
+    img = load_image(f"do_or_not/time.png")
+    frame.paste(img, (0, 0), alpha=True)
+    sl = load_image(f'do_or_not/user_left.png')
+    sr = load_image(f'do_or_not/user_right.png')
+    ul = load_image(f'do_or_not/sender_left.png')
+    ur = load_image(f'do_or_not/sender_right.png')
+    for i in range(len(args)):
+        tex_m = Text2Image.from_text(args[i], 25, fill="white",fontname= 'simhei.tff').to_image()
+        if len(args[i])  > 17:
+            return f'第{i+1}个台词太长咯，改短点再试试吧'
+        if i % 2 == 0 :
+            text_img = BuildImage.new("RGBA", (tex_m.width+40, 81),'#95EC69')
+            text_img.draw_text(
+                    (20, 20, text_img.width-20, text_img.height-20),
+                    args[i],
+                    max_fontsize=25,
+                    min_fontsize=25,
+                    fill="black",
+                )
+            frame.paste(self_head, (643 , 114+i//2*216),alpha=True)
+            frame.paste(text_img, (615-text_img.width, 114+i//2*216), alpha=True)
+            frame.paste(sl, (615-text_img.width-sl.width, 114+i//2*216), alpha=True)
+            frame.paste(sr, (643-sr.width, 114+i//2*216), alpha=True)
+        else:
+            text_img = BuildImage.new("RGBA", (tex_m.width+40, 81),'white')
+            text_img.draw_text(
+                    (20, 20, text_img.width - 20, text_img.height- 20),
+                    args[i],
+                    max_fontsize=25,
+                    min_fontsize=25,
+                    fill="black",
+                )
+            frame.paste(user_head, (25 , 222+(i-1)//2*216),alpha=True)
+            frame.paste(ul, (110, 222+(i-1)//2*216), alpha=True)
+            frame.paste(text_img, (110+ul.width, 222+(i-1)//2*216), alpha=True)
+            frame.paste(ur, (110+ul.width+text_img.width, 222+(i-1)//2*216), alpha=True)
+
+    return frame.save_jpg()
+
