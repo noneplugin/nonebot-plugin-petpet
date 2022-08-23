@@ -1486,12 +1486,12 @@ async def wechat(
     user_head = user_img.convert("RGBA").resize((81,81))
     d_len = len(args)
     frame = BuildImage.new("RGBA", (750,305+81*d_len+27*(d_len-1)), "#EBEBEB")
-    img = load_image(f"do_or_not/time.png")
+    img = load_image(f"wechat/time.png")
     frame.paste(img, (0, 0), alpha=True)
-    sl = load_image(f'do_or_not/user_left.png')
-    sr = load_image(f'do_or_not/user_right.png')
-    ul = load_image(f'do_or_not/sender_left.png')
-    ur = load_image(f'do_or_not/sender_right.png')
+    sl = load_image(f'wechat/user_left.png')
+    sr = load_image(f'wechat/user_right.png')
+    ul = load_image(f'wechat/sender_left.png')
+    ur = load_image(f'wechat/sender_right.png')
     for i in range(len(args)):
         tex_m = Text2Image.from_text(args[i], 25, fill="white",fontname= 'simhei.tff').to_image()
         if len(args[i])  > 17:
