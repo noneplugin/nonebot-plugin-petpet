@@ -77,4 +77,5 @@ memes = [
     Meme("gun", gun, ("手枪",)),
     Meme("blood_pressure", blood_pressure, ("高血压",)),
     Meme("read_book", read_book, ("看书",)),
+    Meme("call_110", call_110, ("遇到困难请拨打",)),
 ]
