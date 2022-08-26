@@ -37,7 +37,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/08/16/XqgcomEMGWBuwpV.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/08/26/9O3kBNcHWS8hX1e.jpg" width="400" />
 </div>
 
 
@@ -138,3 +138,8 @@ pip install nonebot_plugin_petpet
 | 这是我的老婆 | <img src="https://s2.loli.net/2022/08/16/7wPht5rp6sk1ZCq.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
 | 胡桃平板 | <img src="https://s2.loli.net/2022/08/16/Mc5HvfB6ywqLQiV.jpg" width="200" > | 支持gif |
 | 讲课<br>敲黑板 | <img src="https://s2.loli.net/2022/08/16/VpdIHsteKocgRzP.jpg" width="200" > | 支持gif |
+| 上瘾<br>毒瘾发作 | <img src="https://s2.loli.net/2022/08/26/WAVDFfJB7tH5z3y.jpg" width="200" > | 支持gif |
+| 手枪 | <img src="https://s2.loli.net/2022/08/26/MRO3mqvfbaxkB1t.jpg" width="200" > |  |
+| 高血压 | <img src="https://s2.loli.net/2022/08/26/9qbyN2h38MAkRZE.jpg" width="200" > | 支持gif |
+| 看书 | <img src="https://s2.loli.net/2022/08/26/SeAC86RgDlUvLNY.jpg" width="200" > |  |
+| 遇到困难请拨打 | <img src="https://s2.loli.net/2022/08/26/KWGSf6qErB14uwp.jpg" width="200" > | 可指定一个或两个目标 |
