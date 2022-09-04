@@ -1508,7 +1508,7 @@ def call_110(
 def confuse(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").resize((500, 500), keep_ratio=True)
     frames: List[IMG] = []
-    for i in range(60):
+    for i in range(100):
         mask = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
         frame = BuildImage.new("RGBA", img.size, (255, 255, 255, 0))
         avatar = img
