@@ -80,4 +80,5 @@ memes = [
     Meme("call_110", call_110, ("遇到困难请拨打",)),
     Meme("confuse", confuse, ("迷惑",)),
     Meme("hit_screen", hit_screen, ("打穿", "打穿屏幕"), r"打穿(?:屏幕)?"),
+    Meme("fencing", fencing, ("击剑", "🤺")),
 ]

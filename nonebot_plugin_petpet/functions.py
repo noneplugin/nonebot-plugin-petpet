@@ -1544,3 +1544,37 @@ def hit_screen(img: BuildImage = UserImg(), arg=NoArg()):
         frames[i].paste(img.perspective(points), pos, below=True)
     frames = [frame.image for frame in frames]
     return save_gif(frames, 0.2)
+
+
+def fencing(
+    user_imgs: List[BuildImage] = UserImgs(1, 2),
+    sender_img: BuildImage = SenderImg(),
+    arg=NoArg(),
+):
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
+    else:
+        self_img = sender_img
+        user_img = user_imgs[0]
+    self_head = self_img.convert("RGBA").circle().resize((27, 27))
+    user_head = user_img.convert("RGBA").circle().resize((27, 27))
+    # fmt: off
+    user_locs = [
+        (57, 4), (55, 5), (58, 7), (57, 5), (53, 8), (54, 9),
+        (64, 5), (66, 8), (70, 9), (73, 8), (81, 10), (77, 10),
+        (72, 4), (79, 8), (50, 8), (60, 7), (67, 6), (60, 6), (50, 9)
+    ]
+    self_locs = [
+        (10, 6), (3, 6), (32, 7), (22, 7), (13, 4), (21, 6),
+        (30, 6), (22, 2), (22, 3), (26, 8), (23, 8), (27, 10),
+        (30, 9), (17, 6), (12, 8), (11, 7), (8, 6), (-2, 10), (4, 9)
+    ]
+    # fmt: on
+    frames: List[IMG] = []
+    for i in range(19):
+        frame = load_image(f"fencing/{i}.png")
+        frame.paste(user_head, user_locs[i], alpha=True)
+        frame.paste(self_head, self_locs[i], alpha=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.05)
