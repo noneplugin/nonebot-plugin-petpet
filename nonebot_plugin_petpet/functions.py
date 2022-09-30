@@ -540,14 +540,15 @@ def twist(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def wallpaper(img: BuildImage = UserImg(), arg=NoArg()):
-    frame = load_image("wallpaper/0.png")
-
-    def make(img: BuildImage) -> BuildImage:
-        return frame.copy().paste(
-            img.resize((775, 496), keep_ratio=True), (260, 580), below=True
-        )
-
-    return make_jpg_or_gif(img, make, gif_zoom=0.5)
+    img = img.convert("RGBA").resize((515, 383), keep_ratio=True)
+    frames: List[IMG] = []
+    for i in range(8):
+        frames.append(load_image(f"wallpaper/{i}.png").image)
+    for i in range(8, 20):
+        frame = load_image(f"wallpaper/{i}.png")
+        frame.paste(img, (176, -9), below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.07)
 
 
 def china_flag(img: BuildImage = UserImg(), arg=NoArg()):
