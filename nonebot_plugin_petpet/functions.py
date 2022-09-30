@@ -1578,3 +1578,22 @@ def fencing(
         frame.paste(self_head, self_locs[i], alpha=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
+
+
+def hug_leg(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square()
+    locs = [
+        (50, 73, 68, 92),
+        (58, 60, 62, 95),
+        (65, 10, 67, 118),
+        (61, 20, 77, 97),
+        (55, 44, 65, 106),
+        (66, 85, 60, 98),
+    ]
+    frames: List[IMG] = []
+    for i in range(6):
+        frame = load_image(f"hug_leg/{i}.png")
+        x, y, w, h = locs[i]
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.06)

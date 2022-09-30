@@ -81,4 +81,5 @@ memes = [
     Meme("confuse", confuse, ("迷惑",)),
     Meme("hit_screen", hit_screen, ("打穿", "打穿屏幕"), r"打穿(?:屏幕)?"),
     Meme("fencing", fencing, ("击剑", "🤺")),
+    Meme("hug_leg", hug_leg, ("抱大腿",)),
 ]
