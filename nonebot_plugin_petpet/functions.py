@@ -1385,6 +1385,24 @@ def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
+def walnut_zoom(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA")
+    # fmt: off
+    locs = (
+        (-275, -151, 780, 780), (-256, -151, 780, 780), (-41, -151, 780, 780), (16, -151, 780, 780),
+        (16, -144, 778, 778), (-90, -316, 910, 910), (-117, -347, 1009, 1009), (-234, -482, 1187, 1187)
+    )
+    seq = [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 6, 7, 7, 7, 7]
+    # fmt: on
+    frames: List[IMG] = []
+    for i in range(24):
+        frame = load_image(f"walnut_zoom/{i}.png")
+        x, y, w, h = locs[seq[i]]
+        frame.paste(img.resize((w, h)).rotate(9), (x, y), below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.2)
+
+
 def teach(img: BuildImage = UserImg(), arg: str = Arg()):
     frame = load_image("teach/0.png").resize_width(960).convert("RGBA")
     try:

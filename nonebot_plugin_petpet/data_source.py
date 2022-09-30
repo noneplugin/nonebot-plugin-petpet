@@ -72,6 +72,7 @@ memes = [
     Meme("charpic", charpic, ("字符画",)),
     Meme("mywife", mywife, ("这是我的老婆",), r"这是(?P<ta>\S+)的(?P<name>\S+)"),
     Meme("walnutpad", walnutpad, ("胡桃平板",)),
+    Meme("walnut_zoom", walnut_zoom, ("胡桃放大",)),
     Meme("teach", teach, ("讲课", "敲黑板")),
     Meme("addition", addition, ("上瘾", "毒瘾发作")),
     Meme("gun", gun, ("手枪",)),
