@@ -82,4 +82,5 @@ memes = [
     Meme("hit_screen", hit_screen, ("打穿", "打穿屏幕"), r"打穿(?:屏幕)?"),
     Meme("fencing", fencing, ("击剑", "🤺")),
     Meme("hug_leg", hug_leg, ("抱大腿",)),
+    Meme("tankuku_holdsign", tankuku_holdsign, ("唐可可举牌",)),
 ]
