@@ -37,7 +37,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s1.328888.xyz/2022/10/01/Mp7Fm.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/10/01/vN63w9JH2aBQYim.jpg" width="400" />
 </div>
 
 
@@ -100,7 +100,7 @@ pip install nonebot_plugin_petpet
 | 问问<br>去问问 | <img src="https://s2.loli.net/2022/02/23/GUyax1BF6q5Hvin.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
 | 舔<br>舔屏<br>prpr | <img src="https://s2.loli.net/2022/03/05/WMHpwygtmN5bdEV.jpg" width="200" /> | 支持gif |
 | 搓 | <img src="https://s2.loli.net/2022/03/09/slRF4ue56xSQzra.gif" width="200" /> |  |
-| 墙纸 | <img src="https://s1.328888.xyz/2022/10/01/MptIr.gif" width="200" /> |  |
+| 墙纸 | <img src="https://s2.loli.net/2022/10/01/wm3pFvEZeUctA4J.gif" width="200" /> |  |
 | 国旗 | <img src="https://s2.loli.net/2022/03/10/p7nwCvgsU3LxBDI.jpg" width="200" /> |  |
 | 交个朋友 | <img src="https://s2.loli.net/2022/03/10/SnmkNrjKuFeZvbA.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
 | 继续干活<br>打工人 | <img src="https://s2.loli.net/2022/04/20/LIak2BsJ9Dd5O7l.jpg" width="200" > |  |
@@ -143,20 +143,20 @@ pip install nonebot_plugin_petpet
 | 字符画 | <img src="https://s2.loli.net/2022/07/21/R58eG7mVZWPp1Cy.jpg" width="200" > | 支持gif |
 | 这是我的老婆 | <img src="https://s2.loli.net/2022/08/16/7wPht5rp6sk1ZCq.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
 | 胡桃平板 | <img src="https://s2.loli.net/2022/08/16/Mc5HvfB6ywqLQiV.jpg" width="200" > | 支持gif |
-| 胡桃放大 | <img src="https://s1.328888.xyz/2022/10/01/MpyHK.gif" width="200" > | 支持gif |
+| 胡桃放大 | <img src="https://s2.loli.net/2022/10/01/ISotJVp1xOfgvlq.gif" width="200" > | 支持gif |
 | 讲课<br>敲黑板 | <img src="https://s2.loli.net/2022/08/16/VpdIHsteKocgRzP.jpg" width="200" > | 支持gif |
 | 上瘾<br>毒瘾发作 | <img src="https://s2.loli.net/2022/08/26/WAVDFfJB7tH5z3y.jpg" width="200" > | 支持gif |
 | 手枪 | <img src="https://s2.loli.net/2022/08/26/MRO3mqvfbaxkB1t.jpg" width="200" > |  |
 | 高血压 | <img src="https://s2.loli.net/2022/08/26/9qbyN2h38MAkRZE.jpg" width="200" > | 支持gif |
 | 看书 | <img src="https://s2.loli.net/2022/08/26/SeAC86RgDlUvLNY.jpg" width="200" > |  |
 | 遇到困难请拨打 | <img src="https://s2.loli.net/2022/08/26/KWGSf6qErB14uwp.jpg" width="200" > | 可指定一个或两个目标 |
-| 迷惑 | <img src="https://s1.328888.xyz/2022/10/01/Mpp8w.gif" width="200" > | 支持gif |
-| 打穿<br>打穿屏幕 | <img src="https://s1.328888.xyz/2022/10/01/MprEE.gif" width="200" > | 支持gif |
-| 击剑<br>🤺 | <img src="https://s1.328888.xyz/2022/10/01/MpQ57.gif" width="200" > |  |
-| 抱大腿 | <img src="https://s1.328888.xyz/2022/10/01/MpJ6j.gif" width="200" > |  |
-| 唐可可举牌 | <img src="https://s1.328888.xyz/2022/10/01/MpSzk.gif" width="200" > |  |
-| 无响应 | <img src="https://s1.328888.xyz/2022/10/01/MpHwJ.jpg" width="200" > |  |
-| 抱紧 | <img src="https://s1.328888.xyz/2022/10/01/Mpgw6.jpg" width="200" > |  |
+| 迷惑 | <img src="https://s2.loli.net/2022/10/01/WqfAXNpD8JkVnUH.gif" width="200" > | 支持gif |
+| 打穿<br>打穿屏幕 | <img src="https://s2.loli.net/2022/10/01/ndxBbC1TKeRYv9X.gif" width="200" > | 支持gif |
+| 击剑<br>🤺 | <img src="https://s2.loli.net/2022/10/01/97uZYdFs16CkJhQ.gif" width="200" > |  |
+| 抱大腿 | <img src="https://s2.loli.net/2022/10/01/mivPkLle6qwZQsg.gif" width="200" > |  |
+| 唐可可举牌 | <img src="https://s2.loli.net/2022/10/01/LdGk9MmzYaebFt5.gif" width="200" > |  |
+| 无响应 | <img src="https://s2.loli.net/2022/10/01/vjXnOgcSVLGfdCQ.jpg" width="200" > |  |
+| 抱紧 | <img src="https://s2.loli.net/2022/10/01/vYgl3nRmXuGwqDd.jpg" width="200" > |  |
 
 </details>
 
