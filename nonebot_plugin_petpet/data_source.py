@@ -84,4 +84,6 @@ memes = [
     Meme("fencing", fencing, ("击剑", "🤺")),
     Meme("hug_leg", hug_leg, ("抱大腿",)),
     Meme("tankuku_holdsign", tankuku_holdsign, ("唐可可举牌",)),
+    Meme("no_response", no_response, ("无响应",)),
+    Meme("hold_tight", hold_tight, ("抱紧",)),
 ]

@@ -1232,6 +1232,10 @@
         "hash": "428161e3ddf06e69180156ab4c245884"
     },
     {
+        "path": "images/hold_tight/0.png",
+        "hash": "6c52f7de5f1a4aca8f1a0e7c5f6dd89b"
+    },
+    {
         "path": "images/hug_leg/0.png",
         "hash": "bc08d4fd4fa124712006354df0eb092d"
     },
@@ -1438,6 +1442,10 @@
     {
         "path": "images/need/0.png",
         "hash": "1b1b6fb05731056fc52d9afd3b4877b9"
+    },
+    {
+        "path": "images/no_response/0.png",
+        "hash": "2d83def33dfe559dcad883f39bfee4cb"
     },
     {
         "path": "images/paint/0.png",

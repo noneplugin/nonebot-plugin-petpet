@@ -1641,3 +1641,17 @@ def tankuku_holdsign(img: BuildImage = UserImg(), arg=NoArg()):
         frame.paste(img.perspective(points), pos, below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.2)
+
+
+def no_response(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((1050, 783), keep_ratio=True)
+    frame = load_image("no_response/0.png")
+    frame.paste(img, (0, 581), below=True)
+    return frame.save_jpg()
+
+
+def hold_tight(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((159, 171), keep_ratio=True)
+    frame = load_image("hold_tight/0.png")
+    frame.paste(img, (113, 205), below=True)
+    return frame.save_jpg()
