@@ -789,8 +789,7 @@ def love_you(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", "右"])):
-    img = img.convert("RGBA").resize_width(500)
-    img_w, img_h = img.size
+    img_w, img_h = img.copy().convert("RGBA").resize_width(500).size
 
     Mode = namedtuple(
         "Mode", ["method", "frame_size", "size1", "pos1", "size2", "pos2"]
@@ -838,12 +837,16 @@ def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", 
     elif arg == "下":
         mode = modes["bottom"]
 
-    first = img
-    second = img.transpose(mode.method)
-    frame = BuildImage.new("RGBA", mode.frame_size)
-    frame.paste(first.crop(mode.size1), mode.pos1)
-    frame.paste(second.crop(mode.size2), mode.pos2)
-    return frame.save_jpg()
+    def make(img: BuildImage) -> BuildImage:
+        img = img.resize_width(500)
+        first = img
+        second = img.transpose(mode.method)
+        frame = BuildImage.new("RGBA", mode.frame_size)
+        frame.paste(first.crop(mode.size1), mode.pos1)
+        frame.paste(second.crop(mode.size2), mode.pos2)
+        return frame
+
+    return make_jpg_or_gif(img, make)
 
 
 def safe_sense(user: UserInfo = User(), arg: str = Arg()):
