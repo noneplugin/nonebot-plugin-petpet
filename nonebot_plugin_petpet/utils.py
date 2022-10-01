@@ -77,6 +77,53 @@ def make_jpg_or_gif(
         return save_gif(frames, duration)
 
 
+def make_gif_or_combined_gif(
+    img: BuildImage, functions: List[Maker], duration: float
+) -> BytesIO:
+    """
+    使用静图或动图制作gif
+    :params
+      * ``img``: 输入图片，如头像
+      * ``functions``: 图片处理函数数组，每个函数输入img并返回处理后的图片
+      * ``duration``: 相邻帧之间的时间间隔，单位为秒
+    """
+    image = img.image
+    if not getattr(image, "is_animated", False):
+        img = img.convert("RGBA")
+        frames: List[IMG] = []
+        for func in functions:
+            frames.append(func(img).image)
+        return save_gif(frames, duration)
+
+    img_frames: List[BuildImage] = []
+    n_frames = image.n_frames
+    img_duration = image.info["duration"] / 1000
+
+    n_frame = 0
+    time_start = 0
+    for i in range(len(functions)):
+        while n_frame < n_frames:
+            if (
+                n_frame * img_duration
+                <= i * duration - time_start
+                < (n_frame + 1) * img_duration
+            ):
+                image.seek(n_frame)
+                img_frames.append(BuildImage(image).convert("RGBA"))
+                print(f"add frame {n_frame}")
+                break
+            else:
+                n_frame += 1
+                if n_frame >= n_frames:
+                    n_frame = 0
+                    time_start += n_frames * img_duration
+
+    frames: List[IMG] = []
+    for func, img_frame in zip(functions, img_frames):
+        frames.append(func(img_frame).image)
+    return save_gif(frames, duration)
+
+
 async def translate(text: str) -> str:
     url = f"http://fanyi.youdao.com/translate"
     params = {"type": "ZH_CN2JA", "i": text, "doctype": "json"}

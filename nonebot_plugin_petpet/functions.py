@@ -9,7 +9,7 @@ from nonebot_plugin_imageutils.fonts import Font
 from nonebot_plugin_imageutils import BuildImage, Text2Image
 
 from .download import load_image
-from .utils import UserInfo, save_gif, make_jpg_or_gif, translate
+from .utils import *
 from .depends import *
 
 
@@ -1390,21 +1390,26 @@ def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def walnut_zoom(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA")
     # fmt: off
     locs = (
-        (-275, -151, 780, 780), (-256, -151, 780, 780), (-41, -151, 780, 780), (16, -151, 780, 780),
-        (16, -144, 778, 778), (-90, -316, 910, 910), (-117, -347, 1009, 1009), (-234, -482, 1187, 1187)
-    )
-    seq = [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 6, 7, 7, 7, 7]
+        (-222, 30, 695, 430), (-212, 30, 695, 430), (0, 30, 695, 430), (41, 26, 695, 430),
+        (-100, -67, 922, 570), (-172, -113, 1059, 655), (-273, -192, 1217, 753)
+    ) # (-47, -12, 801, 495), 
+    seq = [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 6, 6, 6]
     # fmt: on
-    frames: List[IMG] = []
-    for i in range(24):
-        frame = load_image(f"walnut_zoom/{i}.png")
-        x, y, w, h = locs[seq[i]]
-        frame.paste(img.resize((w, h), keep_ratio=True).rotate(9), (x, y), below=True)
-        frames.append(frame.image)
-    return save_gif(frames, 0.2)
+
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            frame = load_image(f"walnut_zoom/{i}.png")
+            x, y, w, h = locs[seq[i]]
+            img = img.resize((w, h), keep_ratio=True).rotate(4.2, expand=True)
+            frame.paste(img, (x, y), below=True)
+            return frame
+
+        return make
+
+    functions = [maker(i) for i in range(24)]
+    return make_gif_or_combined_gif(img, functions, 0.2)
 
 
 def teach(img: BuildImage = UserImg(), arg: str = Arg()):
@@ -1528,18 +1533,20 @@ def call_110(
 
 
 def confuse(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize_width(500)
-    frames: List[IMG] = []
-    for i in range(100):
-        frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
-        frame.paste(img, below=True)
-        frames.append(frame.image)
-    return save_gif(frames, 0.015)
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            img = img.resize_width(500)
+            frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
+            frame.paste(img, below=True)
+            return frame
+
+        return make
+
+    functions = [maker(i) for i in range(100)]
+    return make_gif_or_combined_gif(img, functions, 0.015)
 
 
 def hit_screen(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((140, 120), keep_ratio=True)
-    frames = [load_image(f"hit_screen/{i}.png") for i in range(29)]
     params = (
         (((1, 10), (138, 1), (140, 119), (7, 154)), (32, 37)),
         (((1, 10), (138, 1), (140, 121), (7, 154)), (32, 37)),
@@ -1558,11 +1565,20 @@ def hit_screen(img: BuildImage = UserImg(), arg=NoArg()):
         (((1, 12), (141, 1), (147, 130), (16, 150)), (11, 60)),
         (((1, 15), (165, 1), (175, 135), (1, 171)), (-6, 46)),
     )
-    for i in range(6, 22):
-        points, pos = params[i - 6]
-        frames[i].paste(img.perspective(points), pos, below=True)
-    frames = [frame.image for frame in frames]
-    return save_gif(frames, 0.2)
+
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            img = img.resize((140, 120), keep_ratio=True)
+            frame = load_image(f"hit_screen/{i}.png")
+            if 6 <= i < 22:
+                points, pos = params[i - 6]
+                frame.paste(img.perspective(points), pos, below=True)
+            return frame
+
+        return make
+
+    functions = [maker(i) for i in range(29)]
+    return make_gif_or_combined_gif(img, functions, 0.2)
 
 
 def fencing(
