@@ -37,7 +37,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/08/26/9O3kBNcHWS8hX1e.jpg" width="400" />
+  <img src="https://s1.328888.xyz/2022/10/01/Mp7Fm.jpg" width="400" />
 </div>
 
 
@@ -46,8 +46,11 @@ pip install nonebot_plugin_petpet
 - 指令 + qq号，如：/爬 123456
 - 指令 + 自己，如：/爬 自己
 - 指令 + 图片，如：/爬 [图片]
+- 回复图片消息 + 指令
 
 前三种触发方式会使用目标qq的头像作为图片
+
+回复图片时需要把指令前的“@”删除
 
 
 #### 表情包开关
@@ -64,6 +67,9 @@ pip install nonebot_plugin_petpet
 
 
 #### 支持的指令
+
+<details>
+<summary>展开/收起</summary>
 
 | 指令 | 效果 | 备注 |
 | --- | --- | --- |
@@ -94,7 +100,7 @@ pip install nonebot_plugin_petpet
 | 问问<br>去问问 | <img src="https://s2.loli.net/2022/02/23/GUyax1BF6q5Hvin.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
 | 舔<br>舔屏<br>prpr | <img src="https://s2.loli.net/2022/03/05/WMHpwygtmN5bdEV.jpg" width="200" /> | 支持gif |
 | 搓 | <img src="https://s2.loli.net/2022/03/09/slRF4ue56xSQzra.gif" width="200" /> |  |
-| 墙纸 | <img src="https://s2.loli.net/2022/03/10/tQRXzLamGyWi24s.jpg" width="200" /> | 支持gif |
+| 墙纸 | <img src="https://s1.328888.xyz/2022/10/01/MptIr.gif" width="200" /> |  |
 | 国旗 | <img src="https://s2.loli.net/2022/03/10/p7nwCvgsU3LxBDI.jpg" width="200" /> |  |
 | 交个朋友 | <img src="https://s2.loli.net/2022/03/10/SnmkNrjKuFeZvbA.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
 | 继续干活<br>打工人 | <img src="https://s2.loli.net/2022/04/20/LIak2BsJ9Dd5O7l.jpg" width="200" > |  |
@@ -108,7 +114,7 @@ pip install nonebot_plugin_petpet
 | 典中典 | <img src="https://s2.loli.net/2022/03/18/ikQ1IB6hS4x3EjD.jpg" width="200" > |  |
 | 哈哈镜 | <img src="https://s2.loli.net/2022/03/15/DwRPaErSNZWXGgp.gif" width="200" > |  |
 | 永远爱你 | <img src="https://s2.loli.net/2022/03/15/o6mhWk7crwdepU5.gif" width="200" > |  |
-| 对称 | <img src="https://s2.loli.net/2022/03/15/HXntCy8kc7IRZxp.jpg" width="200" > | 可使用参数“上”、“下”、“左”、“右”指定对称方向 |
+| 对称 | <img src="https://s2.loli.net/2022/03/15/HXntCy8kc7IRZxp.jpg" width="200" > | 可使用参数“上”、“下”、“左”、“右”指定对称方向<br>支持gif |
 | 安全感 | <img src="https://s2.loli.net/2022/03/15/58pPzrgxJNkUYRT.jpg" width="200" > | 可指定描述 |
 | 永远喜欢<br>我永远喜欢 | <img src="https://s2.loli.net/2022/03/15/EpTiUbcoVGCXLkJ.jpg" width="200" > | 图中名字为目标qq昵称<br>可指定名字<br>可指定多个目标叠buff |
 | 采访 | <img src="https://s2.loli.net/2022/03/15/AYpkWEc2BrXhKeU.jpg" width="200" > | 可指定描述 |
@@ -137,9 +143,25 @@ pip install nonebot_plugin_petpet
 | 字符画 | <img src="https://s2.loli.net/2022/07/21/R58eG7mVZWPp1Cy.jpg" width="200" > | 支持gif |
 | 这是我的老婆 | <img src="https://s2.loli.net/2022/08/16/7wPht5rp6sk1ZCq.jpg" width="200" > | 可改为别的称谓<br>如“这是他的老公” |
 | 胡桃平板 | <img src="https://s2.loli.net/2022/08/16/Mc5HvfB6ywqLQiV.jpg" width="200" > | 支持gif |
+| 胡桃放大 | <img src="https://s1.328888.xyz/2022/10/01/MpyHK.gif" width="200" > | 支持gif |
 | 讲课<br>敲黑板 | <img src="https://s2.loli.net/2022/08/16/VpdIHsteKocgRzP.jpg" width="200" > | 支持gif |
 | 上瘾<br>毒瘾发作 | <img src="https://s2.loli.net/2022/08/26/WAVDFfJB7tH5z3y.jpg" width="200" > | 支持gif |
 | 手枪 | <img src="https://s2.loli.net/2022/08/26/MRO3mqvfbaxkB1t.jpg" width="200" > |  |
 | 高血压 | <img src="https://s2.loli.net/2022/08/26/9qbyN2h38MAkRZE.jpg" width="200" > | 支持gif |
 | 看书 | <img src="https://s2.loli.net/2022/08/26/SeAC86RgDlUvLNY.jpg" width="200" > |  |
 | 遇到困难请拨打 | <img src="https://s2.loli.net/2022/08/26/KWGSf6qErB14uwp.jpg" width="200" > | 可指定一个或两个目标 |
+| 迷惑 | <img src="https://s1.328888.xyz/2022/10/01/Mpp8w.gif" width="200" > | 支持gif |
+| 打穿<br>打穿屏幕 | <img src="https://s1.328888.xyz/2022/10/01/MprEE.gif" width="200" > | 支持gif |
+| 击剑<br>🤺 | <img src="https://s1.328888.xyz/2022/10/01/MpQ57.gif" width="200" > |  |
+| 抱大腿 | <img src="https://s1.328888.xyz/2022/10/01/MpJ6j.gif" width="200" > |  |
+| 唐可可举牌 | <img src="https://s1.328888.xyz/2022/10/01/MpSzk.gif" width="200" > |  |
+| 无响应 | <img src="https://s1.328888.xyz/2022/10/01/MpHwJ.jpg" width="200" > |  |
+| 抱紧 | <img src="https://s1.328888.xyz/2022/10/01/Mpgw6.jpg" width="200" > |  |
+
+</details>
+
+
+### 特别感谢
+
+- [FloatTech/ZeroBot-Plugin](https://github.com/FloatTech/ZeroBot-Plugin) 基于 ZeroBot 的 OneBot 插件
+- [Dituon/petpet](https://github.com/Dituon/petpet) Mirai插件 生成各种奇怪的图片
