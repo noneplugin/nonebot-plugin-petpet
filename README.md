@@ -1,6 +1,24 @@
+<div align="center">
+
+  <a href="https://v2.nonebot.dev/">
+    <img src="https://v2.nonebot.dev/logo.png" width="200" height="200" alt="nonebot">
+  </a>
+
 # nonebot-plugin-petpet
 
-[Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关的表情包
+_✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关的表情包 ✨_
+
+<p align="center">
+  <img src="https://img.shields.io/github/license/noneplugin/nonebot-plugin-petpet" alt="license">
+  <img src="https://img.shields.io/badge/python-3.7.3+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/nonebot-2.0.0b4+-red.svg" alt="NoneBot">
+  <a href="https://pypi.org/project/nonebot-plugin-petpet">
+    <img src="https://badgen.net/pypi/v/nonebot-plugin-petpet" alt="pypi">
+  </a>
+</p>
+
+</div>
+
 
 文字类表情包制作：[nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
 
@@ -28,6 +46,49 @@ pip install nonebot_plugin_petpet
 插件在启动时会检查并下载图片资源，初次使用时需等待资源下载完成
 
 可以手动下载 `resources` 下的 `images` 文件夹，放置于机器人运行目录下的 `data/petpet/` 文件夹中
+
+
+### 配置项
+
+<details>
+<summary>展开/收起</summary>
+
+#### `petpet_command_start`
+ - 类型：`str`
+ - 默认：`""`
+ - 说明：命令开始字符，为空则使用Nonebot设置中的`command_start`
+
+#### `petpet_resource_url`
+ - 类型：`str`
+ - 默认：`https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-petpet/v0.3.x/resources`
+ - 说明：资源下载链接，默认为使用`ghproxy`代理的github仓库链接
+
+#### `petpet_disabled_list`
+ - 类型：`List[str]`
+ - 默认：`[]`
+ - 说明：禁用的表情包列表，需填写表情名称的列表，表情名称可以在`data_source.py`文件中查看。若只是临时关闭，可以用下文中的“表情包开关”
+
+#### `petpet_gif_max_size`
+ - 类型：`float`
+ - 默认：`10`
+ - 说明：限制生成的gif的最大体积，单位为`Mb`。若生成的gif体积过大，则先会尝试缩减帧数，其次尝试缩小图片尺寸
+
+#### `petpet_gif_max_frames`
+ - 类型：`int`
+ - 默认：`100`
+ - 说明：限制生成的gif的最大帧数
+
+#### `baidu_trans_appid`
+ - 类型：`str`
+ - 默认：`""`
+ - 说明：百度翻译api相关，可在[百度翻译开放平台](http://api.fanyi.baidu.com)申请
+
+#### `baidu_trans_apikey`
+ - 类型：`str`
+ - 默认：`""`
+ - 说明：百度翻译api相关，可在[百度翻译开放平台](http://api.fanyi.baidu.com)申请
+
+</details>
 
 
 ### 使用

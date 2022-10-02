@@ -8,9 +8,9 @@ from typing import List, Dict, Optional
 from nonebot_plugin_imageutils.fonts import Font
 from nonebot_plugin_imageutils import BuildImage, Text2Image
 
-from .download import load_image
 from .utils import *
 from .depends import *
+from .download import load_image
 
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
@@ -733,7 +733,7 @@ async def dianzhongdian(img: BuildImage = UserImg(), arg: str = Arg()):
     if not arg:
         return REQUIRE_ARG
 
-    trans = await translate(arg)
+    trans = await translate(arg, lang_to="jp")
     img = img.convert("L").resize_width(500)
     text_img1 = BuildImage.new("RGBA", (500, 60))
     text_img2 = BuildImage.new("RGBA", (500, 35))
@@ -1325,22 +1325,14 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
-def mywife(
-    user: UserInfo = User(),
-    ta: str = RegexArg("ta"),
-    name: str = RegexArg("name"),
-    arg=NoArg(),
-):
-    ta = ta.strip() or "我"
-    name = name.strip() or "老婆"
-
+def mywife(user: UserInfo = User(), arg=NoArg()):
     img = user.img.convert("RGBA").resize_width(400)
     img_w, img_h = img.size
     frame = BuildImage.new("RGBA", (650, img_h + 500), "white")
     frame.paste(img, (int(325 - img_w / 2), 105), alpha=True)
 
     try:
-        text = f"如果你的{name}长这样"
+        text = f"如果你的老婆长这样"
         frame.draw_text(
             (27, 12, 27 + 596, 12 + 79),
             text,
@@ -1350,7 +1342,7 @@ def mywife(
             lines_align="center",
             weight="bold",
         )
-        text = f"那么这就不是你的{name}\n这是{ta}的{name}"
+        text = f"那么这就不是你的老婆\n这是我的老婆"
         frame.draw_text(
             (27, img_h + 120, 27 + 593, img_h + 120 + 135),
             text,
@@ -1359,7 +1351,7 @@ def mywife(
             allow_wrap=True,
             weight="bold",
         )
-        text = f"滚去找你\n自己的{name}去"
+        text = f"滚去找你\n自己的老婆去"
         frame.draw_text(
             (27, img_h + 295, 27 + 374, img_h + 295 + 135),
             text,
@@ -1535,7 +1527,7 @@ def call_110(
 def confuse(img: BuildImage = UserImg(), arg=NoArg()):
     def maker(i: int) -> Maker:
         def make(img: BuildImage) -> BuildImage:
-            img = img.resize_width(500)
+            img = img.resize_width(380)
             frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
             frame.paste(img, below=True)
             return frame

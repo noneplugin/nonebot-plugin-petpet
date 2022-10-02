@@ -1,4 +1,6 @@
+import time
 import httpx
+import hashlib
 import imageio
 from io import BytesIO
 from dataclasses import dataclass
@@ -7,6 +9,8 @@ from typing_extensions import Literal
 from typing import Callable, List, Tuple, Protocol
 
 from nonebot_plugin_imageutils import BuildImage
+
+from .config import petpet_config
 
 
 @dataclass
@@ -34,7 +38,29 @@ class Meme:
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:
     output = BytesIO()
     imageio.mimsave(output, frames, format="gif", duration=duration)
-    return output
+
+    # 没有超出最大大小，直接返回
+    nbytes = output.getbuffer().nbytes
+    if nbytes <= petpet_config.petpet_gif_max_size * 10**6:
+        return output
+
+    # 超出最大大小，帧数超出最大帧数时，缩减帧数
+    n_frames = len(frames)
+    gif_max_frames = petpet_config.petpet_gif_max_frames
+    if n_frames > gif_max_frames:
+        index = range(n_frames)
+        ratio = n_frames / gif_max_frames
+        index = (int(i * ratio) for i in range(gif_max_frames))
+        new_duration = duration * ratio
+        new_frames = [frames[i] for i in index]
+        return save_gif(new_frames, new_duration)
+
+    # 超出最大大小，帧数没有超出最大帧数时，缩小尺寸
+    new_frames = [
+        frame.resize((int(frame.width * 0.9), int(frame.height * 0.9)))
+        for frame in frames
+    ]
+    return save_gif(new_frames, duration)
 
 
 class Maker(Protocol):
@@ -42,38 +68,22 @@ class Maker(Protocol):
         ...
 
 
-def make_jpg_or_gif(
-    img: BuildImage, func: Maker, gif_zoom: float = 1, gif_max_frames: int = 50
-) -> BytesIO:
+def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
     """
     制作静图或者动图
     :params
       * ``img``: 输入图片，如头像
       * ``func``: 图片处理函数，输入img，返回处理后的图片
-      * ``gif_zoom``: gif 图片缩放比率，避免生成的 gif 太大
-      * ``gif_max_frames``: gif 最大帧数，避免生成的 gif 太大
     """
     image = img.image
     if not getattr(image, "is_animated", False):
         return func(img.convert("RGBA")).save_jpg()
     else:
-        index = range(image.n_frames)
-        ratio = image.n_frames / gif_max_frames
         duration = image.info["duration"] / 1000
-        if ratio > 1:
-            index = (int(i * ratio) for i in range(gif_max_frames))
-            duration *= ratio
-
         frames: List[IMG] = []
-        for i in index:
+        for i in range(image.n_frames):
             image.seek(i)
-            new_img = func(BuildImage(image).convert("RGBA"))
-            new_img = new_img.resize(
-                (int(new_img.width * gif_zoom), int(new_img.height * gif_zoom))
-            )
-            bg = BuildImage.new("RGBA", new_img.size, "white")
-            bg.paste(new_img, alpha=True)
-            frames.append(bg.image)
+            frames.append(func(BuildImage(image).convert("RGBA")).image)
         return save_gif(frames, duration)
 
 
@@ -124,13 +134,22 @@ def make_gif_or_combined_gif(
     return save_gif(frames, duration)
 
 
-async def translate(text: str) -> str:
-    url = f"http://fanyi.youdao.com/translate"
-    params = {"type": "ZH_CN2JA", "i": text, "doctype": "json"}
-    try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, params=params)
-            result = resp.json()
-        return result["translateResult"][0][0]["tgt"]
-    except:
-        return ""
+async def translate(text: str, lang_from: str = "auto", lang_to: str = "zh") -> str:
+    salt = str(round(time.time() * 1000))
+    appid = petpet_config.baidu_trans_appid
+    apikey = petpet_config.baidu_trans_apikey
+    sign_raw = appid + text + salt + apikey
+    sign = hashlib.md5(sign_raw.encode("utf8")).hexdigest()
+    params = {
+        "q": text,
+        "from": lang_from,
+        "to": lang_to,
+        "appid": appid,
+        "salt": salt,
+        "sign": sign,
+    }
+    url = "https://fanyi-api.baidu.com/api/trans/vip/translate"
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, params=params)
+        result = resp.json()
+    return result["trans_result"][0]["dst"]

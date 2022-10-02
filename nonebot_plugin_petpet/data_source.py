@@ -1,5 +1,6 @@
 from .utils import Meme
 from .functions import *
+from .config import petpet_config
 
 memes = [
     Meme("universal", universal, ("万能表情", "空白表情")),
@@ -70,7 +71,7 @@ memes = [
     Meme("repeat", repeat, ("复读",)),
     Meme("anti_kidnap", anti_kidnap, ("防诱拐",)),
     Meme("charpic", charpic, ("字符画",)),
-    Meme("mywife", mywife, ("这是我的老婆",), r"这是(?P<ta>\S+)的(?P<name>\S+)"),
+    Meme("mywife", mywife, ("我老婆",)),
     Meme("walnutpad", walnutpad, ("胡桃平板",)),
     Meme("walnut_zoom", walnut_zoom, ("胡桃放大",)),
     Meme("teach", teach, ("讲课", "敲黑板")),
@@ -87,3 +88,5 @@ memes = [
     Meme("no_response", no_response, ("无响应",)),
     Meme("hold_tight", hold_tight, ("抱紧",)),
 ]
+
+memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]

@@ -6,7 +6,7 @@ from typing import List, Optional
 from nonebot.rule import Rule
 from nonebot import get_driver
 from nonebot.typing import T_State
-from nonebot.params import State, Depends
+from nonebot.params import Depends
 from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
@@ -19,6 +19,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot_plugin_imageutils import BuildImage
 
 from .utils import UserInfo
+from .config import petpet_config
 from .download import download_url, download_avatar
 
 
@@ -28,17 +29,22 @@ ARGS_KEY = "ARGS"
 REGEX_DICT = "REGEX_DICT"
 REGEX_ARG = "REGEX_ARG"
 
+command_start = petpet_config.petpet_command_start or "|".join(
+    get_driver().config.command_start
+)
+
 
 def regex(pattern: str) -> Rule:
-    def checker(event: MessageEvent, state: T_State = State()) -> bool:
+    def checker(event: MessageEvent, state: T_State) -> bool:
         msg = event.get_message()
         msg_seg: MessageSegment = msg[0]
         if not msg_seg.is_text():
             return False
 
         seg_text = str(msg_seg).lstrip()
-        start = "|".join(get_driver().config.command_start)
-        matched = re.match(rf"(?:{start})(?:{pattern})", seg_text, re.IGNORECASE)
+        matched = re.match(
+            rf"(?:{command_start})(?:{pattern})", seg_text, re.IGNORECASE
+        )
         if not matched:
             return False
 
@@ -60,7 +66,7 @@ def is_qq(msg: str):
 
 
 def split_msg():
-    def dependency(event: MessageEvent, state: T_State = State()):
+    def dependency(event: MessageEvent, state: T_State):
         def _is_at_me_seg(segment: MessageSegment):
             return segment.type == "at" and str(segment.data.get("qq", "")) == str(
                 event.self_id
@@ -160,7 +166,7 @@ async def download_image(user: UserInfo):
 
 
 def Users(min_num: int = 1, max_num: int = 1):
-    async def dependency(bot: Bot, state: T_State = State()):
+    async def dependency(bot: Bot, state: T_State):
         users: List[UserInfo] = state[USERS_KEY]
         if len(users) > max_num or len(users) < min_num:
             return
@@ -182,7 +188,7 @@ def User():
 
 
 def UserImgs(min_num: int = 1, max_num: int = 1):
-    async def dependency(state: T_State = State()):
+    async def dependency(state: T_State):
         users: List[UserInfo] = state[USERS_KEY]
         if len(users) > max_num or len(users) < min_num:
             return
@@ -203,7 +209,7 @@ def UserImg():
 
 
 def Sender():
-    async def dependency(bot: Bot, state: T_State = State()):
+    async def dependency(bot: Bot, state: T_State):
         sender: UserInfo = state[SENDER_KEY]
         await get_user_info(bot, sender)
         await download_image(sender)
@@ -213,7 +219,7 @@ def Sender():
 
 
 def SenderImg():
-    async def dependency(state: T_State = State()):
+    async def dependency(state: T_State):
         sender: UserInfo = state[SENDER_KEY]
         await download_image(sender)
         return sender.img
@@ -222,7 +228,7 @@ def SenderImg():
 
 
 def Args(min_num: int = 1, max_num: int = 1):
-    async def dependency(state: T_State = State()):
+    async def dependency(state: T_State):
         args: List[str] = state[ARGS_KEY]
         if len(args) > max_num or len(args) < min_num:
             return
@@ -232,7 +238,7 @@ def Args(min_num: int = 1, max_num: int = 1):
 
 
 def RegexArg(key: str):
-    async def dependency(state: T_State = State()):
+    async def dependency(state: T_State):
         arg: dict = state[REGEX_DICT]
         return arg.get(key, None)
 

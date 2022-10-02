@@ -9,6 +9,8 @@ from nonebot import get_driver
 from nonebot_plugin_imageutils import BuildImage
 from nonebot_plugin_imageutils.fonts import add_font
 
+from .config import petpet_config
+
 data_path = Path() / "data" / "petpet"
 
 
@@ -39,7 +41,7 @@ async def download_avatar(user_id: str) -> bytes:
 
 
 def resource_url(path: str) -> str:
-    return f"https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-petpet/v0.3.x/resources/{path}"
+    return f"{petpet_config.petpet_resource_url}/{path}"
 
 
 async def download_resource(path: str) -> bytes:
