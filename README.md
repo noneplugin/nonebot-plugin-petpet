@@ -15,6 +15,9 @@ _✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关
   <a href="https://pypi.org/project/nonebot-plugin-petpet">
     <img src="https://badgen.net/pypi/v/nonebot-plugin-petpet" alt="pypi">
   </a>
+  <a href="https://jq.qq.com/?_wv=1027&k=wDVNrMdr">
+    <img src="https://img.shields.io/badge/QQ%E7%BE%A4-682145034-orange" alt="qq group">
+  </a>
 </p>
 
 </div>
