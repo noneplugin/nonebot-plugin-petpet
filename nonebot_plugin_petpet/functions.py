@@ -1666,3 +1666,21 @@ def hold_tight(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("hold_tight/0.png")
     frame.paste(img, (113, 205), below=True)
     return frame.save_jpg()
+
+
+def look_flat(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize_width(500)
+    img = img.resize((img.width, img.height // 2))
+    frame = BuildImage.new("RGBA", (img.width, img.height + 80), "white")
+    frame.paste(img, alpha=True)
+    try:
+        frame.draw_text(
+            (10, img.height, frame.width - 10, frame.height),
+            "可恶...被人看扁了",
+            max_fontsize=55,
+            min_fontsize=30,
+            weight="bold",
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    return frame.save_jpg()

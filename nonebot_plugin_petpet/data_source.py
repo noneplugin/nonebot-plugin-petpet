@@ -87,6 +87,7 @@ memes = [
     Meme("tankuku_holdsign", tankuku_holdsign, ("唐可可举牌",)),
     Meme("no_response", no_response, ("无响应",)),
     Meme("hold_tight", hold_tight, ("抱紧",)),
+    Meme("look_flat", look_flat, ("看扁",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
