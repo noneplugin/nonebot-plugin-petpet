@@ -180,7 +180,7 @@ def Users(min_num: int = 1, max_num: int = 1):
 
 
 def User():
-    async def dependency(users: Optional[List[UserInfo]] = Users()):
+    def dependency(users: Optional[List[UserInfo]] = Users()):
         if users:
             return users[0]
 
@@ -201,7 +201,7 @@ def UserImgs(min_num: int = 1, max_num: int = 1):
 
 
 def UserImg():
-    async def dependency(imgs: List[BuildImage] = UserImgs()):
+    def dependency(imgs: List[BuildImage] = UserImgs()):
         if imgs:
             return imgs[0]
 
@@ -228,7 +228,7 @@ def SenderImg():
 
 
 def Args(min_num: int = 1, max_num: int = 1):
-    async def dependency(state: T_State):
+    def dependency(state: T_State):
         args: List[str] = state[ARGS_KEY]
         if len(args) > max_num or len(args) < min_num:
             return
@@ -238,7 +238,7 @@ def Args(min_num: int = 1, max_num: int = 1):
 
 
 def RegexArg(key: str):
-    async def dependency(state: T_State):
+    def dependency(state: T_State):
         arg: dict = state[REGEX_DICT]
         return arg.get(key, None)
 
@@ -246,7 +246,7 @@ def RegexArg(key: str):
 
 
 def Arg(possible_values: List[str] = []):
-    async def dependency(args: List[str] = Args(0, 1)):
+    def dependency(args: List[str] = Args(0, 1)):
         if args:
             arg = args[0]
             if possible_values and arg not in possible_values:
@@ -259,7 +259,7 @@ def Arg(possible_values: List[str] = []):
 
 
 def NoArg():
-    async def dependency(args: List[str] = Args(0, 0)):
+    def dependency(args: List[str] = Args(0, 0)):
         return
 
     return Depends(dependency)

@@ -1,7 +1,8 @@
 import math
+import random
 from io import BytesIO
-from typing import List, Union
 from PIL.Image import Image as IMG
+from typing import Any, List, Union
 from typing_extensions import Literal
 
 from nonebot.params import Depends
@@ -11,6 +12,7 @@ from nonebot.typing import T_Handler
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+from nonebot.dependencies import Dependent
 from nonebot import require, on_command, on_message
 from nonebot.adapters.onebot.v11 import (
     Message,
@@ -212,6 +214,20 @@ def create_matchers():
             block=False,
             priority=12,
         ).append_handler(handler(meme), parameterless=[split_msg()])
+
+    def random_handler() -> T_Handler:
+        def handle(matcher: Matcher):
+            random_meme = random.choice([meme for meme in memes if check_flag(meme)])
+            handler_ = Dependent[Any].parse(
+                call=handler(random_meme),
+                parameterless=[split_msg()],
+                allow_types=matcher.HANDLER_PARAM_TYPES,
+            )
+            matcher.handlers.append(handler_)
+
+        return handle
+
+    on_message(regex("随机表情"), block=False, priority=12).append_handler(random_handler())
 
 
 create_matchers()
