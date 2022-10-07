@@ -9,7 +9,7 @@ homepage = "https://github.com/noneplugin/nonebot-plugin-petpet"
 repository = "https://github.com/noneplugin/nonebot-plugin-petpet"
 
 [tool.poetry.dependencies]
-python = "^3.7.3"
+python = "^3.8"
 nonebot2 = "^2.0.0-beta.4"
 nonebot-adapter-onebot = "^2.1.1"
 httpx = ">=0.19.0"

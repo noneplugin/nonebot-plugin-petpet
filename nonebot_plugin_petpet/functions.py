@@ -1,15 +1,15 @@
 import random
-from collections import namedtuple
-from datetime import datetime
 from typing import Dict
-
+from datetime import datetime
+from collections import namedtuple
 from PIL import Image, ImageDraw, ImageFilter
+
 from nonebot_plugin_imageutils import Text2Image
 from nonebot_plugin_imageutils.fonts import Font
 
+from .utils import *
 from .depends import *
 from .download import load_image
-from .utils import *
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -1685,20 +1685,13 @@ def look_flat(img: BuildImage = UserImg(), arg=NoArg()):
     return frame.save_jpg()
 
 
-def look_this_icon(img_o: BuildImage = UserImg(), args=Args(1, 2)):
+def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
     if not args:
         args = ["朋友", "先看看这个图标再说话"]
 
-    bg = load_image("look_this_icon/nmsl.png")
-
-    def make(img: BuildImage) -> BuildImage:
-        frame = bg.copy()
-        frame = frame.paste(
-            img.convert("RGBA").resize((515, 515), keep_ratio=True),
-            (599, 403),
-            alpha=True,
-            below=True,
-        )
+    img = img.convert("RGBA").resize((515, 515), keep_ratio=True)
+    frame = load_image("look_this_icon/nmsl.png")
+    try:
         frame.draw_text(
             (0, 933, 1170, 1143),
             "\n".join(args),
@@ -1706,6 +1699,10 @@ def look_this_icon(img_o: BuildImage = UserImg(), args=Args(1, 2)):
             weight="bold",
             max_fontsize=100,
         )
-        return frame
+    except ValueError:
+        return TEXT_TOO_LONG
 
-    return make_jpg_or_gif(img_o, make)
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(img, (599, 403), below=True)
+
+    return make_jpg_or_gif(img, make)

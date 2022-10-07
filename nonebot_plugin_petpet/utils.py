@@ -5,8 +5,7 @@ import imageio
 from io import BytesIO
 from dataclasses import dataclass
 from PIL.Image import Image as IMG
-from typing_extensions import Literal
-from typing import Callable, List, Tuple, Protocol
+from typing import Callable, List, Literal, Protocol, Tuple
 
 from nonebot_plugin_imageutils import BuildImage
 
