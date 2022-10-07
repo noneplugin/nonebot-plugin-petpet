@@ -1126,8 +1126,8 @@ def suck(img: BuildImage = UserImg(), arg=NoArg()):
 def hammer(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off
-    locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92),
-            (46, 182, 184, 100), (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
+    locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92), (46, 182, 184, 100),
+            (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
     # fmt: on
     frames: List[IMG] = []
     for i in range(7):
