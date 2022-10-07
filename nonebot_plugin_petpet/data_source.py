@@ -1,6 +1,5 @@
-from .utils import Meme
-from .functions import *
 from .config import petpet_config
+from .functions import *
 
 memes = [
     Meme("universal", universal, ("万能表情", "空白表情")),
@@ -88,6 +87,7 @@ memes = [
     Meme("no_response", no_response, ("无响应",)),
     Meme("hold_tight", hold_tight, ("抱紧",)),
     Meme("look_flat", look_flat, ("看扁",)),
+    Meme("look_this_icon", look_this_icon, ("看图标",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
