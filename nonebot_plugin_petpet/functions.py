@@ -1,17 +1,15 @@
 import random
-from datetime import datetime
 from collections import namedtuple
-from PIL import Image, ImageFilter, ImageDraw
-from PIL.Image import Image as IMG
-from typing import List, Dict, Optional
+from datetime import datetime
+from typing import Dict
 
+from PIL import Image, ImageDraw, ImageFilter
+from nonebot_plugin_imageutils import Text2Image
 from nonebot_plugin_imageutils.fonts import Font
-from nonebot_plugin_imageutils import BuildImage, Text2Image
 
-from .utils import *
 from .depends import *
 from .download import load_image
-
+from .utils import *
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -177,7 +175,8 @@ def pat(img: BuildImage = UserImg(), arg=NoArg()):
         frame.paste(img.resize((w, h)), (x, y), below=True)
         img_frames.append(frame.image)
     # fmt: off
-    seq = [0, 1, 2, 3, 1, 2, 3, 0, 1, 2, 3, 0, 0, 1, 2, 3, 0, 0, 0, 0, 4, 5, 5, 5, 6, 7, 8, 9]
+    seq = [0, 1, 2, 3, 1, 2, 3, 0, 1, 2, 3, 0, 0, 1, 2, 3, 0, 0, 0, 0, 4, 5, 5, 5, 6, 7,
+           8, 9]
     # fmt: on
     frames = [img_frames[n] for n in seq]
     return save_gif(frames, 0.085)
@@ -1010,8 +1009,10 @@ def pound(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off
     locs = [
-        (135, 240, 138, 47), (135, 240, 138, 47), (150, 190, 105, 95), (150, 190, 105, 95),
-        (148, 188, 106, 98), (146, 196, 110, 88), (145, 223, 112, 61), (145, 223, 112, 61)
+        (135, 240, 138, 47), (135, 240, 138, 47), (150, 190, 105, 95),
+        (150, 190, 105, 95),
+        (148, 188, 106, 98), (146, 196, 110, 88), (145, 223, 112, 61),
+        (145, 223, 112, 61)
     ]
     # fmt: on
     frames: List[IMG] = []
@@ -1055,8 +1056,10 @@ def cover_face(img: BuildImage = UserImg(), arg=NoArg()):
 def knock(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off
-    locs = [(60, 308, 210, 195), (60, 308, 210, 198), (45, 330, 250, 172), (58, 320, 218, 180),
-            (60, 310, 215, 193), (40, 320, 250, 285), (48, 308, 226, 192), (51, 301, 223, 200)]
+    locs = [(60, 308, 210, 195), (60, 308, 210, 198), (45, 330, 250, 172),
+            (58, 320, 218, 180),
+            (60, 310, 215, 193), (40, 320, 250, 285), (48, 308, 226, 192),
+            (51, 301, 223, 200)]
     # fmt: on
     frames: List[IMG] = []
     for i in range(8):
@@ -1071,9 +1074,9 @@ def garbage(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square().resize((79, 79))
     # fmt: off
     locs = (
-        [] + [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10
-        + [(39, 30), (39, 27), (39, 32), (37, 49), (37, 64),
-           (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]
+            [] + [(39, 40)] * 3 + [(39, 30)] * 2 + [(39, 32)] * 10
+            + [(39, 30), (39, 27), (39, 32), (37, 49), (37, 64),
+               (37, 67), (37, 67), (39, 69), (37, 70), (37, 70)]
     )
     # fmt: on
     frames: List[IMG] = []
@@ -1111,9 +1114,12 @@ def jiujiu(img: BuildImage = UserImg(), arg=NoArg()):
 def suck(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off
-    locs = [(82, 100, 130, 119), (82, 94, 126, 125), (82, 120, 128, 99), (81, 164, 132, 55),
-            (79, 163, 132, 55), (82, 140, 127, 79), (83, 152, 125, 67), (75, 157, 140, 62),
-            (72, 165, 144, 54), (80, 132, 128, 87), (81, 127, 127, 92), (79, 111, 132, 108)]
+    locs = [(82, 100, 130, 119), (82, 94, 126, 125), (82, 120, 128, 99),
+            (81, 164, 132, 55),
+            (79, 163, 132, 55), (82, 140, 127, 79), (83, 152, 125, 67),
+            (75, 157, 140, 62),
+            (72, 165, 144, 54), (80, 132, 128, 87), (81, 127, 127, 92),
+            (79, 111, 132, 108)]
     # fmt: on
     frames: List[IMG] = []
     for i in range(12):
@@ -1128,7 +1134,8 @@ def suck(img: BuildImage = UserImg(), arg=NoArg()):
 def hammer(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off
-    locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92), (46, 182, 184, 100),
+    locs = [(62, 143, 158, 113), (52, 177, 173, 105), (42, 192, 192, 92),
+            (46, 182, 184, 100),
             (54, 169, 174, 110), (69, 128, 144, 135), (65, 130, 152, 124)]
     # fmt: on
     frames: List[IMG] = []
@@ -1143,10 +1150,14 @@ def hammer(img: BuildImage = UserImg(), arg=NoArg()):
 def tightly(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").resize((640, 400), keep_ratio=True)
     # fmt: off
-    locs = [(39, 169, 267, 141), (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135),
-            (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143), (38, 174, 270, 135), (28, 176, 293, 134),
-            (5, 215, 333, 96), (10, 210, 321, 102), (3, 210, 330, 104), (4, 210, 328, 102), (4, 212, 328, 100),
-            (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100), (29, 195, 285, 120)]
+    locs = [(39, 169, 267, 141), (40, 167, 264, 143), (38, 174, 270, 135),
+            (40, 167, 264, 143), (38, 174, 270, 135),
+            (40, 167, 264, 143), (38, 174, 270, 135), (40, 167, 264, 143),
+            (38, 174, 270, 135), (28, 176, 293, 134),
+            (5, 215, 333, 96), (10, 210, 321, 102), (3, 210, 330, 104),
+            (4, 210, 328, 102), (4, 212, 328, 100),
+            (4, 212, 328, 100), (4, 212, 328, 100), (4, 212, 328, 100),
+            (4, 212, 328, 100), (29, 195, 285, 120)]
     # fmt: on
     frames: List[IMG] = []
     for i in range(20):
@@ -1384,10 +1395,12 @@ def walnutpad(img: BuildImage = UserImg(), arg=NoArg()):
 def walnut_zoom(img: BuildImage = UserImg(), arg=NoArg()):
     # fmt: off
     locs = (
-        (-222, 30, 695, 430), (-212, 30, 695, 430), (0, 30, 695, 430), (41, 26, 695, 430),
+        (-222, 30, 695, 430), (-212, 30, 695, 430), (0, 30, 695, 430),
+        (41, 26, 695, 430),
         (-100, -67, 922, 570), (-172, -113, 1059, 655), (-273, -192, 1217, 753)
-    ) # (-47, -12, 801, 495), 
+    )  # (-47, -12, 801, 495),
     seq = [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 6, 6, 6]
+
     # fmt: on
 
     def maker(i: int) -> Maker:
@@ -1684,3 +1697,28 @@ def look_flat(img: BuildImage = UserImg(), arg=NoArg()):
     except ValueError:
         return TEXT_TOO_LONG
     return frame.save_jpg()
+
+
+def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
+    if not args:
+        args = ["朋友", "先看看这个图标再说话"]
+
+    bg = load_image("look_this_icon/nmsl.png")
+    bg = bg.paste(
+        img.convert("RGBA").resize((515, 515), keep_ratio=True),
+        (599, 403),
+        alpha=True,
+        below=True,
+    )
+
+    try:
+        bg.draw_text(
+            (0, 933, 1170, 1143),
+            "\n".join(args),
+            lines_align="center",
+            weight="bold",
+            max_fontsize=100,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    return bg.save_jpg()
