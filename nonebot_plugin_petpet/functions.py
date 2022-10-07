@@ -1702,19 +1702,20 @@ def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
     if not args:
         args = ["朋友", "先看看这个图标再说话"]
 
+    frame = load_image("look_this_icon/nmsl.png")
+    try:
+        frame.draw_text(
+            (0, 933, 1170, 1143),
+            "\n".join(args),
+            lines_align="center",
+            weight="bold",
+            max_fontsize=100,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    
     def make(img: BuildImage) -> BuildImage:
         img = img.convert("RGBA").resize((515, 515), keep_ratio=True)
-        frame = load_image("look_this_icon/nmsl.png")
-        try:
-            frame.draw_text(
-                (0, 933, 1170, 1143),
-                "\n".join(args),
-                lines_align="center",
-                weight="bold",
-                max_fontsize=100,
-            )
-        except ValueError:
-            return TEXT_TOO_LONG
-        return frame.paste(img, (599, 403), below=True)
+        return frame.copy().paste(img, (599, 403), below=True)
 
     return make_jpg_or_gif(img, make)
