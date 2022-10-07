@@ -1699,26 +1699,27 @@ def look_flat(img: BuildImage = UserImg(), arg=NoArg()):
     return frame.save_jpg()
 
 
-def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
+def look_this_icon(img_o: BuildImage = UserImg(), args=Args(1, 2)):
     if not args:
         args = ["朋友", "先看看这个图标再说话"]
 
     bg = load_image("look_this_icon/nmsl.png")
-    bg = bg.paste(
-        img.convert("RGBA").resize((515, 515), keep_ratio=True),
-        (599, 403),
-        alpha=True,
-        below=True,
-    )
 
-    try:
-        bg.draw_text(
+    def make(img: BuildImage) -> BuildImage:
+        frame = bg.copy()
+        frame = frame.paste(
+            img.convert("RGBA").resize((515, 515), keep_ratio=True),
+            (599, 403),
+            alpha=True,
+            below=True,
+        )
+        frame.draw_text(
             (0, 933, 1170, 1143),
             "\n".join(args),
             lines_align="center",
             weight="bold",
             max_fontsize=100,
         )
-    except ValueError:
-        return TEXT_TOO_LONG
-    return bg.save_jpg()
+        return frame
+
+    return make_jpg_or_gif(img_o, make)
