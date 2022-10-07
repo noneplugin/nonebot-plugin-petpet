@@ -1667,11 +1667,7 @@ def hold_tight(img: BuildImage = UserImg(), arg=NoArg()):
     return frame.save_jpg()
 
 
-def look_flat(img: BuildImage = UserImg(), args: List[str] = Args(0, 3)):
-    """
-    可以手动指定看扁大小，高度压缩倍率至少为2，范围2~50，超出范围默认为2
-    """
-    mode = "bottom"
+def look_flat(img: BuildImage = UserImg(), args: List[str] = Args(0, 2)):
     flat_size = 2
     text = "可恶...被人看扁了"
     text_height = 80
@@ -1680,85 +1676,45 @@ def look_flat(img: BuildImage = UserImg(), args: List[str] = Args(0, 3)):
             flat_size = int(arg)
             if flat_size < 2 or flat_size > 50:
                 flat_size = 2
-        elif arg == "左":
-            mode = "left"
-        elif arg == "右":
-            mode = "right"
-        elif arg == "上":
-            mode = "top"
-        elif arg == "下":
-            mode = "bottom"
         else:
             text = arg
-    if mode == "left" or mode == "right":
-        img = img.convert("RGBA").resize_height(500)
-        img = img.resize((img.width // flat_size, img.height))
-        text = "\n".join(text)
-    else:
+
+    def make(img: BuildImage) -> BuildImage:
         img = img.convert("RGBA").resize_width(500)
         img = img.resize((img.width, img.height // flat_size))
-    """
-    模式，分为上下左右（指文字的位置），默认为下
-    """
-    Mode = namedtuple(
-        "Mode", ["frame_size", "image_position", "text_position"]
-    )
-    modes: Dict[str, Mode] = {
-        "left": Mode(
-            (img.width + text_height, img.height),
-            (text_height, 0),
-            (0, 10, text_height, img.height - 10),
-        ),
-        "right": Mode(
-            (img.width + text_height, img.height),
-            (0, 0),
-            (img.width, 10, img.width + text_height, img.height - 10),
-        ),
-        "top": Mode(
-            (img.width, img.height + text_height),
-            (0, text_height),
-            (10, 0, img.width - 10, text_height),
-        ),
-        "bottom": Mode(
-            (img.width, img.height + text_height),
-            (0, 0),
-            (10, img.height, img.width - 10, img.height + text_height),
-        ),
-    }
-    mode = modes[mode]
-    frame = BuildImage.new("RGBA", mode.frame_size, "white")
-    frame.paste(img, mode.image_position, alpha=True)
-    try:
-        frame.draw_text(
-            mode.text_position,
-            text,
-            max_fontsize=55,
-            min_fontsize=30,
-            weight="bold",
-        )
-    except ValueError:
-        return TEXT_TOO_LONG
-    return frame.save_jpg()
+        frame = BuildImage.new("RGBA", (img.width, img.height + text_height), "white")
+        try:
+            frame.draw_text(
+                (10, img.height, img.width - 10, img.height + text_height),
+                text,
+                max_fontsize=55,
+                min_fontsize=30,
+                weight="bold",
+            )
+        except ValueError:
+            return TEXT_TOO_LONG
+        return frame.paste(img, (0, 0), alpha=True)
+
+    return make_jpg_or_gif(img, make)
 
 
 def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
     if not args:
         args = ["朋友", "先看看这个图标再说话"]
 
-    img = img.convert("RGBA").resize((515, 515), keep_ratio=True)
-    frame = load_image("look_this_icon/nmsl.png")
-    try:
-        frame.draw_text(
-            (0, 933, 1170, 1143),
-            "\n".join(args),
-            lines_align="center",
-            weight="bold",
-            max_fontsize=100,
-        )
-    except ValueError:
-        return TEXT_TOO_LONG
-
     def make(img: BuildImage) -> BuildImage:
-        return frame.copy().paste(img, (599, 403), below=True)
+        img = img.convert("RGBA").resize((515, 515), keep_ratio=True)
+        frame = load_image("look_this_icon/nmsl.png")
+        try:
+            frame.draw_text(
+                (0, 933, 1170, 1143),
+                "\n".join(args),
+                lines_align="center",
+                weight="bold",
+                max_fontsize=100,
+            )
+        except ValueError:
+            return TEXT_TOO_LONG
+        return frame.paste(img, (599, 403), below=True)
 
     return make_jpg_or_gif(img, make)
