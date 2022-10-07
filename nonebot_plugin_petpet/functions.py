@@ -626,7 +626,7 @@ def my_friend(
     if not user:
         user = sender
     if not args:
-        return REQUIRE_ARG
+        args = ["救命啊",]
     name = name.strip() or user.name or "朋友"
     texts = args
     img = user.img.convert("RGBA").circle().resize((100, 100))
@@ -729,7 +729,7 @@ def listen_music(img: BuildImage = UserImg(), arg=NoArg()):
 
 async def dianzhongdian(img: BuildImage = UserImg(), arg: str = Arg()):
     if not arg:
-        return REQUIRE_ARG
+        arg = "救命啊"
 
     trans = await translate(arg, lang_to="jp")
     img = img.convert("L").resize_width(500)
