@@ -245,7 +245,10 @@ def RegexArg(key: str):
     return Depends(dependency)
 
 
-def Arg(possible_values: List[str] = []):
+def Arg(possible_values=None):
+    if possible_values is None:
+        possible_values = []
+
     def dependency(args: List[str] = Args(0, 1)):
         if args:
             arg = args[0]

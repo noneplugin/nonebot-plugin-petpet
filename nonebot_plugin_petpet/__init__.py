@@ -2,8 +2,7 @@ import math
 import random
 from io import BytesIO
 from PIL.Image import Image as IMG
-from typing import Any, List, Union
-from typing_extensions import Literal
+from typing import Any, List, Literal, Union
 
 from nonebot.params import Depends
 from nonebot.utils import run_sync
@@ -30,6 +29,7 @@ require("nonebot_plugin_imageutils")
 from nonebot_plugin_imageutils import BuildImage, Text2Image
 
 from .utils import Meme
+from .config import Config
 from .data_source import memes
 from .depends import split_msg, regex
 from .manager import meme_manager, ActionResult, MemeMode
@@ -39,6 +39,7 @@ __plugin_meta__ = PluginMetadata(
     name="头像表情包",
     description="摸头等头像相关表情制作",
     usage="触发方式：指令 + @user/qq/自己/图片\n发送“头像表情包”查看支持的指令",
+    config=Config,
     extra={
         "unique_name": "petpet",
         "example": "摸 @小Q\n摸 114514\n摸 自己\n摸 [图片]",

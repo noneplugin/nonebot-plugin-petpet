@@ -9,7 +9,10 @@ def update():
         if not file.is_file():
             continue
         resource_list.append(
-            {"path": str(file), "hash": hashlib.md5(file.read_bytes()).hexdigest()}
+            {
+                "path": str(file.as_posix()),
+                "hash": hashlib.md5(file.read_bytes()).hexdigest(),
+            }
         )
     resource_list.sort(key=lambda i: i["path"])
     with open("resource_list.json", "w", encoding="utf-8") as f:
