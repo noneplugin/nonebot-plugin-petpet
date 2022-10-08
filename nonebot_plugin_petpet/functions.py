@@ -14,7 +14,6 @@ from .download import load_image
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
 REQUIRE_NAME = "找不到名字，加上名字再试吧~"
-REQUIRE_ARG = "该表情至少需要一个参数"
 
 
 def universal(img: BuildImage = UserImg(), args: List[str] = Args(0, 10)):
@@ -634,7 +633,9 @@ def my_friend(
     if not user:
         user = sender
     if not args:
-        args = ["救命啊",]
+        args = [
+            "救命啊",
+        ]
     name = name.strip() or user.name or "朋友"
     texts = args
     img = user.img.convert("RGBA").circle().resize((100, 100))
@@ -1676,52 +1677,55 @@ def hold_tight(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def look_flat(img: BuildImage = UserImg(), args: List[str] = Args(0, 2)):
-    flat_size = 2
+    ratio = 2
     text = "可恶...被人看扁了"
-    text_height = 80
     for arg in args:
         if arg.isdigit():
-            flat_size = int(arg)
-            if flat_size < 2 or flat_size > 50:
-                flat_size = 2
-        else:
+            ratio = int(arg)
+            if ratio < 2 or ratio > 10:
+                ratio = 2
+        elif arg:
             text = arg
 
+    img_w = 500
+    text_h = 80
+    text_frame = BuildImage.new("RGBA", (img_w, text_h), "white")
+    try:
+        text_frame.draw_text(
+            (10, 0, img_w - 10, text_h),
+            text,
+            max_fontsize=55,
+            min_fontsize=30,
+            weight="bold",
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+
     def make(img: BuildImage) -> BuildImage:
-        img = img.convert("RGBA").resize_width(500)
-        img = img.resize((img.width, img.height // flat_size))
-        frame = BuildImage.new("RGBA", (img.width, img.height + text_height), "white")
-        try:
-            frame.draw_text(
-                (10, img.height, img.width - 10, img.height + text_height),
-                text,
-                max_fontsize=55,
-                min_fontsize=30,
-                weight="bold",
-            )
-        except ValueError:
-            return TEXT_TOO_LONG
-        return frame.paste(img, (0, 0), alpha=True)
+        img = img.convert("RGBA").resize_width(img_w)
+        img = img.resize((img_w, img.height // ratio))
+        img_h = img.height
+        frame = BuildImage.new("RGBA", (img_w, img_h + text_h), "white")
+        return frame.paste(img, alpha=True).paste(text_frame, (0, img_h), alpha=True)
 
     return make_jpg_or_gif(img, make)
 
 
-def look_this_icon(img: BuildImage = UserImg(), args=Args(1, 2)):
-    if not args:
-        args = ["朋友", "先看看这个图标再说话"]
-
+def look_this_icon(img: BuildImage = UserImg(), arg: str = Arg()):
+    text = arg or "朋友\n先看看这个图标再说话"
     frame = load_image("look_this_icon/nmsl.png")
     try:
         frame.draw_text(
             (0, 933, 1170, 1143),
-            "\n".join(args),
+            text,
             lines_align="center",
             weight="bold",
             max_fontsize=100,
+            min_fontsize=50,
         )
     except ValueError:
         return TEXT_TOO_LONG
-    
+
     def make(img: BuildImage) -> BuildImage:
         img = img.convert("RGBA").resize((515, 515), keep_ratio=True)
         return frame.copy().paste(img, (599, 403), below=True)

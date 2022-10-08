@@ -101,7 +101,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/10/01/vN63w9JH2aBQYim.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/10/08/8WFRY4kAdILaNpx.jpg" width="400" />
 </div>
 
 
@@ -230,6 +230,8 @@ pip install nonebot_plugin_petpet
 | 唐可可举牌 | <img src="https://s2.loli.net/2022/10/01/LdGk9MmzYaebFt5.gif" width="200" > |  |
 | 无响应 | <img src="https://s2.loli.net/2022/10/01/vjXnOgcSVLGfdCQ.jpg" width="200" > |  |
 | 抱紧 | <img src="https://s2.loli.net/2022/10/01/vYgl3nRmXuGwqDd.jpg" width="200" > |  |
+| 看扁 | <img src="https://s2.loli.net/2022/10/08/kAHs6GYnmRh28WB.jpg" width="200" > | 支持gif<br>可指定描述<br>可指定缩放倍率，默认为2<br>如：看扁 3 自己 |
+| 看图标 | <img src="https://s2.loli.net/2022/10/08/Ek8Vu6eFyQKJnos.jpg" width="200" > | 支持gif<br>可指定描述 |
 
 </details>
 
