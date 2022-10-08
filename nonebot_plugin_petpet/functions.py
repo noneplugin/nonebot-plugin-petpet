@@ -200,6 +200,14 @@ def rip(user_imgs: List[BuildImage] = UserImgs(1, 2), arg=NoArg()):
     return frame.save_jpg()
 
 
+def rip_angrily(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((105, 105))
+    frame = load_image("rip_angrily/0.png")
+    frame.paste(img.rotate(-24, expand=True), (18, 170), below=True)
+    frame.paste(img.rotate(24, expand=True), (163, 65), below=True)
+    return frame.save_jpg()
+
+
 def throw(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").circle().rotate(random.randint(1, 360)).resize((143, 143))
     frame = load_image("throw/0.png")
