@@ -89,6 +89,7 @@ memes = [
     Meme("hold_tight", hold_tight, ("抱紧",)),
     Meme("look_flat", look_flat, ("看扁",)),
     Meme("look_this_icon", look_this_icon, ("看图标",)),
+    Meme("captain", captain, ("舰长", "人间之屑")),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]

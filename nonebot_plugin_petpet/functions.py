@@ -1731,3 +1731,39 @@ def look_this_icon(img: BuildImage = UserImg(), arg: str = Arg()):
         return frame.copy().paste(img, (599, 403), below=True)
 
     return make_jpg_or_gif(img, make)
+
+
+def captain(
+    user_imgs: List[BuildImage] = UserImgs(1, 5),
+    sender_img: BuildImage = SenderImg(),
+    arg=NoArg(),
+):
+    imgs: List[IMG] = []
+    if len(user_imgs) == 1:
+        imgs.append(sender_img)
+        imgs.append(user_imgs[0])
+        imgs.append(user_imgs[0])
+    elif len(user_imgs) == 2:
+        imgs.append(user_imgs[0])
+        imgs.append(user_imgs[1])
+        imgs.append(user_imgs[1])
+    else:
+        imgs = user_imgs
+
+    model = BuildImage.new("RGBA", (640, 440), "white")
+    captain_0 = load_image("captain/0.png")
+    captain_1 = load_image("captain/1.png")
+    captain_2 = load_image("captain/2.png")
+
+    frame = BuildImage.new("RGBA", (640, 440*len(imgs)), "white")
+    for i in range(0,len(imgs)): 
+        if i < len(imgs) - 2:
+            tframe = model.copy().paste(captain_0)
+        elif i == len(imgs) - 2:
+            tframe = model.copy().paste(captain_1)
+        else:
+            tframe = model.copy().paste(captain_2)
+        tframe.paste(imgs[i].convert("RGBA").square().resize((250, 250)), (350, 85))
+        frame.paste(tframe, (0, 440*i))
+
+    return frame.save_jpg()
