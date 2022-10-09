@@ -9,6 +9,7 @@ memes = [
     Meme("play", play, ("顶", "玩")),
     Meme("pat", pat, ("拍",)),
     Meme("rip", rip, ("撕",)),
+    Meme("rip_angrily", rip_angrily, ("怒撕", "玩尼玛",)),
     Meme("throw", throw, ("丢", "扔")),
     Meme("throw_gif", throw_gif, ("抛", "掷")),
     Meme("crawl", crawl, ("爬",)),
