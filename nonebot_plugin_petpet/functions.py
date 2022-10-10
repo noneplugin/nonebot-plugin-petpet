@@ -408,11 +408,11 @@ def worship(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def eat(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").square().resize((32, 32))
+    img = img.convert("RGBA").square().resize((34, 34))
     frames = []
     for i in range(3):
         frame = load_image(f"eat/{i}.png")
-        frame.paste(img, (1, 38), below=True)
+        frame.paste(img, (2, 38), below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
 
@@ -1765,5 +1765,63 @@ def captain(
             tframe = model.copy().paste(captain_2)
         tframe.paste(imgs[i].convert("RGBA").square().resize((250, 250)), (350, 85))
         frame.paste(tframe, (0, 440*i))
+
+    return frame.save_jpg()
+
+
+def jiji_king(
+    user_imgs: List[BuildImage] = UserImgs(1, 6),
+    args: List[str] = Args(0, 2),
+):
+    frame = load_image("jiji_king/0.png")
+
+    char = "急"
+    text = "我是急急国王"
+    for arg in args:
+        if len(arg) <= 2:
+            char = arg
+        else:
+            text = arg
+
+    imgs: List[IMG] = []
+    if len(user_imgs) == 2:
+        imgs = [user_imgs[1]] * 5
+    elif len(user_imgs) > 2:
+        index = 1
+        while len(imgs) < 5:
+            imgs.append(user_imgs[index])
+            index = index + 1 if index + 1 < len(user_imgs) else 1
+    
+    frame.paste(user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5))
+    if imgs:
+        for i in range(0,len(imgs)): 
+            frame.paste(imgs[i].convert("RGBA").square().resize((90, 90)), (5+100*i, 200))
+    else:
+        tframe = BuildImage.new("RGBA", (90, 90), "black")
+        try:
+            tframe.draw_text(
+                (0, 0, 90, 90),
+                char,
+                lines_align="center",
+                weight="bold",
+                max_fontsize=60,
+                min_fontsize=30,
+                fill="white",
+            )
+        except ValueError:
+            return TEXT_TOO_LONG
+        for i in range(5): 
+            frame.paste(tframe, (5+100*i, 200))
+    try:
+        frame.draw_text(
+            (10, 300, 490, 390),
+            text,
+            lines_align="center",
+            weight="bold",
+            max_fontsize=100,
+            min_fontsize=60,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
 
     return frame.save_jpg()
