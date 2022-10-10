@@ -1,3 +1,4 @@
+import math
 import random
 from typing import Dict
 from datetime import datetime
@@ -1738,7 +1739,7 @@ def captain(
     sender_img: BuildImage = SenderImg(),
     arg=NoArg(),
 ):
-    imgs: List[IMG] = []
+    imgs: List[BuildImage] = []
     if len(user_imgs) == 1:
         imgs.append(sender_img)
         imgs.append(user_imgs[0])
@@ -1750,21 +1751,16 @@ def captain(
     else:
         imgs = user_imgs
 
-    model = BuildImage.new("RGBA", (640, 440), "white")
-    captain_0 = load_image("captain/0.png")
-    captain_1 = load_image("captain/1.png")
-    captain_2 = load_image("captain/2.png")
+    bg0 = load_image("captain/0.png")
+    bg1 = load_image("captain/1.png")
+    bg2 = load_image("captain/2.png")
 
-    frame = BuildImage.new("RGBA", (640, 440*len(imgs)), "white")
-    for i in range(0,len(imgs)): 
-        if i < len(imgs) - 2:
-            tframe = model.copy().paste(captain_0)
-        elif i == len(imgs) - 2:
-            tframe = model.copy().paste(captain_1)
-        else:
-            tframe = model.copy().paste(captain_2)
-        tframe.paste(imgs[i].convert("RGBA").square().resize((250, 250)), (350, 85))
-        frame.paste(tframe, (0, 440*i))
+    frame = BuildImage.new("RGBA", (640, 440 * len(imgs)), "white")
+    for i in range(len(imgs)):
+        bg = bg0 if i < len(imgs) - 2 else bg1 if i == len(imgs) - 2 else bg2
+        imgs[i] = imgs[i].convert("RGBA").square().resize((250, 250))
+        bg = bg.copy().paste(imgs[i], (350, 85))
+        frame.paste(bg, (0, 440 * i))
 
     return frame.save_jpg()
 
@@ -1773,33 +1769,30 @@ def jiji_king(
     user_imgs: List[BuildImage] = UserImgs(1, 6),
     args: List[str] = Args(0, 2),
 ):
-    frame = load_image("jiji_king/0.png")
-
     char = "急"
     text = "我是急急国王"
-    for arg in args:
-        if len(arg) <= 2:
-            char = arg
+    if len(args) == 1:
+        if len(user_imgs) == 1:
+            char = args[0]
+            text = f"我是{char*2}国王"
         else:
-            text = arg
+            text = args[0]
+    elif len(args) == 2:
+        char = args[0]
+        text = args[1]
 
-    imgs: List[IMG] = []
-    if len(user_imgs) == 2:
-        imgs = [user_imgs[1]] * 5
-    elif len(user_imgs) > 2:
-        index = 1
-        while len(imgs) < 5:
-            imgs.append(user_imgs[index])
-            index = index + 1 if index + 1 < len(user_imgs) else 1
-    
-    frame.paste(user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5))
-    if imgs:
-        for i in range(0,len(imgs)): 
-            frame.paste(imgs[i].convert("RGBA").square().resize((90, 90)), (5+100*i, 200))
+    frame = load_image("jiji_king/0.png")
+    frame.paste(
+        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5), alpha=True
+    )
+
+    if len(user_imgs) > 1:
+        imgs = user_imgs[1:]
+        imgs = [img.convert("RGBA").square().resize((90, 90)) for img in imgs]
     else:
-        tframe = BuildImage.new("RGBA", (90, 90), "black")
+        block = BuildImage.new("RGBA", (90, 90), "black")
         try:
-            tframe.draw_text(
+            block.draw_text(
                 (0, 0, 90, 90),
                 char,
                 lines_align="center",
@@ -1810,8 +1803,12 @@ def jiji_king(
             )
         except ValueError:
             return TEXT_TOO_LONG
-        for i in range(5): 
-            frame.paste(tframe, (5+100*i, 200))
+        imgs = [block]
+
+    imgs = sum([[img] * math.ceil(5 / len(imgs)) for img in imgs], [])
+    for i in range(5):
+        frame.paste(imgs[i], (5 + 100 * i, 200))
+
     try:
         frame.draw_text(
             (10, 300, 490, 390),

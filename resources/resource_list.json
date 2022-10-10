@@ -92,6 +92,18 @@
         "hash": "d5dd1ea44908952885ff14a283f99695"
     },
     {
+        "path": "images/captain/0.png",
+        "hash": "f6cca0f44aa54c721f8b172f8ebb7f40"
+    },
+    {
+        "path": "images/captain/1.png",
+        "hash": "2885566e47ef4fb40560149c795dca7f"
+    },
+    {
+        "path": "images/captain/2.png",
+        "hash": "e230240d0929b774a985a301962d36b5"
+    },
+    {
         "path": "images/china_flag/0.png",
         "hash": "aa64adae6f7ede5bceafe81a5273cafc"
     },
@@ -1268,6 +1280,10 @@
         "hash": "34775a82e4b8b7df44d2cf37a6e16ea5"
     },
     {
+        "path": "images/jiji_king/0.png",
+        "hash": "9fa0daa0d9ce4756d09f405ed982861a"
+    },
+    {
         "path": "images/jiujiu/0.png",
         "hash": "39d0bbaa8485ec76e06448665033f76c"
     },
@@ -1790,6 +1806,10 @@
     {
         "path": "images/rip/1.png",
         "hash": "91cfac98b3e2857988c727c03ce76418"
+    },
+    {
+        "path": "images/rip_angrily/0.png",
+        "hash": "0c58878dfbe96bdc8a4f8cb3a5d9ae79"
     },
     {
         "path": "images/roll/0.png",

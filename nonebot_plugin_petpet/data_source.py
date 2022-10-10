@@ -9,7 +9,7 @@ memes = [
     Meme("play", play, ("顶", "玩")),
     Meme("pat", pat, ("拍",)),
     Meme("rip", rip, ("撕",)),
-    Meme("rip_angrily", rip_angrily, ("怒撕", "玩尼玛",)),
+    Meme("rip_angrily", rip_angrily, ("怒撕",)),
     Meme("throw", throw, ("丢", "扔")),
     Meme("throw_gif", throw_gif, ("抛", "掷")),
     Meme("crawl", crawl, ("爬",)),
@@ -89,8 +89,8 @@ memes = [
     Meme("hold_tight", hold_tight, ("抱紧",)),
     Meme("look_flat", look_flat, ("看扁",)),
     Meme("look_this_icon", look_this_icon, ("看图标",)),
-    Meme("captain", captain, ("舰长", "人间之屑",)),
-    Meme("jiji_king", jiji_king, ("我是急急国王", "急急国王", "国王",)),
+    Meme("captain", captain, ("舰长",)),
+    Meme("jiji_king", jiji_king, ("急急国王",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
