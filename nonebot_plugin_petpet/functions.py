@@ -408,11 +408,11 @@ def worship(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def eat(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").square().resize((32, 32))
+    img = img.convert("RGBA").square().resize((34, 34))
     frames = []
     for i in range(3):
         frame = load_image(f"eat/{i}.png")
-        frame.paste(img, (1, 38), below=True)
+        frame.paste(img, (2, 38), below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
 
