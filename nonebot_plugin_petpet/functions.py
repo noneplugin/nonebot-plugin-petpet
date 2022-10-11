@@ -3,7 +3,7 @@ import random
 from typing import Dict
 from datetime import datetime
 from collections import namedtuple
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
 
 from nonebot_plugin_imageutils import Text2Image
 from nonebot_plugin_imageutils.fonts import Font
@@ -1821,4 +1821,23 @@ def jiji_king(
     except ValueError:
         return TEXT_TOO_LONG
 
+    return frame.save_jpg()
+
+
+def incivilization(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("incivilization/0.png")
+    img = ImageEnhance.Brightness(img.convert("RGBA").circle().resize((150, 150)).image).enhance(0.8)
+    frame.paste(img, (156, 165), alpha=True)
+    text = "你刚才说的话不是很礼貌！" if not arg else arg
+    try:
+        frame.draw_text(
+            (57, 42, 528, 117),
+            text,
+            weight="bold",
+            max_fontsize=50,
+            min_fontsize=20,
+            allow_wrap=True,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
     return frame.save_jpg()
