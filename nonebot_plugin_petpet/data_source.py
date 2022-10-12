@@ -92,6 +92,7 @@ memes = [
     Meme("captain", captain, ("舰长",)),
     Meme("jiji_king", jiji_king, ("急急国王",)),
     Meme("incivilization", incivilization, ("不文明",)),
+    Meme("together", together, ("一起",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]

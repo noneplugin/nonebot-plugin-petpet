@@ -1843,3 +1843,21 @@ def incivilization(img: BuildImage = UserImg(), arg: str = Arg()):
     except ValueError:
         return TEXT_TOO_LONG
     return frame.save_jpg()
+
+
+def together(user: UserInfo = User(), arg: str = Arg()):
+    frame = load_image("together/0.png")
+    frame.paste(user.img.convert("RGBA").resize((63, 63)), (132, 36))
+    text = arg or f"一起玩{user.name}吧！"
+    try:
+        frame.draw_text(
+            (10, 140, 190, 190),
+            text,
+            weight="bold",
+            max_fontsize=50,
+            min_fontsize=20,
+            allow_wrap=True,
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
+    return frame.save_jpg()
