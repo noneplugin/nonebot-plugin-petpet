@@ -91,6 +91,7 @@ memes = [
     Meme("look_this_icon", look_this_icon, ("看图标",)),
     Meme("captain", captain, ("舰长",)),
     Meme("jiji_king", jiji_king, ("急急国王",)),
+    Meme("incivilization", incivilization, ("不文明",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
