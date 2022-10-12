@@ -67,6 +67,16 @@ class Maker(Protocol):
         ...
 
 
+def get_avg_duration(image: IMG) -> float:
+    if not getattr(image, "is_animated", False):
+        return 0
+    total_duration = 0
+    for i in range(image.n_frames):
+        image.seek(i)
+        total_duration += image.info["duration"]
+    return total_duration / image.n_frames
+
+
 def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
     """
     制作静图或者动图
@@ -78,7 +88,7 @@ def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
     if not getattr(image, "is_animated", False):
         return func(img.convert("RGBA")).save_jpg()
     else:
-        duration = image.info["duration"] / 1000
+        duration = get_avg_duration(image) / 1000
         frames: List[IMG] = []
         for i in range(image.n_frames):
             image.seek(i)
@@ -106,7 +116,7 @@ def make_gif_or_combined_gif(
 
     img_frames: List[BuildImage] = []
     n_frames = image.n_frames
-    img_duration = image.info["duration"] / 1000
+    img_duration = get_avg_duration(image) / 1000
 
     n_frame = 0
     time_start = 0
