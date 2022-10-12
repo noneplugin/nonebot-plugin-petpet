@@ -1826,9 +1826,11 @@ def jiji_king(
 
 def incivilization(img: BuildImage = UserImg(), arg: str = Arg()):
     frame = load_image("incivilization/0.png")
-    img = ImageEnhance.Brightness(img.convert("RGBA").circle().resize((150, 150)).image).enhance(0.8)
-    frame.paste(img, (156, 165), alpha=True)
-    text = "你刚才说的话不是很礼貌！" if not arg else arg
+    points = ((0, 20), (154, 0), (164, 153), (22, 180))
+    img = img.convert("RGBA").circle().resize((150, 150)).perspective(points)
+    image = ImageEnhance.Brightness(img.image).enhance(0.8)
+    frame.paste(image, (137, 151), alpha=True)
+    text = arg or "你刚才说的话不是很礼貌！"
     try:
         frame.draw_text(
             (57, 42, 528, 117),
