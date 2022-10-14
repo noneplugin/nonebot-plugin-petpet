@@ -1767,7 +1767,7 @@ def captain(
 
 def jiji_king(
     user_imgs: List[BuildImage] = UserImgs(1, 7),
-    args: List[str] = Args(0, 2),
+    args: List[str] = Args(0, 7),
 ):
     char = "急"
     text = "我是急急国王"
@@ -1780,6 +1780,11 @@ def jiji_king(
     elif len(args) == 2:
         char = args[0]
         text = args[1]
+    elif len(args) == 6:
+        char = args[0:]
+    elif len(args) == 7:
+        char = args[0:6]
+        text = args[6]
 
     frame = load_image("jiji_king/0.png")
     frame.paste(
@@ -1789,6 +1794,23 @@ def jiji_king(
     if len(user_imgs) > 1:
         imgs = user_imgs[1:]
         imgs = [img.convert("RGBA").square().resize((90, 90)) for img in imgs]
+    elif isinstance(char, list):
+        imgs = []
+        for i in range(6):
+            try:
+                block = BuildImage.new("RGBA", (90, 90), "black")
+                block.draw_text(
+                    (0, 0, 90, 90),
+                    char[i],
+                    lines_align="center",
+                    weight="bold",
+                    max_fontsize=60,
+                    min_fontsize=30,
+                    fill="white",
+                )
+                imgs.append(block)
+            except ValueError:
+                return TEXT_TOO_LONG
     else:
         block = BuildImage.new("RGBA", (90, 90), "black")
         try:
@@ -1804,10 +1826,9 @@ def jiji_king(
         except ValueError:
             return TEXT_TOO_LONG
         imgs = [block]
-
-    imgs = sum([[img] * math.ceil(5 / len(imgs)) for img in imgs], [])
+    imgs = sum([[img] * math.ceil(6 / len(imgs)) for img in imgs], [])
     for i in range(6):
-        frame.paste(imgs[i], (5 + 100 * i, 200))
+        frame.paste(imgs[i], (6 + 100 * i, 200))
 
     try:
         frame.draw_text(
