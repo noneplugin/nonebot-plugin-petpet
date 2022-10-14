@@ -1766,7 +1766,7 @@ def captain(
 
 
 def jiji_king(
-    user_imgs: List[BuildImage] = UserImgs(1, 6),
+    user_imgs: List[BuildImage] = UserImgs(1, 7),
     args: List[str] = Args(0, 2),
 ):
     char = "急"
@@ -1783,7 +1783,7 @@ def jiji_king(
 
     frame = load_image("jiji_king/0.png")
     frame.paste(
-        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5), alpha=True
+        user_imgs[0].convert("RGBA").square().resize((125, 125)), (295, 5), alpha=True
     )
 
     if len(user_imgs) > 1:
@@ -1806,12 +1806,12 @@ def jiji_king(
         imgs = [block]
 
     imgs = sum([[img] * math.ceil(5 / len(imgs)) for img in imgs], [])
-    for i in range(5):
+    for i in range(6):
         frame.paste(imgs[i], (5 + 100 * i, 200))
 
     try:
         frame.draw_text(
-            (10, 300, 490, 390),
+            (10, 300, 600, 390),
             text,
             lines_align="center",
             weight="bold",
