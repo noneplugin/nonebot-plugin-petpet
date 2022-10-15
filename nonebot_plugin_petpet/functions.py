@@ -1766,57 +1766,68 @@ def captain(
 
 
 def jiji_king(
-    user_imgs: List[BuildImage] = UserImgs(1, 6),
-    args: List[str] = Args(0, 2),
+    user_imgs: List[BuildImage] = UserImgs(1, 11),
+    args: List[str] = Args(0, 11),
 ):
-    char = "急"
+    block_num = 5
+    if len(user_imgs) >= 7 or len(args) >= 7:
+        block_num = max(len(user_imgs),len(args)) - 1
+    
+    chars = ["急"]
     text = "我是急急国王"
     if len(args) == 1:
         if len(user_imgs) == 1:
-            char = args[0]
-            text = f"我是{char*2}国王"
+            chars = [args[0]] * block_num
+            text = f"我是{args[0]*2}国王"
         else:
             text = args[0]
     elif len(args) == 2:
-        char = args[0]
+        chars = [args[0]] * block_num
         text = args[1]
+    elif args:
+        chars = sum([[arg] * math.ceil(block_num / len(args[:-1])) for arg in args[:-1]], [])
+        text = args[-1]
 
+    bg = BuildImage.new("RGBA", (10+100*block_num, 400), "white")
     frame = load_image("jiji_king/0.png")
+    frame_x = 58*(block_num-5) if block_num < 10 else 280
+    frame = bg.paste(frame,(frame_x,0))
     frame.paste(
-        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5), alpha=True
+        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237+58*(block_num-5), 5), alpha=True
     )
 
     if len(user_imgs) > 1:
         imgs = user_imgs[1:]
         imgs = [img.convert("RGBA").square().resize((90, 90)) for img in imgs]
     else:
+        imgs = []
         block = BuildImage.new("RGBA", (90, 90), "black")
-        try:
-            block.draw_text(
-                (0, 0, 90, 90),
-                char,
-                lines_align="center",
-                weight="bold",
-                max_fontsize=60,
-                min_fontsize=30,
-                fill="white",
-            )
-        except ValueError:
-            return TEXT_TOO_LONG
-        imgs = [block]
+        for char in chars:
+            try:
+                imgs.append(block.copy().draw_text(
+                    (0, 0, 90, 90),
+                    char,
+                    lines_align="center",
+                    weight="bold",
+                    max_fontsize=60,
+                    min_fontsize=30,
+                    fill="white",
+                ))
+            except ValueError:
+                return TEXT_TOO_LONG
 
-    imgs = sum([[img] * math.ceil(5 / len(imgs)) for img in imgs], [])
-    for i in range(5):
-        frame.paste(imgs[i], (5 + 100 * i, 200))
+    imgs = sum([[img] * math.ceil(block_num / len(imgs)) for img in imgs], [])
+    for i in range(block_num):
+        frame.paste(imgs[i], (10 + 100 * i, 200))
 
     try:
         frame.draw_text(
-            (10, 300, 490, 390),
+            (10, 300, 490+100*(block_num-5), 390),
             text,
             lines_align="center",
             weight="bold",
             max_fontsize=100,
-            min_fontsize=60,
+            min_fontsize=30,
         )
     except ValueError:
         return TEXT_TOO_LONG
@@ -1855,7 +1866,7 @@ def together(user: UserInfo = User(), arg: str = Arg()):
             text,
             weight="bold",
             max_fontsize=50,
-            min_fontsize=20,
+            min_fontsize=10,
             allow_wrap=True,
         )
     except ValueError:
