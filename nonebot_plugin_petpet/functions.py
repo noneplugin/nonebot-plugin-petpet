@@ -1530,7 +1530,7 @@ def read_book(img: BuildImage = UserImg(), arg: str = Arg()):
             pieces.append(piece)
         w = max((piece.width for piece in pieces))
         h = sum((piece.height for piece in pieces))
-        if w > 240 or h > 3000:
+        if w > 265 or h > 3000:
             return TEXT_TOO_LONG
         text_img = BuildImage.new("RGBA", (w, h))
         h = 0
@@ -1806,8 +1806,8 @@ def jiji_king(
 ):
     block_num = 5
     if len(user_imgs) >= 7 or len(args) >= 7:
-        block_num = max(len(user_imgs),len(args)) - 1
-    
+        block_num = max(len(user_imgs), len(args)) - 1
+
     chars = ["急"]
     text = "我是急急国王"
     if len(args) == 1:
@@ -1820,26 +1820,27 @@ def jiji_king(
         chars = [args[0]] * block_num
         text = args[1]
     elif args:
-        chars = sum([[arg] * math.ceil(block_num / len(args[:-1])) for arg in args[:-1]], [])
+        chars = sum(
+            [[arg] * math.ceil(block_num / len(args[:-1])) for arg in args[:-1]], []
+        )
         text = args[-1]
 
-    bg = BuildImage.new("RGBA", (10+100*block_num, 400), "white")
-    frame = load_image("jiji_king/0.png")
-    frame_x = 58*(block_num-5) if block_num < 10 else 280
-    frame = bg.paste(frame,(frame_x,0))
-    frame.paste(
-        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237+58*(block_num-5), 5), alpha=True
+    frame = BuildImage.new("RGBA", (10 + 100 * block_num, 400), "white")
+    king = load_image("jiji_king/0.png")
+    king.paste(
+        user_imgs[0].convert("RGBA").square().resize((125, 125)), (237, 5), alpha=True
     )
+    frame.paste(king, ((frame.width - king.width) // 2, 0))
 
     if len(user_imgs) > 1:
         imgs = user_imgs[1:]
         imgs = [img.convert("RGBA").square().resize((90, 90)) for img in imgs]
     else:
         imgs = []
-        block = BuildImage.new("RGBA", (90, 90), "black")
         for char in chars:
+            block = BuildImage.new("RGBA", (90, 90), "black")
             try:
-                imgs.append(block.copy().draw_text(
+                block.draw_text(
                     (0, 0, 90, 90),
                     char,
                     lines_align="center",
@@ -1847,9 +1848,10 @@ def jiji_king(
                     max_fontsize=60,
                     min_fontsize=30,
                     fill="white",
-                ))
+                )
             except ValueError:
                 return TEXT_TOO_LONG
+            imgs.append(block)
 
     imgs = sum([[img] * math.ceil(block_num / len(imgs)) for img in imgs], [])
     for i in range(block_num):
@@ -1857,7 +1859,7 @@ def jiji_king(
 
     try:
         frame.draw_text(
-            (10, 300, 490+100*(block_num-5), 390),
+            (10, 300, frame.width - 10, 390),
             text,
             lines_align="center",
             weight="bold",
