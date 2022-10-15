@@ -279,33 +279,38 @@ def always(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def always_always(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize_width(500)
-    img_h = img.height
-    text_h = img.resize_width(100).height + img.resize_width(20).height + 10
+    tmp = img.convert("RGBA").resize_width(500)
+    img_h = tmp.height
+    text_h = tmp.resize_width(100).height + tmp.resize_width(20).height + 10
     text_h = max(text_h, 80)
     frame_h = img_h + text_h
-    base_frame = BuildImage.new("RGBA", (500, frame_h), "white")
-    base_frame.paste(img, alpha=True).draw_text(
+    text_frame = BuildImage.new("RGBA", (500, frame_h), "white")
+    text_frame.draw_text(
         (0, img_h, 280, frame_h), "要我一直", halign="right", max_fontsize=60
     ).draw_text((400, img_h, 500, frame_h), "吗", halign="left", max_fontsize=60)
 
-    frames: List[IMG] = []
     frame_num = 20
     coeff = 5 ** (1 / frame_num)
-    ratio = 1
-    for _ in range(frame_num):
-        frame = BuildImage.new("RGBA", base_frame.size, "white")
-        r = ratio
-        for _ in range(4):
-            x = int(358 * (1 - r))
-            y = int(frame_h * (1 - r))
-            w = int(500 * r)
-            h = int(frame_h * r)
-            frame.paste(base_frame.resize((w, h)), (x, y))
-            r /= 5
-        ratio *= coeff
-        frames.append(frame.image)
-    return save_gif(frames, 0.1)
+
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            img = img.resize_width(500)
+            base_frame = text_frame.copy().paste(img, alpha=True)
+            frame = BuildImage.new("RGBA", base_frame.size, "white")
+            r = coeff**i
+            for _ in range(4):
+                x = int(358 * (1 - r))
+                y = int(frame_h * (1 - r))
+                w = int(500 * r)
+                h = int(frame_h * r)
+                frame.paste(base_frame.resize((w, h)), (x, y))
+                r /= 5
+            return frame
+
+        return make
+
+    functions = [maker(i) for i in range(frame_num)]
+    return make_gif_or_combined_gif(img, functions, 0.1)
 
 
 def loading(img: BuildImage = UserImg(), arg=NoArg()):

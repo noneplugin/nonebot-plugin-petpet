@@ -129,7 +129,6 @@ def make_gif_or_combined_gif(
             ):
                 image.seek(n_frame)
                 img_frames.append(BuildImage(image).convert("RGBA"))
-                print(f"add frame {n_frame}")
                 break
             else:
                 n_frame += 1
