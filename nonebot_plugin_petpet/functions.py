@@ -1909,3 +1909,27 @@ def together(user: UserInfo = User(), arg: str = Arg()):
     except ValueError:
         return TEXT_TOO_LONG
     return frame.save_jpg()
+
+
+def wave(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize_width(500)
+    img_w, img_h = img.size
+    period = 25
+    amp = 3
+    frame_num = 4
+    phase = 0
+    frames: List[IMG] = []
+    for _ in range(frame_num):
+        frame = img.copy()
+        for i in range(img_w):
+            for j in range(img_h):
+                dx = int(amp * math.cos(2 * math.pi / period * (i + phase)))
+                dy = int(amp * math.sin(2 * math.pi / period * (j + phase)))
+                if 0 <= i + dx < img_w and 0 <= j + dy < img_h:
+                    frame.image.putpixel((i, j), img.image.getpixel((i + dx, j + dy)))
+                else:
+                    frame.image.putpixel((i, j), 0)
+        frame = frame.resize_canvas((img_w - amp * 2, img_h - amp * 2))
+        frames.append(frame.image)
+        phase += period / frame_num
+    return save_gif(frames, 0.01)
