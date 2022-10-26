@@ -349,11 +349,8 @@ def turn(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def littleangel(user: UserInfo = User(), arg: str = Arg()):
-    img = user.img.convert("RGBA").resize_width(500)
-    img_w, img_h = img.size
+    img_w, img_h = user.img.convert("RGBA").resize_width(500).size
     frame = BuildImage.new("RGBA", (600, img_h + 230), "white")
-    frame.paste(img, (int(300 - img_w / 2), 110), alpha=True)
-
     text = "非常可爱！简直就是小天使"
     frame.draw_text(
         (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, weight="bold"
@@ -374,7 +371,11 @@ def littleangel(user: UserInfo = User(), arg: str = Arg()):
     except ValueError:
         return NAME_TOO_LONG
 
-    return frame.save_jpg()
+    def make(img: BuildImage) -> BuildImage:
+        img = img.resize_width(500)
+        return frame.copy().paste(img, (int(300 - img_w / 2), 110), alpha=True)
+
+    return make_jpg_or_gif(user.img, make)
 
 
 def dont_touch(img: BuildImage = UserImg(), arg=NoArg()):
@@ -1429,9 +1430,8 @@ def walnut_zoom(img: BuildImage = UserImg(), arg=NoArg()):
     locs = (
         (-222, 30, 695, 430), (-212, 30, 695, 430), (0, 30, 695, 430), (41, 26, 695, 430),
         (-100, -67, 922, 570), (-172, -113, 1059, 655), (-273, -192, 1217, 753)
-    )  # (-47, -12, 801, 495),
+    )
     seq = [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 6, 6, 6, 6]
-
     # fmt: on
 
     def maker(i: int) -> Maker:
