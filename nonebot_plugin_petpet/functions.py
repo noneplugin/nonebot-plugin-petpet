@@ -309,8 +309,7 @@ def always_always(img: BuildImage = UserImg(), arg=NoArg()):
 
         return make
 
-    functions = [maker(i) for i in range(frame_num)]
-    return make_gif_or_combined_gif(img, functions, 0.1)
+    return make_gif_or_combined_gif(img, maker, frame_num, 0.1)
 
 
 def loading(img: BuildImage = UserImg(), arg=NoArg()):
@@ -1444,8 +1443,7 @@ def walnut_zoom(img: BuildImage = UserImg(), arg=NoArg()):
 
         return make
 
-    functions = [maker(i) for i in range(24)]
-    return make_gif_or_combined_gif(img, functions, 0.2)
+    return make_gif_or_combined_gif(img, maker, 24, 0.2)
 
 
 def teach(img: BuildImage = UserImg(), arg: str = Arg()):
@@ -1578,8 +1576,7 @@ def confuse(img: BuildImage = UserImg(), arg=NoArg()):
 
         return make
 
-    functions = [maker(i) for i in range(100)]
-    return make_gif_or_combined_gif(img, functions, 0.015)
+    return make_gif_or_combined_gif(img, maker, 100, 0.015, False)
 
 
 def hit_screen(img: BuildImage = UserImg(), arg=NoArg()):
@@ -1613,8 +1610,7 @@ def hit_screen(img: BuildImage = UserImg(), arg=NoArg()):
 
         return make
 
-    functions = [maker(i) for i in range(29)]
-    return make_gif_or_combined_gif(img, functions, 0.2)
+    return make_gif_or_combined_gif(img, maker, 29, 0.2)
 
 
 def fencing(
@@ -1912,25 +1908,35 @@ def together(user: UserInfo = User(), arg: str = Arg()):
 
 
 def wave(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize_width(500)
-    img_w, img_h = img.size
-    period = 50
-    amp = 5
-    frame_num = 4
+    img_w,_ = img.size
+    img_w = min(max(img_w, 360), 720)
+    period = img_w / 6
+    amp = img_w / 60
+    frame_num = 8
     phase = 0
-    frames: List[IMG] = []
-    sin = lambda x: amp * math.sin(2 * math.pi / period * (x + phase))
-    for _ in range(frame_num):
-        frame = img.copy()
-        for i in range(img_w):
-            for j in range(img_h):
-                dx = int(sin(i))
-                dy = int(sin(j))
-                if 0 <= i + dx < img_w and 0 <= j + dy < img_h:
-                    frame.image.putpixel((i, j), img.image.getpixel((i + dx, j + dy)))
-                else:
-                    frame.image.putpixel((i, j), 0)
-        frame = frame.resize_canvas((img_w - amp * 2, img_h - amp * 2))
-        frames.append(frame.image)
-        phase += period / frame_num
-    return save_gif(frames, 0.01)
+    sin = lambda x: amp * math.sin(2 * math.pi / period * (x + phase)) / 2
+
+    def maker(x: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            newW,_ =img.size
+            if newW != img_w:
+                img = img.resize_width(img_w)
+
+            _, img_h = img.size
+            frame = img.copy()
+            for i in range(img_w):
+                for j in range(img_h):
+                    dx = int(sin(i) * (img_h - j) / img_h)
+                    dy = int(sin(j) * j / img_h)
+                    if 0 <= i + dx < img_w and 0 <= j + dy < img_h:
+                        frame.image.putpixel((i, j), img.image.getpixel((i + dx, j + dy)))
+
+            frame = frame.resize_canvas((int(img_w - amp), int(img_h - amp)))
+            nonlocal phase
+            phase += period / frame_num
+            frame = frame
+            return frame
+
+        return make
+
+    return make_gif_or_combined_gif(img, maker, frame_num, 0.01, False)
