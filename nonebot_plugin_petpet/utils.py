@@ -1,9 +1,9 @@
+import math
 import time
-from math import ceil
-
 import httpx
 import hashlib
 import imageio
+from enum import Enum
 from io import BytesIO
 from dataclasses import dataclass
 from PIL.Image import Image as IMG
@@ -69,6 +69,11 @@ class Maker(Protocol):
         ...
 
 
+class GifMaker(Protocol):
+    def __call__(self, i: int) -> Maker:
+        ...
+
+
 def get_avg_duration(image: IMG) -> float:
     if not getattr(image, "is_animated", False):
         return 0
@@ -98,67 +103,97 @@ def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
         return save_gif(frames, duration)
 
 
-def bei(num1 : int, num2 : int):
+def bei(num1: int, num2: int):
     maxNum = max(num1, num2)
     return maxNum
 
+
+class FrameAlignPolicy(Enum):
+    """
+    输入gif长度大于目标gif时，是否延长目标gif长度以对齐两个gif
+    """
+
+    no_extend = 0
+    """不延长"""
+    extend_first = 1
+    """延长第一帧"""
+    extend_last = 2
+    """延长最后一帧"""
+    extend_loop = 3
+    """以循环方式延长"""
+
+
 def make_gif_or_combined_gif(
-    img: BuildImage, maker: Maker, frame_num:int, duration: float, useFrame:bool = True
+    img: BuildImage,
+    maker: GifMaker,
+    frame_num: int,
+    duration: float,
+    frame_align: FrameAlignPolicy = FrameAlignPolicy.no_extend,
 ) -> BytesIO:
     """
     使用静图或动图制作gif
     :params
       * ``img``: 输入图片，如头像
-      * ``functions``: 图片处理函数数组，每个函数输入img并返回处理后的图片
+      * ``maker``: 图片处理函数生成，传入第几帧，返回对应的图片处理函数
+      * ``frame_num``: 目标gif的帧数
       * ``duration``: 相邻帧之间的时间间隔，单位为秒
+      * ``frame_align``: 输入gif长度大于目标gif时，gif长度对齐方式
     """
     image = img.image
     if not getattr(image, "is_animated", False):
         img = img.convert("RGBA")
-        frames: List[IMG] = []
-        for i in range(frame_num):
-            func = maker(i)
-            frames.append(func(img).image)
-        return save_gif(frames, duration)
+        return save_gif([maker(i)(img).image for i in range(frame_num)], duration)
 
-    img_frames: List[IMG] = []
-    n_frames = image.n_frames
-    img_duration = get_avg_duration(image) / 1000
+    frame_num_in = image.n_frames
+    duration_in = get_avg_duration(image) / 1000
+    total_duration_in = frame_num_in * duration_in
+    total_duration = frame_num * duration
 
-    count = frame_num
-    if not useFrame:
-        if n_frames > frame_num:
-            count = bei(n_frames, frame_num)
-            duration = img_duration
-            for i in range(count):
-                func = maker(i)
-                image.seek(i % n_frames)
-                frame = func(BuildImage(image).convert("RGBA"))
-                img_frames.append(frame.image)
+    func_idxs: List[int] = list(range(frame_num))
+    diff_duration = total_duration_in - total_duration
+    diff_num = int((total_duration_in - total_duration) / duration)
 
-            return save_gif(img_frames, duration)
+    if diff_duration >= duration:
+        if frame_align == FrameAlignPolicy.extend_first:
+            func_idxs = [0] * diff_num + func_idxs
 
-    n_frame = 0
+        elif frame_align == FrameAlignPolicy.extend_last:
+            func_idxs = func_idxs + [frame_num - 1] * diff_num
+
+        elif frame_align == FrameAlignPolicy.extend_loop:
+            frame_num_total = frame_num
+            while frame_num_total + frame_num <= petpet_config.petpet_gif_max_frames:
+                frame_num_total += frame_num
+                func_idxs += list(range(frame_num))
+                multiple = round(frame_num_total * duration / total_duration_in)
+                if (
+                    math.fabs(total_duration_in * multiple - frame_num_total * duration)
+                    <= duration
+                ):
+                    break
+
+    frames: List[IMG] = []
+    frame_idx_in = 0
     time_start = 0
-    for i in range(count):
-        func = maker(i)
-        while n_frame < n_frames:
+    for i, idx in enumerate(func_idxs):
+        func = maker(idx)
+        while frame_idx_in < frame_num_in:
             if (
-                    n_frame * img_duration
-                    <= i * duration - time_start
-                    < (n_frame + 1) * img_duration
+                frame_idx_in * duration_in
+                <= i * duration - time_start
+                < (frame_idx_in + 1) * duration_in
             ):
-                image.seek(n_frame)
+                image.seek(frame_idx_in)
                 frame = func(BuildImage(image).convert("RGBA"))
-                img_frames.append(frame.image)
+                frames.append(frame.image)
                 break
             else:
-                n_frame += 1
-                if n_frame >= n_frames:
-                    n_frame = 0
-                    time_start += n_frames * img_duration
+                frame_idx_in += 1
+                if frame_idx_in >= frame_num_in:
+                    frame_idx_in = 0
+                    time_start += frame_num_in * duration_in
 
-    return save_gif(img_frames, duration)
+    return save_gif(frames, duration)
 
 
 async def translate(text: str, lang_from: str = "auto", lang_to: str = "zh") -> str:
