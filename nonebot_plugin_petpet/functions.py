@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
 
 from nonebot_plugin_imageutils import Text2Image
 from nonebot_plugin_imageutils.fonts import Font
+from nonebot_plugin_imageutils.gradient import LinearGradient, ColorStop
 
 from .utils import *
 from .depends import *
@@ -492,11 +493,13 @@ def ask(user: UserInfo = User(), arg: str = Arg()):
     img = user.img.resize_width(640)
     img_w, img_h = img.size
     gradient_h = 150
-    gradient = BuildImage.new("RGBA", (img_w, gradient_h)).gradient_color(
-        (0, 0, 0, 220), (0, 0, 0, 30)
+    gradient = LinearGradient(
+        (0, 0, 0, gradient_h),
+        [ColorStop(0, (0, 0, 0, 220)), ColorStop(1, (0, 0, 0, 30))],
     )
+    gradient_img = gradient.create_image((img_w, gradient_h))
     mask = BuildImage.new("RGBA", img.size)
-    mask.paste(gradient, (0, img_h - gradient_h), alpha=True)
+    mask.paste(gradient_img, (0, img_h - gradient_h), alpha=True)
     mask = mask.filter(ImageFilter.GaussianBlur(radius=3))
     img.paste(mask, alpha=True)
 
