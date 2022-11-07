@@ -1,4 +1,6 @@
 import time
+from math import ceil
+
 import httpx
 import hashlib
 import imageio
@@ -96,8 +98,12 @@ def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
         return save_gif(frames, duration)
 
 
+def bei(num1 : int, num2 : int):
+    maxNum = max(num1, num2)
+    return maxNum
+
 def make_gif_or_combined_gif(
-    img: BuildImage, functions: List[Maker], duration: float
+    img: BuildImage, maker: Maker, frame_num:int, duration: float, useFrame:bool = True
 ) -> BytesIO:
     """
     使用静图或动图制作gif
@@ -110,25 +116,41 @@ def make_gif_or_combined_gif(
     if not getattr(image, "is_animated", False):
         img = img.convert("RGBA")
         frames: List[IMG] = []
-        for func in functions:
+        for i in range(frame_num):
+            func = maker(i)
             frames.append(func(img).image)
         return save_gif(frames, duration)
 
-    img_frames: List[BuildImage] = []
+    img_frames: List[IMG] = []
     n_frames = image.n_frames
     img_duration = get_avg_duration(image) / 1000
 
+    count = frame_num
+    if not useFrame:
+        if n_frames > frame_num:
+            count = bei(n_frames, frame_num)
+            duration = img_duration
+            for i in range(count):
+                func = maker(i)
+                image.seek(i % n_frames)
+                frame = func(BuildImage(image).convert("RGBA"))
+                img_frames.append(frame.image)
+
+            return save_gif(img_frames, duration)
+
     n_frame = 0
     time_start = 0
-    for i in range(len(functions)):
+    for i in range(count):
+        func = maker(i)
         while n_frame < n_frames:
             if (
-                n_frame * img_duration
-                <= i * duration - time_start
-                < (n_frame + 1) * img_duration
+                    n_frame * img_duration
+                    <= i * duration - time_start
+                    < (n_frame + 1) * img_duration
             ):
                 image.seek(n_frame)
-                img_frames.append(BuildImage(image).convert("RGBA"))
+                frame = func(BuildImage(image).convert("RGBA"))
+                img_frames.append(frame.image)
                 break
             else:
                 n_frame += 1
@@ -136,10 +158,7 @@ def make_gif_or_combined_gif(
                     n_frame = 0
                     time_start += n_frames * img_duration
 
-    frames: List[IMG] = []
-    for func, img_frame in zip(functions, img_frames):
-        frames.append(func(img_frame).image)
-    return save_gif(frames, duration)
+    return save_gif(img_frames, duration)
 
 
 async def translate(text: str, lang_from: str = "auto", lang_to: str = "zh") -> str:
