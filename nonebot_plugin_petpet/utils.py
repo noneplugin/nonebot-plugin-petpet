@@ -2,7 +2,6 @@ import math
 import time
 import httpx
 import hashlib
-import imageio
 from enum import Enum
 from io import BytesIO
 from dataclasses import dataclass
@@ -38,7 +37,15 @@ class Meme:
 
 def save_gif(frames: List[IMG], duration: float) -> BytesIO:
     output = BytesIO()
-    imageio.mimsave(output, frames, format="gif", duration=duration)
+    frames[0].save(
+        output,
+        format="GIF",
+        save_all=True,
+        append_images=frames[1:],
+        duration=duration * 1000,
+        loop=0,
+        disposal=2,
+    )
 
     # 没有超出最大大小，直接返回
     nbytes = output.getbuffer().nbytes
@@ -96,10 +103,16 @@ def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
         return func(img.convert("RGBA")).save_jpg()
     else:
         duration = get_avg_duration(image) / 1000
+        image.seek(0)
+        transparency = image.info.get("transparency", 0)
         frames: List[IMG] = []
         for i in range(image.n_frames):
             image.seek(i)
-            frames.append(func(BuildImage(image).convert("RGBA")).image)
+            background = image.info.get("background", transparency)
+            new_image = func(BuildImage(image).convert("RGBA")).image
+            new_image.info["background"] = background
+            frames.append(new_image)
+        frames[0].info["transparency"] = transparency
         return save_gif(frames, duration)
 
 
