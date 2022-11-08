@@ -1970,22 +1970,22 @@ def rise_dead(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
+    # fmt: off
     positions = [
         (318, 163), (319, 173), (320, 183), (317, 193), (312, 199), 
         (297, 212), (289, 218), (280, 224), (278, 223), (278, 220), 
         (280, 215), (280, 213), (280, 210), (280, 206), (280, 201), 
         (280, 192), (280, 188), (280, 184), (280, 179)
     ]
+    # fmt: on
     def maker(i: int) -> Maker:
         def make(img: BuildImage) -> BuildImage:
             img = img.convert("RGBA")
             if arg == "圆":
                 img = img.circle()
-            tmp = img.resize_height(80)
-            if tmp.width < 80:
-                img = img.resize((80, 80), keep_ratio=True, inside=False)
-            else:
-                img = tmp
+            img = img.resize_height(80)
+            if img.width < 80:
+                img = img.resize((80, 80), keep_ratio=True)
             frame = load_image(f"kirby_hammer/{i}.png")
             if i <= 18:
                 x, y = positions[i]
@@ -1999,6 +1999,4 @@ def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
 
         return make
 
-    return make_gif_or_combined_gif(
-        img, maker, 62, 0.05, FrameAlignPolicy.extend_loop
-    )
+    return make_gif_or_combined_gif(img, maker, 62, 0.05, FrameAlignPolicy.extend_loop)
