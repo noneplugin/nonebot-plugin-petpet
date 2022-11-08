@@ -95,6 +95,7 @@ memes = [
     Meme("incivilization", incivilization, ("不文明",)),
     Meme("together", together, ("一起",)),
     Meme("wave", wave, ("波纹",)),
+    Meme("rise_dead", rise_dead, ("诈尸", "秽土转生")),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
