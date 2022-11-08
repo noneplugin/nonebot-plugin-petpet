@@ -732,7 +732,7 @@ def paint(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def shock(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((300, 300))
+    img = img.convert("RGBA").square().resize((300, 300))
     frames: List[IMG] = []
     for i in range(30):
         frames.append(
@@ -837,7 +837,7 @@ def love_you(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", "右"])):
-    img_w, img_h = img.copy().convert("RGBA").resize_width(500).size
+    img_w, img_h = img.size
 
     Mode = namedtuple(
         "Mode", ["method", "frame_size", "size1", "pos1", "size2", "pos2"]
@@ -886,7 +886,6 @@ def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", 
         mode = modes["bottom"]
 
     def make(img: BuildImage) -> BuildImage:
-        img = img.resize_width(500)
         first = img
         second = img.transpose(mode.method)
         frame = BuildImage.new("RGBA", mode.frame_size)
@@ -1572,9 +1571,11 @@ def call_110(
 
 
 def confuse(img: BuildImage = UserImg(), arg=NoArg()):
+    img_w = min(img.width, 500)
+
     def maker(i: int) -> Maker:
         def make(img: BuildImage) -> BuildImage:
-            img = img.resize_width(380)
+            img = img.resize_width(img_w)
             frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
             frame.paste(img, below=True)
             return frame
