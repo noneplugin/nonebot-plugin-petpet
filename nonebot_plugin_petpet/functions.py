@@ -1378,7 +1378,7 @@ def mywife(user: UserInfo = User(), arg=NoArg()):
     frame = BuildImage.new("RGBA", (650, img_h + 500), "white")
     frame.paste(img, (int(325 - img_w / 2), 105), alpha=True)
 
-    text = f"如果你的老婆长这样"
+    text = "如果你的老婆长这样"
     frame.draw_text(
         (27, 12, 27 + 596, 12 + 79),
         text,
@@ -1388,7 +1388,7 @@ def mywife(user: UserInfo = User(), arg=NoArg()):
         lines_align="center",
         weight="bold",
     )
-    text = f"那么这就不是你的老婆\n这是我的老婆"
+    text = "那么这就不是你的老婆\n这是我的老婆"
     frame.draw_text(
         (27, img_h + 120, 27 + 593, img_h + 120 + 135),
         text,
@@ -1397,7 +1397,7 @@ def mywife(user: UserInfo = User(), arg=NoArg()):
         allow_wrap=True,
         weight="bold",
     )
-    text = f"滚去找你\n自己的老婆去"
+    text = "滚去找你\n自己的老婆去"
     frame.draw_text(
         (27, img_h + 295, 27 + 374, img_h + 295 + 135),
         text,
@@ -1967,3 +1967,22 @@ def rise_dead(img: BuildImage = UserImg(), arg=NoArg()):
             frame.paste(imgs[idx], (x, y), below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.09)
+
+
+def kirby_hammer(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((80, 80)).circle()
+    positions = [
+        (318, 163), (319, 173), (320, 183), (317, 193), (312, 199), 
+        (297, 212), (289, 218), (280, 224), (278, 223), (278, 220), 
+        (280, 215), (280, 213), (280, 210), (280, 206), (280, 201), 
+        (280, 192), (280, 188), (280, 184), (280, 179)
+    ]
+    frames = []
+    for i in range(62):
+        frame = load_image(f"kirby_hammer/{i}.png")
+        if i <= 18:
+            frame.paste(img, positions[i], alpha=True)
+        elif i <= 39:
+            frame.paste(img, positions[18], alpha=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.05)
