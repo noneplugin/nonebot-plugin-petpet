@@ -1969,20 +1969,36 @@ def rise_dead(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.09)
 
 
-def kirby_hammer(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((80, 80)).circle()
+def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
     positions = [
         (318, 163), (319, 173), (320, 183), (317, 193), (312, 199), 
         (297, 212), (289, 218), (280, 224), (278, 223), (278, 220), 
         (280, 215), (280, 213), (280, 210), (280, 206), (280, 201), 
         (280, 192), (280, 188), (280, 184), (280, 179)
     ]
-    frames = []
-    for i in range(62):
-        frame = load_image(f"kirby_hammer/{i}.png")
-        if i <= 18:
-            frame.paste(img, positions[i], alpha=True)
-        elif i <= 39:
-            frame.paste(img, positions[18], alpha=True)
-        frames.append(frame.image)
-    return save_gif(frames, 0.05)
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            img = img.convert("RGBA")
+            if arg == "圆":
+                img = img.circle()
+            tmp = img.resize_height(80)
+            if tmp.width < 80:
+                img = img.resize((80, 80), keep_ratio=True, inside=False)
+            else:
+                img = tmp
+            frame = load_image(f"kirby_hammer/{i}.png")
+            if i <= 18:
+                x, y = positions[i]
+                x = x + 40 - img.width // 2
+                frame.paste(img, (x, y), alpha=True)
+            elif i <= 39:
+                x, y = positions[18]
+                x = x + 40 - img.width // 2
+                frame.paste(img, (x, y), alpha=True)
+            return frame
+
+        return make
+
+    return make_gif_or_combined_gif(
+        img, maker, 62, 0.05, FrameAlignPolicy.extend_loop
+    )
