@@ -1378,38 +1378,35 @@ def mywife(user: UserInfo = User(), arg=NoArg()):
     frame = BuildImage.new("RGBA", (650, img_h + 500), "white")
     frame.paste(img, (int(325 - img_w / 2), 105), alpha=True)
 
-    try:
-        text = f"如果你的老婆长这样"
-        frame.draw_text(
-            (27, 12, 27 + 596, 12 + 79),
-            text,
-            max_fontsize=100,
-            min_fontsize=30,
-            allow_wrap=True,
-            lines_align="center",
-            weight="bold",
-        )
-        text = f"那么这就不是你的老婆\n这是我的老婆"
-        frame.draw_text(
-            (27, img_h + 120, 27 + 593, img_h + 120 + 135),
-            text,
-            max_fontsize=100,
-            min_fontsize=30,
-            allow_wrap=True,
-            weight="bold",
-        )
-        text = f"滚去找你\n自己的老婆去"
-        frame.draw_text(
-            (27, img_h + 295, 27 + 374, img_h + 295 + 135),
-            text,
-            max_fontsize=100,
-            min_fontsize=30,
-            allow_wrap=True,
-            lines_align="center",
-            weight="bold",
-        )
-    except ValueError:
-        return NAME_TOO_LONG
+    text = f"如果你的老婆长这样"
+    frame.draw_text(
+        (27, 12, 27 + 596, 12 + 79),
+        text,
+        max_fontsize=70,
+        min_fontsize=30,
+        allow_wrap=True,
+        lines_align="center",
+        weight="bold",
+    )
+    text = f"那么这就不是你的老婆\n这是我的老婆"
+    frame.draw_text(
+        (27, img_h + 120, 27 + 593, img_h + 120 + 135),
+        text,
+        max_fontsize=70,
+        min_fontsize=30,
+        allow_wrap=True,
+        weight="bold",
+    )
+    text = f"滚去找你\n自己的老婆去"
+    frame.draw_text(
+        (27, img_h + 295, 27 + 374, img_h + 295 + 135),
+        text,
+        max_fontsize=70,
+        min_fontsize=30,
+        allow_wrap=True,
+        lines_align="center",
+        weight="bold",
+    )
 
     img_point = load_image("mywife/1.png").resize_width(200)
     frame.paste(img_point, (421, img_h + 270))
