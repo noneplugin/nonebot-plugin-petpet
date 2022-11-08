@@ -1966,7 +1966,7 @@ def rise_dead(img: BuildImage = UserImg(), arg=NoArg()):
                 y -= 1
             frame.paste(imgs[idx], (x, y), below=True)
         frames.append(frame.image)
-    return save_gif(frames, 0.09)
+    return save_gif(frames, 0.15)
 
 
 def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
