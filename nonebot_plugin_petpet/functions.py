@@ -893,7 +893,7 @@ def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", 
         frame.paste(second.crop(mode.size2), mode.pos2)
         return frame
 
-    return make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make, keep_transparency=True)
 
 
 def safe_sense(user: UserInfo = User(), arg: str = Arg()):

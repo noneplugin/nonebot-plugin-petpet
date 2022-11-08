@@ -91,34 +91,29 @@ def get_avg_duration(image: IMG) -> float:
     return total_duration / image.n_frames
 
 
-def make_jpg_or_gif(img: BuildImage, func: Maker) -> BytesIO:
+def make_jpg_or_gif(
+    img: BuildImage, func: Maker, keep_transparency: bool = False
+) -> BytesIO:
     """
     制作静图或者动图
     :params
       * ``img``: 输入图片，如头像
       * ``func``: 图片处理函数，输入img，返回处理后的图片
+      * ``keep_transparency``: 传入gif时，是否保留该gif的透明度
     """
     image = img.image
     if not getattr(image, "is_animated", False):
         return func(img.convert("RGBA")).save_jpg()
     else:
         duration = get_avg_duration(image) / 1000
-        image.seek(0)
-        transparency = image.info.get("transparency", 0)
         frames: List[IMG] = []
         for i in range(image.n_frames):
             image.seek(i)
-            background = image.info.get("background", transparency)
-            new_image = func(BuildImage(image).convert("RGBA")).image
-            new_image.info["background"] = background
-            frames.append(new_image)
-        frames[0].info["transparency"] = transparency
+            frames.append(func(BuildImage(image).convert("RGBA")).image)
+        if keep_transparency:
+            image.seek(0)
+            frames[0].info["transparency"] = image.info.get("transparency", 0)
         return save_gif(frames, duration)
-
-
-def bei(num1: int, num2: int):
-    maxNum = max(num1, num2)
-    return maxNum
 
 
 class FrameAlignPolicy(Enum):
