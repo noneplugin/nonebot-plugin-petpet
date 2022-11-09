@@ -25,8 +25,6 @@ _✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关
 
 文字类表情包制作：[nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
 
-风格logo图片制作：[nonebot-plugin-logo](https://github.com/noneplugin/nonebot-plugin-logo)
-
 
 ### 安装
 
@@ -101,7 +99,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/10/15/CiHyoqgI6eKSW9p.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/11/09/xazi1q8JsfEmdhC.jpg" width="400" />
 </div>
 
 
@@ -238,6 +236,9 @@ pip install nonebot_plugin_petpet
 | 急急国王 | <img src="https://s2.loli.net/2022/10/11/RqFP8Gtr2CQmSTU.jpg" width="200" > | 可指定方块中的字和描述<br>可用多个图片替代方块 |
 | 不文明 | <img src="https://s2.loli.net/2022/10/15/XBqrksgCcAx1YaH.jpg" width="200" > |  |
 | 一起 | <img src="https://s2.loli.net/2022/10/15/Ujt7avy9d5TfOlW.jpg" width="200" > |  |
+| 波纹 | <img src="https://s2.loli.net/2022/11/09/hTnrF1e5gaYbxsX.gif" width="200" > | 支持gif |
+| 诈尸<br>秽土转生 | <img src="https://s2.loli.net/2022/11/09/z2alEPjdsrNSyMU.gif" width="200" > |  |
+| 卡比锤<br>卡比重锤 | <img src="https://s2.loli.net/2022/11/09/ouF5MxzQaqjC64d.gif" width="200" > | 支持gif<br>可使用参数“圆”让头像为圆形 |
 
 </details>
 
