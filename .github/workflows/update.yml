@@ -20,7 +20,7 @@ jobs:
         uses: Gr1N/setup-poetry@v7
 
       - name: Update resource_list.json
-        working-directory: ${{ GITHUB_WORKSPACE }}/resources
+        working-directory: ${{ github.GITHUB_WORKSPACE }}/resources
         run: python update_list.py
 
       - name: Update poetry.lock
