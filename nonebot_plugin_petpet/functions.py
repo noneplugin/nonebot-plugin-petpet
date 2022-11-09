@@ -1574,13 +1574,14 @@ def confuse(img: BuildImage = UserImg(), arg=NoArg()):
         def make(img: BuildImage) -> BuildImage:
             img = img.resize_width(img_w)
             frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
-            frame.paste(img, below=True)
-            return frame
+            bg = BuildImage.new("RGB", img.size, "white")
+            bg.paste(img, alpha=True).paste(frame, alpha=True)
+            return bg
 
         return make
 
     return make_gif_or_combined_gif(
-        img, maker, 100, 0.015, FrameAlignPolicy.extend_loop
+        img, maker, 100, 0.02, FrameAlignPolicy.extend_loop, input_based=True
     )
 
 

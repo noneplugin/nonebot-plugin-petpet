@@ -118,7 +118,7 @@ def make_jpg_or_gif(
 
 class FrameAlignPolicy(Enum):
     """
-    输入gif长度大于目标gif时，是否延长目标gif长度以对齐两个gif
+    要叠加的gif长度大于基准gif时，是否延长基准gif长度以对齐两个gif
     """
 
     no_extend = 0
@@ -137,6 +137,8 @@ def make_gif_or_combined_gif(
     frame_num: int,
     duration: float,
     frame_align: FrameAlignPolicy = FrameAlignPolicy.no_extend,
+    input_based: bool = False,
+    keep_transparency: bool = False,
 ) -> BytesIO:
     """
     使用静图或动图制作gif
@@ -145,7 +147,9 @@ def make_gif_or_combined_gif(
       * ``maker``: 图片处理函数生成，传入第几帧，返回对应的图片处理函数
       * ``frame_num``: 目标gif的帧数
       * ``duration``: 相邻帧之间的时间间隔，单位为秒
-      * ``frame_align``: 输入gif长度大于目标gif时，gif长度对齐方式
+      * ``frame_align``: 要叠加的gif长度大于基准gif时，gif长度对齐方式
+      * ``input_based``: 是否以输入gif为基准合成gif，默认为`False`，即以目标gif为基准
+      * ``keep_transparency``: 传入gif时，是否保留该gif的透明度
     """
     image = img.image
     if not getattr(image, "is_animated", False):
@@ -157,49 +161,80 @@ def make_gif_or_combined_gif(
     total_duration_in = frame_num_in * duration_in
     total_duration = frame_num * duration
 
-    func_idxs: List[int] = list(range(frame_num))
-    diff_duration = total_duration_in - total_duration
-    diff_num = int((total_duration_in - total_duration) / duration)
+    if input_based:
+        frame_num_base = frame_num_in
+        frame_num_fit = frame_num
+        duration_base = duration_in
+        duration_fit = duration
+        total_duration_base = total_duration_in
+        total_duration_fit = total_duration
+    else:
+        frame_num_base = frame_num
+        frame_num_fit = frame_num_in
+        duration_base = duration
+        duration_fit = duration_in
+        total_duration_base = total_duration
+        total_duration_fit = total_duration_in
 
-    if diff_duration >= duration:
+    frame_idxs: List[int] = list(range(frame_num_base))
+    diff_duration = total_duration_fit - total_duration_base
+    diff_num = int(diff_duration / duration_base)
+
+    if diff_duration >= duration_base:
         if frame_align == FrameAlignPolicy.extend_first:
-            func_idxs = [0] * diff_num + func_idxs
+            frame_idxs = [0] * diff_num + frame_idxs
 
         elif frame_align == FrameAlignPolicy.extend_last:
-            func_idxs = func_idxs + [frame_num - 1] * diff_num
+            frame_idxs += [frame_num_base - 1] * diff_num
 
         elif frame_align == FrameAlignPolicy.extend_loop:
-            frame_num_total = frame_num
-            while frame_num_total + frame_num <= petpet_config.petpet_gif_max_frames:
-                frame_num_total += frame_num
-                func_idxs += list(range(frame_num))
-                multiple = round(frame_num_total * duration / total_duration_in)
+            frame_num_total = frame_num_base
+            # 重复基准gif，直到两个gif总时长之差在1个间隔以内，或总帧数超出最大帧数
+            while (
+                frame_num_total + frame_num_base <= petpet_config.petpet_gif_max_frames
+            ):
+                frame_num_total += frame_num_base
+                frame_idxs += list(range(frame_num_base))
+                multiple = round(frame_num_total * duration_base / total_duration_fit)
                 if (
-                    math.fabs(total_duration_in * multiple - frame_num_total * duration)
-                    <= duration
+                    math.fabs(
+                        total_duration_fit * multiple - frame_num_total * duration_base
+                    )
+                    <= duration_base
                 ):
                     break
 
     frames: List[IMG] = []
-    frame_idx_in = 0
+    frame_idx_fit = 0
     time_start = 0
-    for i, idx in enumerate(func_idxs):
-        func = maker(idx)
-        while frame_idx_in < frame_num_in:
+    for i, idx in enumerate(frame_idxs):
+        while frame_idx_fit < frame_num_fit:
             if (
-                frame_idx_in * duration_in
-                <= i * duration - time_start
-                < (frame_idx_in + 1) * duration_in
+                frame_idx_fit * duration_fit
+                <= i * duration_base - time_start
+                < (frame_idx_fit + 1) * duration_fit
             ):
-                image.seek(frame_idx_in)
+                if input_based:
+                    idx_in = idx
+                    idx_maker = frame_idx_fit
+                else:
+                    idx_in = frame_idx_fit
+                    idx_maker = idx
+
+                func = maker(idx_maker)
+                image.seek(idx_in)
                 frame = func(BuildImage(image).convert("RGBA"))
                 frames.append(frame.image)
                 break
             else:
-                frame_idx_in += 1
-                if frame_idx_in >= frame_num_in:
-                    frame_idx_in = 0
-                    time_start += frame_num_in * duration_in
+                frame_idx_fit += 1
+                if frame_idx_fit >= frame_num_fit:
+                    frame_idx_fit = 0
+                    time_start += total_duration_fit
+
+    if keep_transparency:
+        image.seek(0)
+        frames[0].info["transparency"] = image.info.get("transparency", 0)
 
     return save_gif(frames, duration)
 
