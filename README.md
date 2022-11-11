@@ -51,8 +51,7 @@ pip install nonebot_plugin_petpet
 
 ### 配置项
 
-<details>
-<summary>展开/收起</summary>
+> 以下配置项可在 `.env.*` 文件中设置，具体参考 [NoneBot 配置方式](https://v2.nonebot.dev/docs/tutorial/configuration#%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F)
 
 #### `petpet_command_start`
  - 类型：`str`
@@ -89,7 +88,7 @@ pip install nonebot_plugin_petpet
  - 默认：`""`
  - 说明：百度翻译api相关，可在[百度翻译开放平台](http://api.fanyi.baidu.com)申请
 
-</details>
+ > “典中典”表情需要设置 `baidu_trans_appid` 和 `baidu_trans_apikey`
 
 
 ### 使用
