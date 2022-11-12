@@ -666,19 +666,14 @@ def follow(user: UserInfo = User(), arg: str = Arg()):
 
 
 def my_friend(
-    user: Optional[UserInfo] = User(),
+    users: List[UserInfo] = Users(0, 1),
     sender: UserInfo = Sender(),
     name: str = RegexArg("name"),
     args: List[str] = Args(0, 10),
 ):
-    if not user:
-        user = sender
-    if not args:
-        args = [
-            "救命啊",
-        ]
+    user = users[0] if users else sender
     name = name.strip() or user.name or "朋友"
-    texts = args
+    texts = args or ["救命啊"]
     img = user.img.convert("RGBA").circle().resize((100, 100))
 
     name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
@@ -778,17 +773,15 @@ def listen_music(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 async def dianzhongdian(img: BuildImage = UserImg(), arg: str = Arg()):
-    if not arg:
-        arg = "救命啊"
-
-    trans = await translate(arg, lang_to="jp")
+    text = arg or "救命啊"
+    trans = await translate(text, lang_to="jp")
     img = img.convert("L").resize_width(500)
     text_img1 = BuildImage.new("RGBA", (500, 60))
     text_img2 = BuildImage.new("RGBA", (500, 35))
     try:
         text_img1.draw_text(
             (20, 0, text_img1.width - 20, text_img1.height),
-            arg,
+            text,
             max_fontsize=50,
             min_fontsize=25,
             fill="white",
