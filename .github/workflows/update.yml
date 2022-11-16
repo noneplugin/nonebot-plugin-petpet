@@ -1,0 +1,32 @@
+name: Update resource_list.json & poetry.lock
+
+on:
+  push:
+    branches:
+      - "v0.3.x"
+
+jobs:
+  update-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v7
+
+      - name: Update resource_list.json
+        run: python resources/update_list.py
+
+      - name: Update poetry.lock
+        run: poetry update --lock
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: "v0.3.x"

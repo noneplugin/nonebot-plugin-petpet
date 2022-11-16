@@ -1320,6 +1320,254 @@
         "hash": "82f7556d03c3e847ec3dd3f1d0915d9f"
     },
     {
+        "path": "images/kirby_hammer/0.png",
+        "hash": "4b3d751215727547c9d596370c0cadc6"
+    },
+    {
+        "path": "images/kirby_hammer/1.png",
+        "hash": "3e9b3db1325109cd857498cf764ed8b3"
+    },
+    {
+        "path": "images/kirby_hammer/10.png",
+        "hash": "252c83ec6328ca49a46bf2cf88481123"
+    },
+    {
+        "path": "images/kirby_hammer/11.png",
+        "hash": "410b76d943885f08adbf10f7f054e75f"
+    },
+    {
+        "path": "images/kirby_hammer/12.png",
+        "hash": "9ae6ca270a810714a8d7c9dd4099593a"
+    },
+    {
+        "path": "images/kirby_hammer/13.png",
+        "hash": "ec99ad3043c7fd3ff77530ee38172eaa"
+    },
+    {
+        "path": "images/kirby_hammer/14.png",
+        "hash": "096fe608b0490ed4fcb3f35bd0f74baa"
+    },
+    {
+        "path": "images/kirby_hammer/15.png",
+        "hash": "d117358a362f2ddff2d4c22ed88c981a"
+    },
+    {
+        "path": "images/kirby_hammer/16.png",
+        "hash": "d80a8e7ab1c123c5ece132d9770de968"
+    },
+    {
+        "path": "images/kirby_hammer/17.png",
+        "hash": "9e4d604e25a2da6b99d1840fe7c75602"
+    },
+    {
+        "path": "images/kirby_hammer/18.png",
+        "hash": "067baa4f017f15f90d36d15e89f9527f"
+    },
+    {
+        "path": "images/kirby_hammer/19.png",
+        "hash": "3907359c33ea79883f36a5aaf2cffc81"
+    },
+    {
+        "path": "images/kirby_hammer/2.png",
+        "hash": "2b9c78da812ace9ab756b3ac31bcc2c3"
+    },
+    {
+        "path": "images/kirby_hammer/20.png",
+        "hash": "f72fb17d8f0187ab153021b44dd214d9"
+    },
+    {
+        "path": "images/kirby_hammer/21.png",
+        "hash": "f2c1b689c31792c862208e0027f5eb3d"
+    },
+    {
+        "path": "images/kirby_hammer/22.png",
+        "hash": "d2a986955f38ae165ab7ed5e9eff2c22"
+    },
+    {
+        "path": "images/kirby_hammer/23.png",
+        "hash": "9e90dba73e5a018ca0fd222a004b1f5e"
+    },
+    {
+        "path": "images/kirby_hammer/24.png",
+        "hash": "94a54a4bb46aef8764dc90b4a914c68e"
+    },
+    {
+        "path": "images/kirby_hammer/25.png",
+        "hash": "54bd5065691abd93f8f67e6d4d82654b"
+    },
+    {
+        "path": "images/kirby_hammer/26.png",
+        "hash": "984150c2897e2989bd89a4739ee17628"
+    },
+    {
+        "path": "images/kirby_hammer/27.png",
+        "hash": "acf235c91c7ae0877531dd5eb1d05e9c"
+    },
+    {
+        "path": "images/kirby_hammer/28.png",
+        "hash": "bb8829238a3bbdc892999a9bc3cc0035"
+    },
+    {
+        "path": "images/kirby_hammer/29.png",
+        "hash": "de595b27464eac39b387f139daf0240c"
+    },
+    {
+        "path": "images/kirby_hammer/3.png",
+        "hash": "f2298d7403dc43180713d7d31de47455"
+    },
+    {
+        "path": "images/kirby_hammer/30.png",
+        "hash": "ed48b5f532f17d4419d2eac91787a6e2"
+    },
+    {
+        "path": "images/kirby_hammer/31.png",
+        "hash": "e322d5ae9489235c164239ea0c80ea68"
+    },
+    {
+        "path": "images/kirby_hammer/32.png",
+        "hash": "cca6150a0e930ac96985d7a33daa47ac"
+    },
+    {
+        "path": "images/kirby_hammer/33.png",
+        "hash": "efb182d89025cb064a6d5ab7682975b5"
+    },
+    {
+        "path": "images/kirby_hammer/34.png",
+        "hash": "99ca9df71e8a370f192374a057406d37"
+    },
+    {
+        "path": "images/kirby_hammer/35.png",
+        "hash": "fdde0008b84eabbcff46a0e59c057105"
+    },
+    {
+        "path": "images/kirby_hammer/36.png",
+        "hash": "45b4f1f245216b8670067b9df8df1ea6"
+    },
+    {
+        "path": "images/kirby_hammer/37.png",
+        "hash": "206a72ca3b28cc1a50d4414364190bdc"
+    },
+    {
+        "path": "images/kirby_hammer/38.png",
+        "hash": "9c5f7a67a182d73e0bc4a3a51b676938"
+    },
+    {
+        "path": "images/kirby_hammer/39.png",
+        "hash": "c8eedcaacd133ac50373d45b56f007a7"
+    },
+    {
+        "path": "images/kirby_hammer/4.png",
+        "hash": "9b7ab8b7137898c3a3ef680f27c5dac4"
+    },
+    {
+        "path": "images/kirby_hammer/40.png",
+        "hash": "080e309ebc305fcd4ee2aabfaf40e6e0"
+    },
+    {
+        "path": "images/kirby_hammer/41.png",
+        "hash": "fc6622b31b57c66e5b008d63e6409a94"
+    },
+    {
+        "path": "images/kirby_hammer/42.png",
+        "hash": "1d003a0c7b75832ec11849d0192cabd3"
+    },
+    {
+        "path": "images/kirby_hammer/43.png",
+        "hash": "fc56793262bf080fe9b8cef629a3acc2"
+    },
+    {
+        "path": "images/kirby_hammer/44.png",
+        "hash": "cd3cc7029bffd42fe7119c687be44f2e"
+    },
+    {
+        "path": "images/kirby_hammer/45.png",
+        "hash": "96419814c91e3082d1850793b5978f3f"
+    },
+    {
+        "path": "images/kirby_hammer/46.png",
+        "hash": "f06d71ebed8e4410fe9139de30612e3e"
+    },
+    {
+        "path": "images/kirby_hammer/47.png",
+        "hash": "ac9b4ae0523f7cc80f6ec8545436888c"
+    },
+    {
+        "path": "images/kirby_hammer/48.png",
+        "hash": "3592a8851467f316e4b4186a85bbce27"
+    },
+    {
+        "path": "images/kirby_hammer/49.png",
+        "hash": "9e5bc3797377a5f4f9385e8c9d55b8d6"
+    },
+    {
+        "path": "images/kirby_hammer/5.png",
+        "hash": "3a5ec940f94e19c03879b3b2c21d9959"
+    },
+    {
+        "path": "images/kirby_hammer/50.png",
+        "hash": "b0d440755b85428fc2d00537ab79caec"
+    },
+    {
+        "path": "images/kirby_hammer/51.png",
+        "hash": "65757c46c224edd93ade8aadf0bfc3c0"
+    },
+    {
+        "path": "images/kirby_hammer/52.png",
+        "hash": "c12fe7a7d87912155c9ded3b999752fb"
+    },
+    {
+        "path": "images/kirby_hammer/53.png",
+        "hash": "5046fbe65e726be58b1ef243b7111a7d"
+    },
+    {
+        "path": "images/kirby_hammer/54.png",
+        "hash": "3500fda8e30e5818cf16576e11be38d8"
+    },
+    {
+        "path": "images/kirby_hammer/55.png",
+        "hash": "dec898961403796b4dff81f2af93767f"
+    },
+    {
+        "path": "images/kirby_hammer/56.png",
+        "hash": "da4a03072d3f3ac6b2ef6bd0c129ff4c"
+    },
+    {
+        "path": "images/kirby_hammer/57.png",
+        "hash": "054c7b45c34819d7c6f086da4b27cf3a"
+    },
+    {
+        "path": "images/kirby_hammer/58.png",
+        "hash": "7f2f3d88c96d8f21f47087db40a3156a"
+    },
+    {
+        "path": "images/kirby_hammer/59.png",
+        "hash": "4db1b3f61044fc795e6e859da2030321"
+    },
+    {
+        "path": "images/kirby_hammer/6.png",
+        "hash": "98602b15bcd486f5d334910791a11ff5"
+    },
+    {
+        "path": "images/kirby_hammer/60.png",
+        "hash": "e3e2b230e05b168aeb0c278ce6dea4ed"
+    },
+    {
+        "path": "images/kirby_hammer/61.png",
+        "hash": "89e1a31ef24f68d5d8d7cdf5c0e245c5"
+    },
+    {
+        "path": "images/kirby_hammer/7.png",
+        "hash": "85f414a42d7c8a991e55ef227ce44c22"
+    },
+    {
+        "path": "images/kirby_hammer/8.png",
+        "hash": "3e5886543cdee36c21830fb681568ac1"
+    },
+    {
+        "path": "images/kirby_hammer/9.png",
+        "hash": "83a12e09e4c29d23c634c0f11f1823b4"
+    },
+    {
         "path": "images/kiss/0.png",
         "hash": "49c396692947a52148bcef0ea47f0491"
     },

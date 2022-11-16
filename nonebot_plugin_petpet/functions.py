@@ -666,19 +666,14 @@ def follow(user: UserInfo = User(), arg: str = Arg()):
 
 
 def my_friend(
-    user: Optional[UserInfo] = User(),
+    users: List[UserInfo] = Users(0, 1),
     sender: UserInfo = Sender(),
     name: str = RegexArg("name"),
     args: List[str] = Args(0, 10),
 ):
-    if not user:
-        user = sender
-    if not args:
-        args = [
-            "救命啊",
-        ]
+    user = users[0] if users else sender
     name = name.strip() or user.name or "朋友"
-    texts = args
+    texts = args or ["救命啊"]
     img = user.img.convert("RGBA").circle().resize((100, 100))
 
     name_img = Text2Image.from_text(name, 25, fill="#868894").to_image()
@@ -778,17 +773,15 @@ def listen_music(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 async def dianzhongdian(img: BuildImage = UserImg(), arg: str = Arg()):
-    if not arg:
-        arg = "救命啊"
-
-    trans = await translate(arg, lang_to="jp")
+    text = arg or "救命啊"
+    trans = await translate(text, lang_to="jp")
     img = img.convert("L").resize_width(500)
     text_img1 = BuildImage.new("RGBA", (500, 60))
     text_img2 = BuildImage.new("RGBA", (500, 35))
     try:
         text_img1.draw_text(
             (20, 0, text_img1.width - 20, text_img1.height),
-            arg,
+            text,
             max_fontsize=50,
             min_fontsize=25,
             fill="white",
@@ -893,7 +886,7 @@ def symmetric(img: BuildImage = UserImg(), arg: str = Arg(["上", "下", "左", 
         frame.paste(second.crop(mode.size2), mode.pos2)
         return frame
 
-    return make_jpg_or_gif(img, make)
+    return make_jpg_or_gif(img, make, keep_transparency=True)
 
 
 def safe_sense(user: UserInfo = User(), arg: str = Arg()):
@@ -1574,13 +1567,14 @@ def confuse(img: BuildImage = UserImg(), arg=NoArg()):
         def make(img: BuildImage) -> BuildImage:
             img = img.resize_width(img_w)
             frame = load_image(f"confuse/{i}.png").resize(img.size, keep_ratio=True)
-            frame.paste(img, below=True)
-            return frame
+            bg = BuildImage.new("RGB", img.size, "white")
+            bg.paste(img, alpha=True).paste(frame, alpha=True)
+            return bg
 
         return make
 
     return make_gif_or_combined_gif(
-        img, maker, 100, 0.015, FrameAlignPolicy.extend_loop
+        img, maker, 100, 0.02, FrameAlignPolicy.extend_loop, input_based=True
     )
 
 
@@ -1966,26 +1960,26 @@ def rise_dead(img: BuildImage = UserImg(), arg=NoArg()):
                 y -= 1
             frame.paste(imgs[idx], (x, y), below=True)
         frames.append(frame.image)
-    return save_gif(frames, 0.09)
+    return save_gif(frames, 0.15)
 
 
 def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
+    # fmt: off
     positions = [
         (318, 163), (319, 173), (320, 183), (317, 193), (312, 199), 
         (297, 212), (289, 218), (280, 224), (278, 223), (278, 220), 
         (280, 215), (280, 213), (280, 210), (280, 206), (280, 201), 
         (280, 192), (280, 188), (280, 184), (280, 179)
     ]
+    # fmt: on
     def maker(i: int) -> Maker:
         def make(img: BuildImage) -> BuildImage:
             img = img.convert("RGBA")
             if arg == "圆":
                 img = img.circle()
-            tmp = img.resize_height(80)
-            if tmp.width < 80:
-                img = img.resize((80, 80), keep_ratio=True, inside=False)
-            else:
-                img = tmp
+            img = img.resize_height(80)
+            if img.width < 80:
+                img = img.resize((80, 80), keep_ratio=True)
             frame = load_image(f"kirby_hammer/{i}.png")
             if i <= 18:
                 x, y = positions[i]
