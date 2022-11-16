@@ -96,7 +96,9 @@ memes = [
     Meme("together", together, ("一起",)),
     Meme("wave", wave, ("波纹",)),
     Meme("rise_dead", rise_dead, ("诈尸", "秽土转生")),
-    Meme("kirby_hammer", kirby_hammer, ("卡比锤", "卡比重锤")),
+    Meme("kirby_hammer", kirby_hammer, ("卡比锤","卡比重锤")),
+    Meme("wooden_fish", wooden_fish, ("木鱼",)),
+    Meme("karyl_point", karyl_point, ("凯露指",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
