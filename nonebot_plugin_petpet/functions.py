@@ -2087,3 +2087,32 @@ def smash(img: BuildImage = UserImg(), arg=NoArg()):
         return frame.copy().paste(screen, (-136, -81), below=True)
 
     return make_jpg_or_gif(img, make)
+
+
+def bocchi_draft(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((350, 400), keep_ratio=True)
+    params = [
+        (((54, 62), (353, 1), (379, 382), (1, 399)), (146, 173)),
+        (((54, 61), (349, 1), (379, 381), (1, 398)), (146, 174)),
+        (((54, 61), (349, 1), (379, 381), (1, 398)), (152, 174)),
+        (((54, 61), (335, 1), (379, 381), (1, 398)), (158, 167)),
+        (((54, 61), (335, 1), (370, 381), (1, 398)), (157, 149)),
+        (((41, 59), (321, 1), (357, 379), (1, 396)), (167, 108)),
+        (((41, 57), (315, 1), (357, 377), (1, 394)), (173, 69)),
+        (((41, 56), (309, 1), (353, 380), (1, 393)), (175, 43)),
+        (((41, 56), (314, 1), (353, 380), (1, 393)), (174, 30)),
+        (((41, 50), (312, 1), (348, 367), (1, 387)), (171, 18)),
+        (((35, 50), (306, 1), (342, 367), (1, 386)), (178, 14)),
+    ]
+    # fmt: off
+    idx = [
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+    ]
+    # fmt: on
+    frames: List[IMG] = []
+    for i in range(23):
+        frame = load_image(f"bocchi_draft/{i}.png")
+        points, pos = params[idx[i]]
+        frame.paste(img.perspective(points), pos, below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.08)
