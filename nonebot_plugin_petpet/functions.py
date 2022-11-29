@@ -496,6 +496,18 @@ def bite(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.07)
 
 
+def hutao_bite(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((100, 100))
+    frames: List[IMG] = []
+    locs = [(98, 101, 108, 234), (96, 100, 108, 237)]
+    for i in range(2):
+        frame = load_image(f"hutao_bite/{i}.png")
+        w, h, x, y = locs[i]
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.1)
+
+
 def police(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square().resize((245, 245))
     frame = load_image("police/0.png")

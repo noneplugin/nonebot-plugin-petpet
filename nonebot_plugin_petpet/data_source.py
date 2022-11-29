@@ -27,6 +27,7 @@ memes = [
     Meme("eat", eat, ("吃",)),
     Meme("klee_eat", klee_eat, ("可莉吃",)),
     Meme("bite", bite, ("啃",)),
+    Meme("hutao_bite", hutao_bite, ("胡桃啃",)),
     Meme("police", police, ("出警",)),
     Meme("police1", police1, ("警察",)),
     Meme("ask", ask, ("问问",), r"去?问问"),
