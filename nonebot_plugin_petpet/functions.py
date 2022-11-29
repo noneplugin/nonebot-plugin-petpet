@@ -2076,3 +2076,14 @@ def kick_ball(img: BuildImage = UserImg(), arg=NoArg()):
         frame.paste(img.rotate(-24 * i), locs[i], below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.1)
+
+
+def smash(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("smash/0.png")
+
+    def make(img: BuildImage) -> BuildImage:
+        points = ((1, 237), (826, 1), (832, 508), (160, 732))
+        screen = img.resize((800, 500), keep_ratio=True).perspective(points)
+        return frame.copy().paste(screen, (-136, -81), below=True)
+
+    return make_jpg_or_gif(img, make)

@@ -103,6 +103,7 @@ memes = [
     Meme("wooden_fish", wooden_fish, ("木鱼",)),
     Meme("karyl_point", karyl_point, ("凯露指",)),
     Meme("kick_ball", kick_ball, ("踢球",)),
+    Meme("smash", smash, ("砸",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
