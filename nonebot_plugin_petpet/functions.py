@@ -456,6 +456,26 @@ def eat(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.05)
 
 
+def klee_eat(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((83, 83))
+    # fmt: off
+    locs = [
+        (0, 174), (0, 174), (0, 174), (0, 174), (0, 174),
+        (12, 160), (19, 152), (23, 148), (26, 145), (32, 140),
+        (37, 136), (42, 131), (49, 127), (70, 126), (88, 128),
+        (-30, 210), (-19, 207), (-14, 200), (-10, 188), (-7, 179),
+        (-3, 170), (-3, 175), (-1, 174), (0, 174), (0, 174),
+        (0, 174), (0, 174), (0, 174), (0, 174), (0, 174), (0, 174)
+    ]
+    # fmt: on
+    frames: List[IMG] = []
+    for i in range(31):
+        frame = load_image(f"klee_eat/{i}.png")
+        frame.paste(img, locs[i], below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.1)
+
+
 def bite(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     frames: List[IMG] = []

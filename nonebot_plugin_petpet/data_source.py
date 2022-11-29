@@ -25,6 +25,7 @@ memes = [
     Meme("play_game", play_game, ("玩游戏",), r"来?玩游戏"),
     Meme("worship", worship, ("膜", "膜拜"), r"膜拜?"),
     Meme("eat", eat, ("吃",)),
+    Meme("klee_eat", klee_eat, ("可莉吃",)),
     Meme("bite", bite, ("啃",)),
     Meme("police", police, ("出警",)),
     Meme("police1", police1, ("警察",)),
