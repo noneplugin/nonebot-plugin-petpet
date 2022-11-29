@@ -98,7 +98,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/11/09/xazi1q8JsfEmdhC.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/11/29/8sJQzHn5E1ALYVc.jpg" width="400" />
 </div>
 
 
@@ -147,6 +147,7 @@ pip install nonebot_plugin_petpet
 | 摸<br>摸摸<br>摸头<br>摸摸头<br>rua | <img src="https://s2.loli.net/2022/02/23/oNGVO4iuCk73g8S.gif" width="200" /> | 可使用参数“圆”让头像为圆形<br>如：摸头圆 自己 |
 | 亲<br>亲亲 | <img src="https://s2.loli.net/2022/02/23/RuoiqP8plJBgw9K.gif" width="200" /> | 可指定一个或两个目标<br>若为一个则为 发送人 亲 目标<br>若为两个则为 目标1 亲 目标2<br>如：亲 114514 自己 |
 | 贴<br>贴贴<br>蹭<br>蹭蹭 | <img src="https://s2.loli.net/2022/02/23/QDCE5YZIfroavub.gif" width="200" /> | 可指定一个或两个目标<br>类似 亲 |
+| 咖波蹭 | <img src="https://s2.loli.net/2022/11/29/iZpwCVWb5agDKLH.gif" width="200" > |  |
 | 顶<br>玩 | <img src="https://s2.loli.net/2022/08/16/WVotKxjqupdCJAS.gif" width="200" /> |  |
 | 拍 | <img src="https://s2.loli.net/2022/02/23/5mv6pFJMNtzHhcl.gif" width="200" /> |  |
 | 撕 | <img src="https://s2.loli.net/2022/05/29/FDcam9ROPkqvwxH.jpg" width="200" > |  |
@@ -166,7 +167,9 @@ pip install nonebot_plugin_petpet
 | 玩游戏<br>来玩游戏 | <img src="https://s2.loli.net/2022/05/31/j9ZKB7cFOSklzMe.jpg" width="200" /> | 图中描述默认为：来玩休闲游戏啊<br>可指定描述<br>支持gif |
 | 膜<br>膜拜 | <img src="https://s2.loli.net/2022/02/23/nPgBJwV5qDb1s9l.gif" width="200" /> |  |
 | 吃 | <img src="https://s2.loli.net/2022/02/23/ba8cCtIWEvX9sS1.gif" width="200" /> |  |
+| 可莉吃 | <img src="https://s2.loli.net/2022/11/29/R12XlsdTjCYqnBh.gif" width="200" /> |  |
 | 啃 | <img src="https://s2.loli.net/2022/02/23/k82n76U4KoNwsr3.gif" width="200" /> |  |
+| 胡桃啃 | <img src="https://s2.loli.net/2022/11/29/JUCbMuxgpYDfAWo.gif" width="200" /> |  |
 | 出警 | <img src="https://s2.loli.net/2022/05/31/Q7WL1q2TlHgnERr.jpg" width="200" /> |  |
 | 警察 | <img src="https://s2.loli.net/2022/03/12/xYLgKVJcd3HvqfM.jpg" width="200" > |  |
 | 问问<br>去问问 | <img src="https://s2.loli.net/2022/02/23/GUyax1BF6q5Hvin.jpg" width="200" /> | 名字为qq昵称，可指定名字 |
@@ -238,6 +241,11 @@ pip install nonebot_plugin_petpet
 | 波纹 | <img src="https://s2.loli.net/2022/11/09/hTnrF1e5gaYbxsX.gif" width="200" > | 支持gif |
 | 诈尸<br>秽土转生 | <img src="https://s2.loli.net/2022/11/09/z2alEPjdsrNSyMU.gif" width="200" > |  |
 | 卡比锤<br>卡比重锤 | <img src="https://s2.loli.net/2022/11/09/ouF5MxzQaqjC64d.gif" width="200" > | 支持gif<br>可使用参数“圆”让头像为圆形 |
+| 木鱼 | <img src="https://s2.loli.net/2022/11/29/fuen9axo2d67bRE.gif" width="200" > |  |
+| 凯露指 | <img src="https://s2.loli.net/2022/11/29/8fjBb1rCe6oIdRY.png" width="200" > |  |
+| 踢球 | <img src="https://s2.loli.net/2022/11/29/o9zns8YvZLguV6G.gif" width="200" > |  |
+| 砸 | <img src="https://s2.loli.net/2022/11/29/fTqa5V1dArhxDHX.jpg" width="200" > | 支持gif |
+| 波奇手稿 | <img src="https://s2.loli.net/2022/11/29/Aw8HsGud7JoMKqW.gif" width="200" > |  |
 
 </details>
 
