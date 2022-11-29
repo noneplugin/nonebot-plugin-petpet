@@ -110,13 +110,15 @@ def split_gif(image: IMG) -> List[IMG]:
         frame = image.copy()
         if update_mode == "partial" and last_frame:
             frame = last_frame.copy().paste(frame)
-        frame.info["transparency"] = frame.info.get("transparency", 255)
         frames.append(frame)
+    image.seek(0)
+    if image.info.__contains__("transparency"):
+        frames[0].info["transparency"] = image.info["transparency"]
     return frames
 
 
 def make_jpg_or_gif(
-    img: BuildImage, func: Maker, keep_transparency: bool = True
+    img: BuildImage, func: Maker, keep_transparency: bool = False
 ) -> BytesIO:
     """
     制作静图或者动图
@@ -134,7 +136,8 @@ def make_jpg_or_gif(
         frames = [func(BuildImage(frame)).image for frame in frames]
         if keep_transparency:
             image.seek(0)
-            frames[0].info["transparency"] = image.info.get("transparency", 255)
+            if image.info.__contains__("transparency"):
+                frames[0].info["transparency"] = image.info["transparency"]
         return save_gif(frames, duration)
 
 
@@ -254,7 +257,8 @@ def make_gif_or_combined_gif(
 
     if keep_transparency:
         image.seek(0)
-        frames[0].info["transparency"] = image.info.get("transparency", 0)
+        if image.info.__contains__("transparency"):
+            frames[0].info["transparency"] = image.info["transparency"]
 
     return save_gif(frames, duration)
 
