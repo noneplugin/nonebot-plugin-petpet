@@ -136,6 +136,23 @@ def rub(
     return save_gif(frames, 0.05)
 
 
+def capoo_rub(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((180, 180))
+    frames: List[IMG] = []
+    locs = [
+        (178, 184, 78, 260),
+        (178, 174, 84, 269),
+        (178, 174, 84, 269),
+        (178, 178, 84, 264),
+    ]
+    for i in range(4):
+        frame = load_image(f"capoo_rub/{i}.png")
+        w, h, x, y = locs[i]
+        frame.paste(img.resize((w, h)), (x, y), below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.1)
+
+
 def play(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square()
     # fmt: off

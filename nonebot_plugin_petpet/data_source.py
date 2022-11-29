@@ -6,6 +6,7 @@ memes = [
     Meme("petpet", petpet, ("摸", "摸摸", "摸头", "rua"), r"摸摸?头?|rua"),
     Meme("kiss", kiss, ("亲", "亲亲"), r"亲亲?"),
     Meme("rub", rub, ("贴", "贴贴", "蹭", "蹭蹭"), r"贴贴?|蹭蹭?"),
+    Meme("capoo_rub", capoo_rub, ("咖波蹭",)),
     Meme("play", play, ("顶", "玩")),
     Meme("pat", pat, ("拍",)),
     Meme("rip", rip, ("撕",)),
