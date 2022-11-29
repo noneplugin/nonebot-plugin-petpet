@@ -6,7 +6,7 @@ from enum import Enum
 from io import BytesIO
 from dataclasses import dataclass
 from PIL.Image import Image as IMG
-from typing import Callable, List, Literal, Protocol, Tuple
+from typing import Callable, List, Literal, Protocol, Tuple, Optional
 
 from nonebot_plugin_imageutils import BuildImage
 
@@ -45,6 +45,7 @@ def save_gif(frames: List[IMG], duration: float) -> BytesIO:
         duration=duration * 1000,
         loop=0,
         disposal=2,
+        optimize=False,
     )
 
     # 没有超出最大大小，直接返回
@@ -91,13 +92,36 @@ def get_avg_duration(image: IMG) -> float:
     return total_duration / image.n_frames
 
 
+def split_gif(image: IMG) -> List[IMG]:
+    frames: List[IMG] = []
+
+    update_mode = "full"
+    for i in range(image.n_frames):
+        image.seek(i)
+        if image.tile:  # type: ignore
+            update_region = image.tile[0][1][2:]  # type: ignore
+            if update_region != image.size:
+                update_mode = "partial"
+                break
+
+    last_frame: Optional[IMG] = None
+    for i in range(image.n_frames):
+        image.seek(i)
+        frame = image.copy()
+        if update_mode == "partial" and last_frame:
+            frame = last_frame.copy().paste(frame)
+        frame.info["transparency"] = frame.info.get("transparency", 255)
+        frames.append(frame)
+    return frames
+
+
 def make_jpg_or_gif(
-    img: BuildImage, func: Maker, keep_transparency: bool = False
+    img: BuildImage, func: Maker, keep_transparency: bool = True
 ) -> BytesIO:
     """
     制作静图或者动图
     :params
-      * ``img``: 输入图片，如头像
+      * ``img``: 输入图片
       * ``func``: 图片处理函数，输入img，返回处理后的图片
       * ``keep_transparency``: 传入gif时，是否保留该gif的透明度
     """
@@ -105,14 +129,12 @@ def make_jpg_or_gif(
     if not getattr(image, "is_animated", False):
         return func(img).save_jpg()
     else:
+        frames = split_gif(image)
         duration = get_avg_duration(image) / 1000
-        frames: List[IMG] = []
-        for i in range(image.n_frames):
-            image.seek(i)
-            frames.append(func(BuildImage(image)).image)
+        frames = [func(BuildImage(frame)).image for frame in frames]
         if keep_transparency:
             image.seek(0)
-            frames[0].info["transparency"] = image.info.get("transparency", 0)
+            frames[0].info["transparency"] = image.info.get("transparency", 255)
         return save_gif(frames, duration)
 
 
@@ -222,7 +244,7 @@ def make_gif_or_combined_gif(
 
                 func = maker(idx_maker)
                 image.seek(idx_in)
-                frames.append(func(BuildImage(image)).image)
+                frames.append(func(BuildImage(image.copy())).image)
                 break
             else:
                 frame_idx_fit += 1
