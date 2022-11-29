@@ -1993,15 +1993,16 @@ def kirby_hammer(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
 
         return make
 
-    return make_gif_or_combined_gif(
-        img, maker, 62, 0.05, FrameAlignPolicy.extend_loop
-    )
+    return make_gif_or_combined_gif(img, maker, 62, 0.05, FrameAlignPolicy.extend_loop)
 
 
 def wooden_fish(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").resize((85, 85))
-    frames = [load_image(f"wooden_fish/{i}.png").paste(img, (116, 153), below=True).image for i in range(66)]
-    return save_gif(frames, 0.10)
+    frames = [
+        load_image(f"wooden_fish/{i}.png").paste(img, (116, 153), below=True).image
+        for i in range(66)
+    ]
+    return save_gif(frames, 0.1)
 
 
 def karyl_point(img: BuildImage = UserImg(), arg=NoArg()):
@@ -2009,3 +2010,20 @@ def karyl_point(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("karyl_point/0.png")
     frame.paste(img, (87, 790), alpha=True)
     return frame.save_png()
+
+
+def kick_ball(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").square().resize((78, 78))
+    # fmt: off
+    locs = [
+        (57, 136), (56, 117), (55, 99), (52, 113), (50, 126),
+        (48, 139), (47, 112), (47, 85), (47, 57), (48, 97),
+        (50, 136), (51, 176), (52, 169), (55, 181), (58, 153)
+    ]
+    # fmt: on
+    frames: List[IMG] = []
+    for i in range(15):
+        frame = load_image(f"kick_ball/{i}.png")
+        frame.paste(img.rotate(-24 * i), locs[i], below=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.1)

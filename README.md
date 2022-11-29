@@ -10,7 +10,7 @@ _✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关
 
 <p align="center">
   <img src="https://img.shields.io/github/license/noneplugin/nonebot-plugin-petpet" alt="license">
-  <img src="https://img.shields.io/badge/python-3.7.3+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/nonebot-2.0.0b4+-red.svg" alt="NoneBot">
   <a href="https://pypi.org/project/nonebot-plugin-petpet">
     <img src="https://badgen.net/pypi/v/nonebot-plugin-petpet" alt="pypi">
