@@ -2116,3 +2116,17 @@ def bocchi_draft(img: BuildImage = UserImg(), arg=NoArg()):
         frame.paste(img.perspective(points), pos, below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.08)
+
+
+def sit_still(user: UserInfo = User(), arg: str = Arg()):
+    name = arg or user.name
+    name_img = Text2Image.from_text(name, 75).to_image()
+    text_width = name_img.width
+    if text_width >= 1060:
+        return NAME_TOO_LONG
+    frame = load_image("sit_still/0.png")
+    img = user.img.convert("RGBA").circle().resize((150, 150)).rotate(-10, expand=True)
+    frame.paste(img, (268, 344), alpha=True)
+    frame.paste(name_img.rotate(0, expand=True), (116, 162), alpha=True)
+    return frame.save_jpg()
+

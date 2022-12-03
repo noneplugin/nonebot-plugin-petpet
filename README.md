@@ -246,6 +246,7 @@ pip install nonebot_plugin_petpet
 | 踢球 | <img src="https://s2.loli.net/2022/11/29/o9zns8YvZLguV6G.gif" width="200" > |  |
 | 砸 | <img src="https://s2.loli.net/2022/11/29/fTqa5V1dArhxDHX.jpg" width="200" > | 支持gif |
 | 波奇手稿 | <img src="https://s2.loli.net/2022/11/29/Aw8HsGud7JoMKqW.gif" width="200" > |  |
+| 坐得住<br>坐不住 | <img src="https://s2.loli.net/2022/12/03/gaQsO6AkVtPF3CW.jpg" width="200" > | 图中名字为目标qq昵称<br>可自定义名字 |
 
 </details>
 
