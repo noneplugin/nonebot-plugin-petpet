@@ -217,8 +217,10 @@ def create_matchers():
         ).append_handler(handler(meme), parameterless=[split_msg()])
 
     def random_handler() -> T_Handler:
-        def handle(matcher: Matcher):
-            random_meme = random.choice([meme for meme in memes if check_flag(meme)])
+        def handle(matcher: Matcher, user_id: str = get_user_id()):
+            random_meme = random.choice(
+                [meme for meme in memes if meme_manager.check(user_id, meme)]
+            )
             handler_ = Dependent[Any].parse(
                 call=handler(random_meme),
                 parameterless=[split_msg()],
