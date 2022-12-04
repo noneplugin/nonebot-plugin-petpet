@@ -2130,3 +2130,12 @@ def sit_still(user: UserInfo = User(), arg: str = Arg()):
     frame.paste(name_img.rotate(0, expand=True), (116, 162), alpha=True)
     return frame.save_jpg()
 
+def learn(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("learn/0.png")
+
+    def make(img: BuildImage) -> BuildImage:
+        return frame.copy().paste(
+            img.resize((1751,1347), keep_ratio=True), (1440,0), below=False
+        )
+    
+    return make_jpg_or_gif(img, make)

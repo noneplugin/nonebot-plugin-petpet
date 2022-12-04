@@ -106,7 +106,8 @@ memes = [
     Meme("smash", smash, ("砸",)),
     Meme("bocchi_draft", bocchi_draft, ("波奇手稿",)),
     Meme("sit_still", sit_still, ("坐得住", "坐不住", "坐的住")),
-
+    Meme("learn", learn, ("偷学",)),
+    
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
