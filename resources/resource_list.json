@@ -1956,6 +1956,10 @@
         "hash": "fa158f632f04f81c4eeeb4766222df07"
     },
     {
+        "path": "images/learn/0.png",
+        "hash": "af00ce329ac0491ef721b7916203c74f"
+    },
+    {
         "path": "images/listen_music/0.png",
         "hash": "63252e976b3d821f982d8886bd2900c8"
     },
@@ -3334,9 +3338,5 @@
     {
         "path": "images/worship/9.png",
         "hash": "3861aae5494bd34ce6937d6224c48915"
-    },
-    {
-        "path": "images/learn/0.png",
-        "hash": "af00ce329ac0491ef721b7916203c74f"
     }
 ]
