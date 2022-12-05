@@ -4,7 +4,6 @@ from io import BytesIO
 from typing import List, Optional
 
 from nonebot.rule import Rule
-from nonebot import get_driver
 from nonebot.typing import T_State
 from nonebot.params import Depends
 from nonebot.adapters.onebot.v11 import (
@@ -29,9 +28,7 @@ ARGS_KEY = "ARGS"
 REGEX_DICT = "REGEX_DICT"
 REGEX_ARG = "REGEX_ARG"
 
-command_start = petpet_config.petpet_command_start or "|".join(
-    get_driver().config.command_start
-)
+command_start = "|".join(petpet_config.petpet_command_start)
 
 
 def regex(pattern: str) -> Rule:

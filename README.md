@@ -54,9 +54,9 @@ pip install nonebot_plugin_petpet
 > 以下配置项可在 `.env.*` 文件中设置，具体参考 [NoneBot 配置方式](https://v2.nonebot.dev/docs/tutorial/configuration#%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F)
 
 #### `petpet_command_start`
- - 类型：`str`
- - 默认：`""`
- - 说明：命令开始字符，为空则使用Nonebot设置中的`command_start`
+ - 类型：`List[str]`
+ - 默认：`[""]`
+ - 说明：命令起始标记，默认包含空字符串
 
 #### `petpet_resource_url`
  - 类型：`str`
