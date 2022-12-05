@@ -2120,22 +2120,39 @@ def bocchi_draft(img: BuildImage = UserImg(), arg=NoArg()):
 
 def sit_still(user: UserInfo = User(), arg: str = Arg()):
     name = arg or user.name
-    name_img = Text2Image.from_text(name, 75).to_image()
-    text_width = name_img.width
-    if text_width >= 1060:
-        return NAME_TOO_LONG
     frame = load_image("sit_still/0.png")
+    try:
+        frame.draw_text(
+            (100, 170, 600, 330),
+            name,
+            valign="bottom",
+            max_fontsize=75,
+            min_fontsize=30,
+        )
+    except ValueError:
+        return NAME_TOO_LONG
     img = user.img.convert("RGBA").circle().resize((150, 150)).rotate(-10, expand=True)
     frame.paste(img, (268, 344), alpha=True)
-    frame.paste(name_img.rotate(0, expand=True), (116, 162), alpha=True)
     return frame.save_jpg()
 
-def learn(img: BuildImage = UserImg(), arg=NoArg()):
+
+def learn(img: BuildImage = UserImg(), arg: str = Arg()):
+    text = arg or "偷学群友数理基础"
     frame = load_image("learn/0.png")
+    try:
+        frame.draw_text(
+            (100, 1360, frame.width - 100, 1730),
+            text,
+            max_fontsize=350,
+            min_fontsize=200,
+            weight="bold",
+        )
+    except ValueError:
+        return TEXT_TOO_LONG
 
     def make(img: BuildImage) -> BuildImage:
         return frame.copy().paste(
-            img.resize((1751,1347), keep_ratio=True), (1440,0), below=False
+            img.resize((1751, 1347), keep_ratio=True), (1440, 0), alpha=True
         )
-    
+
     return make_jpg_or_gif(img, make)
