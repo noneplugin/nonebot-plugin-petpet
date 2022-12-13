@@ -367,6 +367,18 @@ def turn(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.05)
 
 
+def windmill_turn(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize((300, 300), keep_ratio=True, inside=False)
+    frame = BuildImage.new("RGBA", (600, 600), "white")
+    _frame = frame.copy()
+    frame.paste(img, (0, 0))
+    frame.paste(img.rotate(90), (0, 300))
+    frame.paste(img.rotate(180), (300, 300))
+    frame.paste(img.rotate(270), (300, 0))
+    frames = [_frame.copy().paste(frame.rotate(i), (0, 0), alpha=True).crop((50, 50, 550, 550)).image for i in range(0, 90, 18)]
+    return save_gif(frames, 0.05)
+
+
 def littleangel(user: UserInfo = User(), arg: str = Arg()):
     img_w, img_h = user.img.convert("RGBA").resize_width(500).size
     frame = BuildImage.new("RGBA", (600, img_h + 230), "white")
