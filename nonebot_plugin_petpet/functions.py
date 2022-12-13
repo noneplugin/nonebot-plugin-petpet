@@ -2168,5 +2168,6 @@ def Trance(img: BuildImage = UserImg()):
         im.paste(img, (0, i),img)
     for i in range(int(height*0.1),int(height*0.1*2)):
         im.paste(img, (0, i),img)
+    im = im.crop((0,int(0.1*height),width,height1))
     result = BuildImage(im)
     return result.save_jpg()
