@@ -19,6 +19,7 @@ memes = [
     Meme("always_always", always_always, ("一直一直",)),
     Meme("loading", loading, ("加载中",)),
     Meme("turn", turn, ("转",)),
+    Meme("windmill_turn", windmill_turn, ("风车转",)),
     Meme("littleangel", littleangel, ("小天使",)),
     Meme("dont_touch", dont_touch, ("不要靠近",)),
     Meme("alike", alike, ("一样",)),
