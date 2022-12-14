@@ -2168,3 +2168,18 @@ def learn(img: BuildImage = UserImg(), arg: str = Arg()):
         )
 
     return make_jpg_or_gif(img, make)
+def Trance(img: BuildImage = UserImg()):
+    img = img.save_png()
+    img = Image.open(img)
+    width, height = img.size
+    height1 = 1.1*height
+    im = Image.new('RGB', (width, int(height1)), 'white')
+    im.paste(img, (0, int(height*0.1)))
+    img.putalpha(3)
+    for i in range(int(height*0.1),0,-1):
+        im.paste(img, (0, i),img)
+    for i in range(int(height*0.1),int(height*0.1*2)):
+        im.paste(img, (0, i),img)
+    im = im.crop((0,int(0.1*height),width,height1))
+    result = BuildImage(im)
+    return result.save_jpg()
