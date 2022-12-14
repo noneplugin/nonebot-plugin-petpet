@@ -368,14 +368,15 @@ def turn(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def windmill_turn(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((300, 300), keep_ratio=True, inside=False)
+    img = img.convert("RGBA").resize((300, 300), keep_ratio=True)
     frame = BuildImage.new("RGBA", (600, 600), "white")
-    _frame = frame.copy()
-    frame.paste(img, (0, 0))
+    frame.paste(img)
     frame.paste(img.rotate(90), (0, 300))
     frame.paste(img.rotate(180), (300, 300))
     frame.paste(img.rotate(270), (300, 0))
-    frames = [_frame.copy().paste(frame.rotate(i), (0, 0), alpha=True).crop((50, 50, 550, 550)).image for i in range(0, 90, 18)]
+    frames = [
+        frame.copy().rotate(i).crop((50, 50, 550, 550)).image for i in range(0, 90, 18)
+    ]
     return save_gif(frames, 0.05)
 
 
@@ -2168,18 +2169,17 @@ def learn(img: BuildImage = UserImg(), arg: str = Arg()):
         )
 
     return make_jpg_or_gif(img, make)
-def Trance(img: BuildImage = UserImg()):
-    img = img.save_png()
-    img = Image.open(img)
+
+
+def trance(img: BuildImage = UserImg(), arg: str = Arg()):
     width, height = img.size
-    height1 = 1.1*height
-    im = Image.new('RGB', (width, int(height1)), 'white')
-    im.paste(img, (0, int(height*0.1)))
-    img.putalpha(3)
-    for i in range(int(height*0.1),0,-1):
-        im.paste(img, (0, i),img)
-    for i in range(int(height*0.1),int(height*0.1*2)):
-        im.paste(img, (0, i),img)
-    im = im.crop((0,int(0.1*height),width,height1))
-    result = BuildImage(im)
-    return result.save_jpg()
+    height1 = int(1.1 * height)
+    frame = BuildImage.new("RGB", (width, height1), "white")
+    frame.paste(img, (0, int(height * 0.1)))
+    img.image.putalpha(3)
+    for i in range(int(height * 0.1), 0, -1):
+        frame.paste(img, (0, i), alpha=True)
+    for i in range(int(height * 0.1), int(height * 0.1 * 2)):
+        frame.paste(img, (0, i), alpha=True)
+    frame = frame.crop((0, int(0.1 * height), width, height1))
+    return frame.save_jpg()
