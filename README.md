@@ -98,7 +98,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/11/29/8sJQzHn5E1ALYVc.jpg" width="400" />
+  <img src="https://s2.loli.net/2022/12/17/8QvqbJjxyHX1ABm.jpg" width="400" />
 </div>
 
 
@@ -160,6 +160,7 @@ pip install nonebot_plugin_petpet
 | 一直一直 | <img src="https://s2.loli.net/2022/10/15/hn5Q4jm29pXNsrL.gif" width="200" /> | 支持gif |
 | 加载中 | <img src="https://s2.loli.net/2022/02/23/751Oudrah6gBsWe.gif" width="200" /> | 支持gif |
 | 转 | <img src="https://s2.loli.net/2022/02/23/HoZaCcDIRgs784Y.gif" width="200" /> |  |
+| 风车转 | <img src="https://s2.loli.net/2022/12/17/7x8DHoYWnCBTeqL.gif)" width="200" > |  |
 | 小天使 | <img src="https://s2.loli.net/2022/02/23/ZgD1WSMRxLIymCq.jpg" width="200" /> | 图中名字为目标qq昵称<br>可指定名字，如：小天使 meetwq 自己 |
 | 不要靠近 | <img src="https://s2.loli.net/2022/02/23/BTdkAzvhRDLOa3U.jpg" width="200" /> |  |
 | 一样 | <img src="https://s2.loli.net/2022/02/23/SwAXoOgfdjP4ecE.jpg" width="200" /> |  |
@@ -246,7 +247,9 @@ pip install nonebot_plugin_petpet
 | 踢球 | <img src="https://s2.loli.net/2022/11/29/o9zns8YvZLguV6G.gif" width="200" > |  |
 | 砸 | <img src="https://s2.loli.net/2022/11/29/fTqa5V1dArhxDHX.jpg" width="200" > | 支持gif |
 | 波奇手稿 | <img src="https://s2.loli.net/2022/11/29/Aw8HsGud7JoMKqW.gif" width="200" > |  |
-| 坐得住<br>坐不住 | <img src="https://s2.loli.net/2022/12/03/gaQsO6AkVtPF3CW.jpg" width="200" > | 图中名字为目标qq昵称<br>可自定义名字 |
+| 坐得住<br>坐的住 | <img src="https://s2.loli.net/2022/12/03/gaQsO6AkVtPF3CW.jpg" width="200" > | 图中名字为目标qq昵称<br>可自定义名字 |
+| 偷学 | <img src="https://s2.loli.net/2022/12/17/v6C9jegrNy1AJRu.jpg)" width="200" > | 描述默认为“偷学群友数理基础”<br>可自定义描述 |
+| 恍惚 | <img src="https://s2.loli.net/2022/12/17/fU6i7tr8egbxaMI.jpg)" width="200" > |  |
 
 </details>
 
