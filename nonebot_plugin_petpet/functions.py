@@ -332,6 +332,72 @@ def always_always(img: BuildImage = UserImg(), arg=NoArg()):
     )
 
 
+def always_cycle(img: BuildImage = UserImg(), args: List[str] = Args(0, 10)) -> BytesIO:
+    if args is None:
+        args = []
+    arg1 = args[0] if args else "要我一直"
+    arg2 = args[1] if len(args) > 1 else "吗"
+
+    def make(in_img: BuildImage) -> BuildImage:
+        img_big = in_img.resize_width(500)
+        img_small = in_img.resize_width(100)
+        h1 = img_big.height
+        h2 = max(img_small.height, 80)
+        # 输入图
+        input_y = h1 + 5
+
+        # 输出图
+        output_x = 280
+        output_y = h1 + h2 + 5
+        output = BuildImage.new("RGBA", (500, h1 + h2 + 10), "white")
+        output.paste(img_big, (0, 0))
+
+        # 贴字
+        output.draw_text(
+            (0, input_y, output_x, output_y), arg1, stroke_fill=(0, 0, 0, 255), halign="right", max_fontsize=60
+        )
+        output.draw_text(
+            (400, h1 + 5, 480, h1 + h2 + 5), arg2, stroke_fill=(0, 0, 0, 255), halign="left", max_fontsize=60
+        )
+
+        new_img_small = output.resize_height(h1 + h2 + 10 - img_big.size[1])
+
+        # 小图长宽
+        output_small_x = new_img_small.size[0]
+        output_small_y = new_img_small.size[1]
+        # 小图起始
+        last_x = output_x + 15
+        last_y = img_big.size[1]
+        x_width = last_x
+        y_height = last_y
+        scale = img_big.size[0] / output_small_x
+        while True:
+            # 小图中心坐标
+            output_small = output.resize((output_small_x, output_small_y), Image.ANTIALIAS)
+            output_small_cen_x = int(last_x + output_small_x / 2)
+            output_small_cen_y = int(last_y + output_small_y / 2)
+            # 小图左上角坐标
+            output_small_cor_x = int(output_small_cen_x - output_small_x / 2)
+            output_small_cor_y = int(output_small_cen_y - output_small_y / 2)
+
+            output_small_x = int(output_small_x / scale)
+            output_small_y = int(output_small_y / scale)
+            if min(output_small_x, output_small_y) < 1:
+                break
+
+            output.paste(output_small, (output_small_cor_x, output_small_cor_y))
+
+            x_width /= scale
+            y_height /= scale
+
+            last_x += x_width
+            last_y += y_height
+
+        return output
+
+    return make_jpg_or_gif(img, make)
+
+
 def loading(img: BuildImage = UserImg(), arg=NoArg()):
     img_big = img.convert("RGBA").resize_width(500)
     img_big = img_big.filter(ImageFilter.GaussianBlur(radius=3))
