@@ -77,6 +77,8 @@ memes = [
     Meme("repeat", repeat, ("复读",)),
     Meme("anti_kidnap", anti_kidnap, ("防诱拐",)),
     Meme("charpic", charpic, ("字符画",)),
+    Meme("cuidao", cuidao, ("催刀", "快出刀",)),
+    Meme("have_lunch", have_lunch, ("共进午餐", "共进晚餐",)),
     Meme("mywife", mywife, ("我老婆",)),
     Meme("walnutpad", walnutpad, ("胡桃平板",)),
     Meme("walnut_zoom", walnut_zoom, ("胡桃放大",)),

@@ -1493,6 +1493,66 @@ def charpic(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
+def cuidao(img: BuildImage = UserImg(), users: List[UserInfo] = Users(0, 1), arg: str = Arg()) -> BytesIO:
+    img = img.convert("RGBA")
+    img_w, img_h = img.size
+    max_len = max(img_w, img_h)
+    img_w = int(img_w * 500 / max_len)
+    img_h = int(img_h * 500 / max_len)
+    img = img.resize((img_w, img_h))
+
+    bg = BuildImage.new("RGB", (600, img_h + 230), (255, 255, 255))
+    bg.paste(img, (int(300 - img_w / 2), 110))
+
+    ta = "他" if users[0].gender == "male" else "她"
+    text = f"{ta}好像失踪了，一刀都没出"
+    try:
+        bg.draw_text(
+            (0, img_h + 120, 600, img_h + 180),
+            text,
+            max_fontsize=46,
+            fill=(0, 0, 0),
+            weight="bold",
+        )
+    except ValueError:
+        raise ValueError(TEXT_TOO_LONG)
+
+    text = f"你们谁看见了麻烦叫{ta}赶紧回来出刀"
+    try:
+        bg.draw_text(
+            (0, img_h + 180, 600, img_h + 230),
+            text,
+            max_fontsize=26,
+            fill=(0, 0, 0),
+            weight="bold",
+        )
+    except ValueError:
+        raise ValueError(TEXT_TOO_LONG)
+
+    name = arg if arg else random.choice([users[0].name, ta])
+    text = f"请问你们看到{name}了吗?"
+
+    try:
+        bg.draw_text(
+            (10, 0, 590, 120),
+            text,
+            max_fontsize=70,
+            fill=(0, 0, 0),
+            weight="bold",
+        )
+    except ValueError:
+        raise ValueError(TEXT_TOO_LONG)
+    return bg.save_jpg()
+
+
+def have_lunch(img: BuildImage = UserImg(), arg=NoArg()) -> BytesIO:
+    bg = load_image("have_lunch/0.jpg")
+    frame = BuildImage.new("RGBA", bg.size)
+    frame.paste(bg, below=True)
+    frame.paste(img.resize((324, 324)), (653, 30))
+    return frame.save_jpg()
+
+
 def mywife(user: UserInfo = User(), arg=NoArg()):
     img = user.img.convert("RGBA").resize_width(400)
     img_w, img_h = img.size
