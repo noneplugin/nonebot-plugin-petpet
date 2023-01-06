@@ -2187,6 +2187,6 @@ def trance(img: BuildImage = UserImg(), arg: str = Arg()):
 
 def dinosaur(img: BuildImage = UserImg(), arg: str = Arg()):
     frame = load_image("dinosaur/0.png")
-    img = img.resize((612, 376))
+    img = img.resize((612, 376),keep_ratio=True)
     frame.paste(img,(310,483),below=True)
     return frame.save_jpg()
