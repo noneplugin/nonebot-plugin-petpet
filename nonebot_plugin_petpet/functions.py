@@ -2183,3 +2183,10 @@ def trance(img: BuildImage = UserImg(), arg: str = Arg()):
         frame.paste(img, (0, i), alpha=True)
     frame = frame.crop((0, int(0.1 * height), width, height1))
     return frame.save_jpg()
+
+
+def dinosaur(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("dinosaur/0.png")
+    img = img.resize((612, 376),keep_ratio=True)
+    frame.paste(img,(310,483),below=True)
+    return frame.save_jpg()
