@@ -110,6 +110,8 @@ memes = [
     Meme("learn", learn, ("偷学",)),
     Meme("trance", trance, ("恍惚",)),
     Meme("dinosuar",dinosaur,("恐龙","小恐龙")),
+    Meme("single",single,("离婚申请","离婚登记")),
+    Meme("scratch_head",scratch_head,("挠头",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
