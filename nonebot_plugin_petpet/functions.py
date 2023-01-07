@@ -2194,3 +2194,29 @@ def dinosaur(img: BuildImage = UserImg(), arg=NoArg()):
         )
 
     return make_jpg_or_gif(img, make)
+
+
+def single(img: BuildImage = UserImg(), arg: str = Arg()):
+    frame = load_image("single/0.png")
+    img = img.resize((1080, 1448),keep_ratio=True)
+    frame.paste(img,(0,0),below=True)
+    return frame.save_jpg()
+
+
+def scratch_head(img: BuildImage = UserImg(), arg: str = Arg()):
+    img = img.convert("RGBA").resize((68, 68))
+    frames: List[IMG] = []
+    locs = [
+        (53,46,4,5),
+        (50,45,7,6),
+        (50,42,6,8),
+        (50,44,7,7),
+        (53,42,4,8),
+        (52,45,7,7),
+    ]
+    for i in range(6):
+        frame = load_image(f"scratch_head/{i}.png")
+        w, h, x, y = locs[i]
+        frame.paste(img.resize((w, h)), (x, y), below=True, alpha=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.1)
