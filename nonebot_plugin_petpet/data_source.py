@@ -72,6 +72,7 @@ memes = [
     Meme("thinkwhat", thinkwhat, ("想什么",)),
     Meme("keepaway", keepaway, ("远离",)),
     Meme("marriage", marriage, ("结婚申请", "结婚登记")),
+    Meme("divorce", divorce, ("离婚协议", "离婚申请")),
     Meme("painter", painter, ("小画家",)),
     Meme("repeat", repeat, ("复读",)),
     Meme("anti_kidnap", anti_kidnap, ("防诱拐",)),
@@ -110,8 +111,7 @@ memes = [
     Meme("learn", learn, ("偷学",)),
     Meme("trance", trance, ("恍惚",)),
     Meme("dinosuar", dinosaur, ("恐龙", "小恐龙")),
-    Meme("single",single,("离婚申请","离婚登记")),
-    Meme("scratch_head",scratch_head,("挠头",)),
+    Meme("scratch_head", scratch_head, ("挠头",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
