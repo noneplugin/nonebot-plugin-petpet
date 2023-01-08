@@ -98,7 +98,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2022/12/17/8QvqbJjxyHX1ABm.jpg" width="400" />
+  <img src="https://s2.loli.net/2023/01/08/QZVmHLtepGSyRbE.jpg" width="400" />
 </div>
 
 
@@ -213,6 +213,7 @@ pip install nonebot_plugin_petpet
 | 想什么 | <img src="https://s2.loli.net/2022/05/18/ck1jNO2K8Qd6Lo3.jpg" width="200" > | 支持gif |
 | 远离 | <img src="https://s2.loli.net/2022/05/31/lqyOu25WPTsGBcb.jpg" width="200" > | 可指定多个目标 |
 | 结婚申请<br>结婚登记 | <img src="https://s2.loli.net/2022/05/31/tZR3ls7cBrdGHTL.jpg" width="200" > |  |
+| 离婚协议<br>离婚申请 | <img src="https://s2.loli.net/2023/01/08/XHakWIShp7q1CjR.jpg" width="200" > |  |
 | 小画家 | <img src="https://s2.loli.net/2022/06/23/KCD73EbgqzWFxr4.jpg" width="200" > |  |
 | 复读 | <img src="https://s2.loli.net/2022/08/16/E6vgRCt3MSLfAWU.gif" width="200" > | 复读内容默认为“救命啊”<br>可指定多个目标 |
 | 防诱拐 | <img src="https://s2.loli.net/2022/07/21/ve6lcYaiV4wfhHg.jpg" width="200" > |  |
@@ -250,6 +251,12 @@ pip install nonebot_plugin_petpet
 | 坐得住<br>坐的住 | <img src="https://s2.loli.net/2022/12/03/gaQsO6AkVtPF3CW.jpg" width="200" > | 图中名字为目标qq昵称<br>可自定义名字 |
 | 偷学 | <img src="https://s2.loli.net/2022/12/17/v6C9jegrNy1AJRu.jpg" width="200" > | 描述默认为“偷学群友数理基础”<br>可自定义描述 |
 | 恍惚 | <img src="https://s2.loli.net/2022/12/17/fU6i7tr8egbxaMI.jpg" width="200" > |  |
+| 恐龙<br>小恐龙 | <img src="https://s2.loli.net/2023/01/08/hWaoIZ4JxDgX9FA.jpg" width="200" > | 支持gif |
+| 挠头 | <img src="https://s2.loli.net/2023/01/08/DeuAJSQRdrC2v51.gif" width="200" > |  |
+| 鼓掌 | <img src="https://s2.loli.net/2023/01/08/SGhsngjWQLRemPd.gif" width="200" > |  |
+| 追列车<br>追火车 | <img src="https://s2.loli.net/2023/01/08/NJ1FnKkdcrDBtEx.gif" width="200" > |  |
+| 万花筒<br>万花镜 | <img src="https://s2.loli.net/2023/01/08/obSnWmDOiFcqYkN.jpg" width="200" > | 支持gif<br>可使用参数“圆”让头像为圆形 |
+| 加班 | <img src="https://s2.loli.net/2023/01/08/LTcqjGobDkSVQIN.jpg" width="200" > |  |
 
 </details>
 
