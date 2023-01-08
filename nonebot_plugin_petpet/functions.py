@@ -2283,3 +2283,32 @@ def chase_train(img: BuildImage = UserImg(), arg=NoArg()):
         frame.paste(img.resize((w, h)), (x, y), below=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
+
+
+def kaleidoscope(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
+    def make(img: BuildImage) -> BuildImage:
+        circle_num = 10
+        img_per_circle = 4
+        init_angle = 0
+        angle_step = 360 / img_per_circle
+        radius = lambda n: n * 50 + 100
+        cx = cy = radius(circle_num)
+
+        img = img.convert("RGBA")
+        frame = BuildImage.new("RGBA", (cx * 2, cy * 2), "white")
+        for i in range(circle_num):
+            r = radius(i)
+            img_w = i * 35 + 100
+            im = img.resize_width(img_w)
+            if arg == "圆":
+                im = im.circle()
+            for j in range(img_per_circle):
+                angle = init_angle + angle_step * j
+                im_rot = im.rotate(angle - 90, expand=True)
+                x = round(cx + r * math.cos(math.radians(angle)) - im_rot.width / 2)
+                y = round(cy - r * math.sin(math.radians(angle)) - im_rot.height / 2)
+                frame.paste(im_rot, (x, y), alpha=True)
+            init_angle += angle_step / 2
+        return frame
+
+    return make_jpg_or_gif(img, make)
