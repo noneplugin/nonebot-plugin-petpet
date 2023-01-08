@@ -2314,8 +2314,8 @@ def kaleidoscope(img: BuildImage = UserImg(), arg: str = Arg(["圆"])):
     return make_jpg_or_gif(img, make)
 
 
-def overtime(img: BuildImage = UserImg(), arg: str = Arg()):
+def overtime(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("overtime/0.png")
-    img = img.resize((250, 250),keep_ratio=True).rotate(-25,expand=True)
-    frame.paste(img,(165,220),below=True)
+    img = img.convert("RGBA").resize((250, 250), keep_ratio=True)
+    frame.paste(img.rotate(-25, expand=True), (165, 220), below=True)
     return frame.save_jpg()
