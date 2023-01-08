@@ -112,6 +112,8 @@ memes = [
     Meme("trance", trance, ("恍惚",)),
     Meme("dinosuar", dinosaur, ("恐龙", "小恐龙")),
     Meme("scratch_head", scratch_head, ("挠头",)),
+    Meme("applaud",applaud,("鼓掌",)),
+    Meme("chase_train",chase_train,("追列车","追火车")),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
