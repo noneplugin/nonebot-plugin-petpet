@@ -296,7 +296,7 @@ def always(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
-def always_always(img: BuildImage = UserImg(), arg=NoArg()):
+def always_always(img: BuildImage = UserImg(), arg=NoArg(), is_cycle=False):
     tmp = img.convert("RGBA").resize_width(500)
     img_h = tmp.height
     text_h = tmp.resize_width(100).height + tmp.resize_width(20).height + 10
@@ -315,7 +315,7 @@ def always_always(img: BuildImage = UserImg(), arg=NoArg()):
             img = img.resize_width(500)
             base_frame = text_frame.copy().paste(img, alpha=True)
             frame = BuildImage.new("RGBA", base_frame.size, "white")
-            r = coeff**i
+            r = coeff ** i
             for _ in range(4):
                 x = int(358 * (1 - r))
                 y = int(frame_h * (1 - r))
@@ -327,9 +327,17 @@ def always_always(img: BuildImage = UserImg(), arg=NoArg()):
 
         return make
 
+    if is_cycle:
+        return_frame = maker(0)(img)
+        return return_frame.save_jpg()
+
     return make_gif_or_combined_gif(
         img, maker, frame_num, 0.1, FrameAlignPolicy.extend_loop
     )
+
+
+def always_cycle(img: BuildImage = UserImg(), arg=NoArg()):
+    return always_always(img, arg, True)
 
 
 def loading(img: BuildImage = UserImg(), arg=NoArg()):
@@ -380,16 +388,16 @@ def windmill_turn(img: BuildImage = UserImg(), arg=NoArg()):
     return save_gif(frames, 0.05)
 
 
-def littleangel(user: UserInfo = User(), arg: str = Arg()):
+def littleangel(user: UserInfo = User(), arg: str = Arg(), is_cuidao=False):
     img_w, img_h = user.img.convert("RGBA").resize_width(500).size
     frame = BuildImage.new("RGBA", (600, img_h + 230), "white")
-    text = "非常可爱！简直就是小天使"
+    ta = "他" if user.gender == "male" else "她"
+    text = "非常可爱！简直就是小天使" if not is_cuidao else f"{ta}好像失踪了，一刀都没出"
     frame.draw_text(
         (10, img_h + 120, 590, img_h + 185), text, max_fontsize=48, weight="bold"
     )
 
-    ta = "他" if user.gender == "male" else "她"
-    text = f"{ta}没失踪也没怎么样  我只是觉得你们都该看一下"
+    text = f"{ta}没失踪也没怎么样  我只是觉得你们都该看一下" if not is_cuidao else f"你们谁看见了麻烦叫{ta}赶紧回来出刀"
     frame.draw_text(
         (20, img_h + 180, 580, img_h + 215), text, max_fontsize=26, weight="bold"
     )
@@ -408,6 +416,10 @@ def littleangel(user: UserInfo = User(), arg: str = Arg()):
         return frame.copy().paste(img, (int(300 - img_w / 2), 110), alpha=True)
 
     return make_jpg_or_gif(user.img, make)
+
+
+def cuidao(user: UserInfo = User(), arg: str = Arg()):
+    return littleangel(user, arg, True)
 
 
 def dont_touch(img: BuildImage = UserImg(), arg=NoArg()):
