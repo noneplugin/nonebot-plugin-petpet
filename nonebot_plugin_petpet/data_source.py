@@ -116,6 +116,7 @@ memes = [
     Meme("chase_train", chase_train, ("追列车", "追火车")),
     Meme("kaleidoscope", kaleidoscope, ("万花筒", "万花镜")),
     Meme("overtime", overtime, ("加班",)),
+    Meme("avatar_formula",avatar_formula,("头像公式",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
