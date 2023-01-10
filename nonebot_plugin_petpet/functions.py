@@ -1577,7 +1577,7 @@ def addition(img: BuildImage = UserImg(), arg: str = Arg()):
         frame = expand_frame
 
     def make(img: BuildImage) -> BuildImage:
-        return frame.copy().paste(img.resize((70, 70), keep_ratio=True), (0, 0))
+        return frame.copy().paste(img.resize((91, 91), keep_ratio=True), (0, 0))
 
     return make_jpg_or_gif(img, make)
 
@@ -2225,7 +2225,7 @@ def dinosaur(img: BuildImage = UserImg(), arg=NoArg()):
 
     def make(img: BuildImage) -> BuildImage:
         return frame.copy().paste(
-            img.resize((612, 376), keep_ratio=True), (310, 483), below=True
+            img.resize((680, 578), keep_ratio=True), (294, 369), below=True
         )
 
     return make_jpg_or_gif(img, make)
