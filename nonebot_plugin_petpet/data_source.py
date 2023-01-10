@@ -16,6 +16,7 @@ memes = [
     Meme("crawl", crawl, ("爬",)),
     Meme("support", support, ("精神支柱",)),
     Meme("always", always, ("一直",)),
+    Meme("always_cycle", always_cycle, ("一直套娃",)),
     Meme("always_always", always_always, ("一直一直",)),
     Meme("loading", loading, ("加载中",)),
     Meme("turn", turn, ("转",)),

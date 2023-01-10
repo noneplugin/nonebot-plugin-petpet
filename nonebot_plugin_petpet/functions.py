@@ -296,6 +296,34 @@ def always(img: BuildImage = UserImg(), arg=NoArg()):
     return make_jpg_or_gif(img, make)
 
 
+def always_cycle(img: BuildImage = UserImg(), arg=NoArg()):
+    tmp = img.convert("RGBA").resize_width(500)
+    img_h = tmp.height
+    text_h = tmp.resize_width(100).height + tmp.resize_width(20).height + 10
+    text_h = max(text_h, 80)
+    frame_h = img_h + text_h
+    text_frame = BuildImage.new("RGBA", (500, frame_h), "white")
+    text_frame.draw_text(
+        (0, img_h, 280, frame_h), "要我一直", halign="right", max_fontsize=60
+    ).draw_text((400, img_h, 500, frame_h), "吗", halign="left", max_fontsize=60)
+
+    def make(img: BuildImage) -> BuildImage:
+        img = img.resize_width(500)
+        base_frame = text_frame.copy().paste(img, alpha=True)
+        frame = BuildImage.new("RGBA", base_frame.size, "white")
+        r = 1
+        for _ in range(4):
+            x = int(358 * (1 - r))
+            y = int(frame_h * (1 - r))
+            w = int(500 * r)
+            h = int(frame_h * r)
+            frame.paste(base_frame.resize((w, h)), (x, y))
+            r /= 5
+        return frame
+
+    return make_jpg_or_gif(img, make)
+
+
 def always_always(img: BuildImage = UserImg(), arg=NoArg()):
     tmp = img.convert("RGBA").resize_width(500)
     img_h = tmp.height

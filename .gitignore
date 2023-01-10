@@ -1,4 +1,6 @@
 *__pycache__/
 dist/
 .vscode/
-testnb/
+.idea/
+venv/
+.venv/
