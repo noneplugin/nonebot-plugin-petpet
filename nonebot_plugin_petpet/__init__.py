@@ -34,6 +34,8 @@ from .data_source import memes
 from .depends import split_msg, regex
 from .manager import meme_manager, ActionResult, MemeMode
 
+from .ex_data_source import ex_memes
+
 
 __plugin_meta__ = PluginMetadata(
     name="头像表情包",
@@ -57,9 +59,11 @@ unblock_cmd = on_command("启用表情", block=True, priority=12, permission=PER
 block_cmd_gl = on_command("全局禁用表情", block=True, priority=12, permission=PERM_GLOBAL)
 unblock_cmd_gl = on_command("全局启用表情", block=True, priority=12, permission=PERM_GLOBAL)
 
+if ex_memes != []:
+            memes.extend(ex_memes)
 
 @run_sync
-def help_image(user_id: str, memes: List[Meme]) -> BytesIO:
+def help_image(user_id: str, memes: List[Meme],ex_memes:List[Meme]) -> BytesIO:
     def cmd_text(memes: List[Meme], start: int = 1) -> str:
         texts = []
         for i, meme in enumerate(memes):
@@ -73,7 +77,7 @@ def help_image(user_id: str, memes: List[Meme]) -> BytesIO:
     head = Text2Image.from_text(head_text, 30, weight="bold").to_image(padding=(20, 10))
     imgs: List[IMG] = []
     col_num = 3
-    num_per_col = math.ceil(len(memes) / col_num)
+    num_per_col = math.ceil((len(memes)+len(ex_memes)) / col_num)
     for idx in range(0, len(memes), num_per_col):
         text = cmd_text(memes[idx : idx + num_per_col], start=idx + 1)
         imgs.append(Text2Image.from_bbcode_text(text, 30).to_image(padding=(20, 10)))
@@ -101,14 +105,14 @@ def get_user_id():
 
 def check_flag(meme: Meme):
     def dependency(user_id: str = get_user_id()) -> bool:
-        return meme_manager.check(user_id, meme)
+        return meme_manager.check(user_id,meme)
 
     return Depends(dependency)
 
 
 @help_cmd.handle()
 async def _(user_id: str = get_user_id()):
-    img = await help_image(user_id, memes)
+    img = await help_image(user_id, memes,ex_memes)
     if img:
         await help_cmd.finish(MessageSegment.image(img))
 
