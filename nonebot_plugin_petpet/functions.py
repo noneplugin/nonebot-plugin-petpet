@@ -396,16 +396,19 @@ def turn(img: BuildImage = UserImg(), arg=NoArg()):
 
 
 def windmill_turn(img: BuildImage = UserImg(), arg=NoArg()):
-    img = img.convert("RGBA").resize((300, 300), keep_ratio=True)
-    frame = BuildImage.new("RGBA", (600, 600), "white")
-    frame.paste(img)
-    frame.paste(img.rotate(90), (0, 300))
-    frame.paste(img.rotate(180), (300, 300))
-    frame.paste(img.rotate(270), (300, 0))
-    frames = [
-        frame.copy().rotate(i).crop((50, 50, 550, 550)).image for i in range(0, 90, 18)
-    ]
-    return save_gif(frames, 0.05)
+    def maker(i: int) -> Maker:
+        def make(img: BuildImage) -> BuildImage:
+            img = img.convert("RGBA").resize((300, 300), keep_ratio=True)
+            frame = BuildImage.new("RGBA", (600, 600), "white")
+            frame.paste(img, alpha=True)
+            frame.paste(img.rotate(90), (0, 300), alpha=True)
+            frame.paste(img.rotate(180), (300, 300), alpha=True)
+            frame.paste(img.rotate(270), (300, 0), alpha=True)
+            return frame.rotate(i * 18).crop((50, 50, 550, 550))
+
+        return make
+
+    return make_gif_or_combined_gif(img, maker, 5, 0.05, FrameAlignPolicy.extend_loop)
 
 
 def littleangel(user: UserInfo = User(), arg: str = Arg()):
