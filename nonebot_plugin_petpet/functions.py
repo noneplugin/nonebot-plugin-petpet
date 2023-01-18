@@ -2373,3 +2373,9 @@ def avatar_formula(img: BuildImage = UserImg(), arg=NoArg()):
         x, y = locs[i]
         frame.paste(img_c, (x, y))
     return frame.save_jpg()
+
+
+def smelt_copper(img: BuildImage = UserImg(), _=NoArg()):
+    bg = load_image("smelt_copper/img.png").convert("RGBA")
+    bg.paste(img.convert("RGBA").resize((232, 232)), (496, 8), below=True)
+    return bg.save_jpg()
