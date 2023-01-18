@@ -2377,5 +2377,5 @@ def avatar_formula(img: BuildImage = UserImg(), arg=NoArg()):
 
 def poor(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("poor/0.png")
-    frame.copy().paste(img.resize((465, 460),keep_ratio=True).rotate(-5, expand=True), (990, 475), below=True)
+    frame.copy().paste(img.resize((470, 455),keep_ratio=True).rotate(-5, expand=True), (520, 10), below=True)
     return make_jpg_or_gif(img, make)
