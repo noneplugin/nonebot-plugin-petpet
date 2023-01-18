@@ -93,7 +93,7 @@ pip install nonebot_plugin_petpet
 
 ### 使用
 
-**以下命令需要加[命令前缀](https://v2.nonebot.dev/docs/api/config#Config-command_start) (默认为`/`)，可自行设置为空**
+**以下命令需要加[命令前缀](https://v2.nonebot.dev/docs/api/config#Config-command_start) (默认为`/`)，可自行设置为空: `.env.*` 文件中设置 `COMMAND_START=[""]`**
 
 发送“头像表情包”显示下图的列表：
 
