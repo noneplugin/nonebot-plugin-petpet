@@ -2375,7 +2375,7 @@ def avatar_formula(img: BuildImage = UserImg(), arg=NoArg()):
     return frame.save_jpg()
 
 
-def poor(img: BuildImage = UserImg(), arg=NoArg()):
+def potato(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("poor/0.png")
     frame.paste(img.circle().resize((458, 458),keep_ratio=True).rotate(-5), (531, 15), below=True)
     return frame.save_jpg()
