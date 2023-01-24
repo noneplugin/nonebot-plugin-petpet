@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - "v0.3.x"
-    tags:
-      - "**"
+    paths:
+      - "pyproject.toml"
 
 jobs:
   update-and-push:
