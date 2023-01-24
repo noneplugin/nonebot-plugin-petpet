@@ -83,6 +83,6 @@ driver = get_driver()
 
 
 @driver.on_startup
-def _():
+async def _():
     logger.info("正在检查资源文件...")
-    asyncio.ensure_future(check_resources())
+    asyncio.create_task(check_resources())
