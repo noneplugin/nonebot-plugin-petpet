@@ -1,9 +1,11 @@
-name: Update resource_list.json & poetry.lock
+name: Update poetry.lock
 
 on:
   push:
     branches:
       - "v0.3.x"
+    tags:
+      - "**"
 
 jobs:
   update-and-push:
@@ -18,9 +20,6 @@ jobs:
 
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v7
-
-      - name: Update resource_list.json
-        run: python resources/update_list.py
 
       - name: Update poetry.lock
         run: poetry update --lock
