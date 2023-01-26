@@ -119,6 +119,7 @@ memes = [
     Meme("overtime", overtime, ("加班",)),
     Meme("avatar_formula", avatar_formula, ("头像公式", "等价无穷小")),
     Meme("potato", potato, ("土豆",)),
+    Meme("printing", printing, ("打印",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]

@@ -2380,3 +2380,14 @@ def potato(img: BuildImage = UserImg(), arg=NoArg()):
     img = img.convert("RGBA").square().resize((458, 458))
     frame.paste(img.rotate(-5), (531, 15), below=True)
     return frame.save_jpg()
+
+
+def printing(img: BuildImage = UserImg(), arg=NoArg()):
+    img = img.convert("RGBA").resize(
+        (301, 173), keep_ratio=True, inside=True, bg_color="white", direction="south"
+    )
+    frames = [load_image(f"printing/{i}.png") for i in range(115)]
+    for i in range(50, 115):
+        frames[i].paste(img, (147, 165), below=True)
+    frames = [frame.image for frame in frames]
+    return save_gif(frames, 0.01)
