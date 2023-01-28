@@ -11,7 +11,7 @@ _✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关
 <p align="center">
   <img src="https://img.shields.io/github/license/noneplugin/nonebot-plugin-petpet" alt="license">
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/nonebot-2.0.0b4+-red.svg" alt="NoneBot">
+  <img src="https://img.shields.io/badge/nonebot-2.0.0rc1+-red.svg" alt="NoneBot">
   <a href="https://pypi.org/project/nonebot-plugin-petpet">
     <img src="https://badgen.net/pypi/v/nonebot-plugin-petpet" alt="pypi">
   </a>
@@ -98,7 +98,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2023/01/08/QZVmHLtepGSyRbE.jpg" width="400" />
+  <img src="https://s2.loli.net/2023/01/28/wWFVrQh2TmuR7dO.jpg" width="400" />
 </div>
 
 
@@ -257,6 +257,9 @@ pip install nonebot_plugin_petpet
 | 追列车<br>追火车 | <img src="https://s2.loli.net/2023/01/08/NJ1FnKkdcrDBtEx.gif" width="200" > |  |
 | 万花筒<br>万花镜 | <img src="https://s2.loli.net/2023/01/08/obSnWmDOiFcqYkN.jpg" width="200" > | 支持gif<br>可使用参数“圆”让头像为圆形 |
 | 加班 | <img src="https://s2.loli.net/2023/01/08/LTcqjGobDkSVQIN.jpg" width="200" > |  |
+| 头像公式<br>等价无穷小 | <img src="https://s2.loli.net/2023/01/28/7CQWSZieyXm5THY.jpg" width="200" > |  |
+| 土豆 | <img src="https://s2.loli.net/2023/01/28/5PAfjsgwBdNzlbn.jpg" width="200" > |  |
+| 打印 | <img src="https://s2.loli.net/2023/01/28/s9F5Ar6QKOqLtBi.gif" width="200" > |  |
 
 </details>
 
