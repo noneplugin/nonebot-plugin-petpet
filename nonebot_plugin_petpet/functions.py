@@ -1900,7 +1900,7 @@ def jiji_king(
     args: List[str] = Args(0, 11),
 ):
     img_circle = False
-    if args[0] == "圆":
+    if len(args) >= 1 and args[0] == "圆":
         args.pop(0)
         img_circle = True
 
