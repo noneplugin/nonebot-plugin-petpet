@@ -1899,17 +1899,17 @@ def jiji_king(
     user_imgs: List[BuildImage] = UserImgs(1, 11),
     args: List[str] = Args(0, 11),
 ):
+    img_circle = False
+    if args[0] == "圆":
+        args.pop(0)
+        img_circle = True
+
     block_num = 5
     if len(user_imgs) >= 7 or len(args) >= 7:
         block_num = max(len(user_imgs), len(args)) - 1
 
     chars = ["急"]
     text = "我是急急国王"
-    img_circle = False
-
-    if args[0] == "圆":
-        args.remove("圆")
-        img_circle = True
 
     if len(args) == 1:
         if len(user_imgs) == 1:
@@ -1928,9 +1928,10 @@ def jiji_king(
 
     frame = BuildImage.new("RGBA", (10 + 100 * block_num, 400), "white")
     king = load_image("jiji_king/0.png")
-    king.paste(
-        user_imgs[0].convert("RGBA").square().resize((125, 125)) if not img_circle else user_imgs[0].convert("RGBA").square().resize((125, 125)).circle(), (237, 5), alpha=True
-    )
+    head = user_imgs[0].convert("RGBA").square().resize((125, 125))
+    if img_circle:
+        head = head.circle()
+    king.paste(head, (237, 5), alpha=True)
     frame.paste(king, ((frame.width - king.width) // 2, 0))
 
     if len(user_imgs) > 1:
