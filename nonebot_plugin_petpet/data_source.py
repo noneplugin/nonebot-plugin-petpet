@@ -111,7 +111,7 @@ memes = [
     Meme("sit_still", sit_still, ("坐得住", "坐的住")),
     Meme("learn", learn, ("偷学",)),
     Meme("trance", trance, ("恍惚",)),
-    Meme("dinosuar", dinosaur, ("恐龙", "小恐龙")),
+    Meme("dinosaur", dinosaur, ("恐龙", "小恐龙")),
     Meme("scratch_head", scratch_head, ("挠头",)),
     Meme("applaud", applaud, ("鼓掌",)),
     Meme("chase_train", chase_train, ("追列车", "追火车")),
