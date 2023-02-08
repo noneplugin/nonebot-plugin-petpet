@@ -2426,3 +2426,25 @@ def name_generator(img: BuildImage = UserImg(), arg=NoArg()):
         stroke_fill="white",
     )
     return frame.save_jpg()
+
+def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = SenderImg(), arg=NoArg()):
+    if len(user_imgs) >= 2:
+        self_img = user_imgs[0]
+        user_img = user_imgs[1]
+    else:
+        self_img = sender_img
+        user_img = user_imgs[0]
+    self_locs = [(116, -8), (109, 3), (130, -10)]
+    user_locs = [(2, 177), (12, 172), (6, 158)]
+    user_rotate = []
+
+    self_head = self_img.convert("RGBA").rotate(15).resize((122, 122)).circle()
+    user_head = user_img.convert("RGBA").rotate(
+        90).resize((112, 112)).circle()
+    frames: List[IMG] = []
+    for i in range(3):
+        frame = load_image(f"do/{i}.png")
+        frame.paste(user_head, user_locs[i], alpha=True)
+        frame.paste(self_head, self_locs[i], alpha=True)
+        frames.append(frame.image)
+    return save_gif(frames, 0.05)
