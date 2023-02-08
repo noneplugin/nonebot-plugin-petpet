@@ -122,7 +122,7 @@ memes = [
     Meme("printing", printing, ("打印",)),
     Meme("name_generator", name_generator, ("亚文化取名机", "亚名")),
     Meme("anime_sweat", anime_sweat, ("流汗",)),
-
+    Meme("do", do, ("撅", "狠狠的撅")),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
