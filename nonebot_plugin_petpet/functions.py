@@ -2439,8 +2439,8 @@ def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = Se
     user_rotate = []
 
     self_head = self_img.convert("RGBA").resize((122, 122)).rotate(15).circle()
-    user_head = user_img.convert("RGBA").rotate(
-        90).resize((112, 112)).circle()
+    user_head = user_img.convert("RGBA").resize((112, 112)).rotate(
+        90).circle()
     frames: List[IMG] = []
     for i in range(3):
         frame = load_image(f"do/{i}.png")
