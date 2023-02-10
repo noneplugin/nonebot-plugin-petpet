@@ -2438,7 +2438,7 @@ def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = Se
     user_locs = [(2, 177), (12, 172), (6, 158)]
     user_rotate = []
 
-    self_head = self_img.convert("RGBA").rotate(15).resize((122, 122)).circle()
+    self_head = self_img.convert("RGBA").resize((122, 122)).rotate(15).circle()
     user_head = user_img.convert("RGBA").rotate(
         90).resize((112, 112)).circle()
     frames: List[IMG] = []
