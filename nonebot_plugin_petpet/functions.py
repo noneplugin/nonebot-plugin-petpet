@@ -2470,3 +2470,24 @@ def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = Se
         frame.paste(self_head, self_locs[i], alpha=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
+
+def anime_sweat(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = img.convert("RGBA")
+    sweat = load_image("anime_sweat/0.png")
+    faces = img.face_detect(get_cv2_filter("lbpcascade_animeface.xml"))
+    PROPORTION = 0.2
+
+    if len(faces) == 0:
+        return "这张图片里面没有识别到任何脸，换一张试试？"
+
+    for (x, y, w, h) in faces:
+        max_width = w * PROPORTION
+        max_height = h * PROPORTION
+        ratio = max(max_width / sweat.width, max_height / sweat.height)
+        cur_sweat = sweat.resize((int(sweat.width * ratio), int(sweat.height * ratio)))
+
+        left_eye_x = x + w - int(sweat.width * ratio)
+        left_eye_y = y
+        droplet_x = int(left_eye_x)
+        droplet_y = int(left_eye_y)
+        frame.paste(cur_sweat, (droplet_x, droplet_y), alpha=True)
