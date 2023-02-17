@@ -82,8 +82,10 @@ async def check_resources():
     # open cv model
     file_path = data_path / "cv_model/lbpcascade_animeface.xml"
     if (not file_path.exists()):
+        logger.debug(f"Downloading cv_model/lbpcascade_animeface.xml ...")
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         try:
-            data = await download_resource(resource_url("cv_model/lbpcascade_animeface.xml"))
+            data = await download_resource("cv_model/lbpcascade_animeface.xml")
             with file_path.open("wb") as f:
                 f.write(data)
         except Exception as e:

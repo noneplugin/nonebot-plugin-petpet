@@ -11,7 +11,7 @@ from nonebot_plugin_imageutils.gradient import LinearGradient, ColorStop
 
 from .utils import *
 from .depends import *
-from .download import load_image
+from .download import load_image, get_cv2_filter
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -2447,3 +2447,5 @@ def anime_sweat(img: BuildImage = UserImg(), arg=NoArg()):
         droplet_x = int(left_eye_x)
         droplet_y = int(left_eye_y)
         frame.paste(cur_sweat, (droplet_x, droplet_y), alpha=True)
+
+    return frame.save_jpg()
