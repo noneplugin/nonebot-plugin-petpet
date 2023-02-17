@@ -17,6 +17,8 @@ data_path = Path() / "data" / "petpet"
 def load_image(path: str) -> BuildImage:
     return BuildImage.open(data_path / "images" / path).convert("RGBA")
 
+def get_cv2_filter(path: str) -> str:
+    return str(data_path / "cv_model" / path)
 
 async def download_url(url: str) -> bytes:
     async with httpx.AsyncClient() as client:
@@ -77,6 +79,15 @@ async def check_resources():
         except Exception as e:
             logger.warning(str(e))
     await check_font("Consolas", "consola.ttf")
+    # open cv model
+    file_path = data_path / "cv_model/lbpcascade_animeface.xml"
+    if (not file_path.exists()):
+        try:
+            data = await download_resource(resource_url("cv_model/lbpcascade_animeface.xml"))
+            with file_path.open("wb") as f:
+                f.write(data)
+        except Exception as e:
+            logger.warning(str(e))
 
 
 driver = get_driver()
