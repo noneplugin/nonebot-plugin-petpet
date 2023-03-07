@@ -2448,3 +2448,23 @@ def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = Se
         frame.paste(self_head, self_locs[i], alpha=True)
         frames.append(frame.image)
     return save_gif(frames, 0.05)
+
+
+
+def beat_head(img: BuildImage = UserImg(), arg: str = Arg()):
+    text = "怎么说话呢你" if not arg else arg
+    print(arg)
+    self_locs = [(160, 121), (172, 124), (208, 166)]
+    self_size = [(76,76),(69,69),(52,52)]
+    head_img = img.convert("RGBA")
+    frames: List[IMG] = []
+    for i in range(3):
+        self_head = head_img.resize(self_size[i]).circle()
+        frame = load_image(f"beat_head/{i}.png")
+        try:
+            frame.paste(self_head, self_locs[i], alpha=True)   
+        except:
+            return TEXT_TOO_LONG
+        frame.draw_text((175,28,316,82),text,max_fontsize=50,min_fontsize=10,allow_wrap=True)
+        frames.append(frame.image)  
+    return save_gif(frames, 0.05)
