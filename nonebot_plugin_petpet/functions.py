@@ -2468,3 +2468,11 @@ def beat_head(img: BuildImage = UserImg(), arg: str = Arg()):
         frame.draw_text((175,28,316,82),text,max_fontsize=50,min_fontsize=10,allow_wrap=True)
         frames.append(frame.image)  
     return save_gif(frames, 0.05)
+
+
+def bubble_tea(img: BuildImage = UserImg(), arg=NoArg()):
+    frame = load_image("bubble_tea/0.png")
+    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
+    frame = img
+
+    return frame.save_jpg()

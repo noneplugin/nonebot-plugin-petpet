@@ -123,6 +123,7 @@ memes = [
     Meme("name_generator", name_generator, ("亚文化取名机", "亚名")),
     Meme("do", do, ("撅", "狠狠的撅")),
     Meme("beat_head", beat_head, ("拍头","怎么说话的")),
+    Meme("bubble_tea", bubble_tea, ("奶茶",)),
 ]
 
 memes = [meme for meme in memes if meme.name not in petpet_config.petpet_disabled_list]
