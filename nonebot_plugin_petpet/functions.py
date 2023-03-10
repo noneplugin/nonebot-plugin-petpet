@@ -1,17 +1,17 @@
 import math
 import random
-from typing import Dict
-from datetime import datetime
 from collections import namedtuple
-from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
+from datetime import datetime
+from typing import Dict
 
 from nonebot_plugin_imageutils import Text2Image
 from nonebot_plugin_imageutils.fonts import Font
-from nonebot_plugin_imageutils.gradient import LinearGradient, ColorStop
+from nonebot_plugin_imageutils.gradient import ColorStop, LinearGradient
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
-from .utils import *
 from .depends import *
 from .download import load_image
+from .utils import *
 
 TEXT_TOO_LONG = "文字太长了哦，改短点再试吧~"
 NAME_TOO_LONG = "名字太长了哦，改短点再试吧~"
@@ -2427,52 +2427,31 @@ def name_generator(img: BuildImage = UserImg(), arg=NoArg()):
     )
     return frame.save_jpg()
 
-def do(user_imgs: List[BuildImage] = UserImgs(1, 2), sender_img: BuildImage = SenderImg(), arg=NoArg()):
-    if len(user_imgs) >= 2:
-        self_img = user_imgs[0]
-        user_img = user_imgs[1]
-    else:
-        self_img = sender_img
-        user_img = user_imgs[0]
-    self_locs = [(116, -8), (109, 3), (130, -10)]
-    user_locs = [(2, 177), (12, 172), (6, 158)]
-    user_rotate = []
-
-    self_head = self_img.convert("RGBA").resize((122, 122)).rotate(15).circle()
-    user_head = user_img.convert("RGBA").resize((112, 112)).rotate(
-        90).circle()
-    frames: List[IMG] = []
-    for i in range(3):
-        frame = load_image(f"do/{i}.png")
-        frame.paste(user_head, user_locs[i], alpha=True)
-        frame.paste(self_head, self_locs[i], alpha=True)
-        frames.append(frame.image)
-    return save_gif(frames, 0.05)
-
-
 
 def beat_head(img: BuildImage = UserImg(), arg: str = Arg()):
     text = "怎么说话呢你" if not arg else arg
-    print(arg)
-    self_locs = [(160, 121), (172, 124), (208, 166)]
-    self_size = [(76,76),(69,69),(52,52)]
-    head_img = img.convert("RGBA")
+    locs = [(160, 121, 76, 76), (172, 124, 69, 69), (208, 166, 52, 52)]
+    img = img.convert("RGBA")
     frames: List[IMG] = []
     for i in range(3):
-        self_head = head_img.resize(self_size[i]).circle()
+        x, y, w, h = locs[i]
         frame = load_image(f"beat_head/{i}.png")
+        frame.paste(img.resize((w, h)), (x, y), below=True)
         try:
-            frame.paste(self_head, self_locs[i], alpha=True)   
+            frame.draw_text(
+                (175, 28, 316, 82),
+                text,
+                max_fontsize=50,
+                min_fontsize=10,
+                allow_wrap=True,
+            )
         except:
             return TEXT_TOO_LONG
-        frame.draw_text((175,28,316,82),text,max_fontsize=50,min_fontsize=10,allow_wrap=True)
-        frames.append(frame.image)  
+        frames.append(frame.image)
     return save_gif(frames, 0.05)
 
 
 def bubble_tea(img: BuildImage = UserImg(), arg=NoArg()):
     frame = load_image("bubble_tea/0.png")
-    img = img.resize((500, 500),keep_ratio=True).paste(frame, (0, 0), alpha=True)
-    frame = img
-
+    frame.paste(img.convert("RGBA").resize((500, 500), keep_ratio=True), below=True)
     return frame.save_jpg()
