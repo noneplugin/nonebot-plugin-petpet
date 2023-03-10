@@ -1,14 +1,14 @@
 import re
-import yaml
 from enum import IntEnum
 from pathlib import Path
-from pydantic import BaseModel
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
+import yaml
 from nonebot.log import logger
+from pydantic import BaseModel
 
-from .utils import Meme
 from .data_source import memes
+from .utils import Meme
 
 data_path = Path() / "data" / "petpet"
 

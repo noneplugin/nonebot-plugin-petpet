@@ -1,14 +1,14 @@
+import hashlib
 import math
 import time
-import httpx
-import hashlib
+from dataclasses import dataclass
 from enum import Enum
 from io import BytesIO
-from dataclasses import dataclass
-from PIL.Image import Image as IMG
-from typing import Callable, List, Literal, Protocol, Tuple, Optional
+from typing import Callable, List, Literal, Optional, Protocol, Tuple
 
+import httpx
 from nonebot_plugin_imageutils import BuildImage
+from PIL.Image import Image as IMG
 
 from .config import petpet_config
 

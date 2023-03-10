@@ -1,39 +1,37 @@
 import math
 import random
 from io import BytesIO
-from PIL.Image import Image as IMG
 from typing import Any, List, Literal, Union
 
-from nonebot.params import Depends
-from nonebot.utils import run_sync
-from nonebot.matcher import Matcher
-from nonebot.typing import T_Handler
-from nonebot.params import CommandArg
-from nonebot.permission import SUPERUSER
-from nonebot.plugin import PluginMetadata
-from nonebot.dependencies import Dependent
-from nonebot import require, on_command, on_message
+from nonebot import on_command, on_message, require
 from nonebot.adapters.onebot.v11 import (
-    Message,
-    MessageSegment,
-    MessageEvent,
     GroupMessageEvent,
+    Message,
+    MessageEvent,
+    MessageSegment,
 )
 from nonebot.adapters.onebot.v11.permission import (
     GROUP_ADMIN,
     GROUP_OWNER,
     PRIVATE_FRIEND,
 )
+from nonebot.dependencies import Dependent
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg, Depends
+from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
+from nonebot.typing import T_Handler
+from nonebot.utils import run_sync
+from PIL.Image import Image as IMG
 
 require("nonebot_plugin_imageutils")
 from nonebot_plugin_imageutils import BuildImage, Text2Image
 
-from .utils import Meme
 from .config import Config
 from .data_source import memes
-from .depends import split_msg, regex
-from .manager import meme_manager, ActionResult, MemeMode
-
+from .depends import regex, split_msg
+from .manager import ActionResult, MemeMode, meme_manager
+from .utils import Meme
 
 __plugin_meta__ = PluginMetadata(
     name="头像表情包",
