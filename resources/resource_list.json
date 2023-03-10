@@ -48,6 +48,18 @@
         "hash": "d85cf009fac3ce49ed90883e0c61e737"
     },
     {
+        "path": "images/beat_head/0.png",
+        "hash": "5d416e568a1691f14a69e1a2d77ff5bf"
+    },
+    {
+        "path": "images/beat_head/1.png",
+        "hash": "42f267444e2c05dab84c4b90923860ef"
+    },
+    {
+        "path": "images/beat_head/2.png",
+        "hash": "a471759f8d378cdaf604cb5a4ef0107e"
+    },
+    {
         "path": "images/bite/0.png",
         "hash": "24b3bb8b2f3a66b84b72e661d97f83b6"
     },
@@ -206,6 +218,10 @@
     {
         "path": "images/bocchi_draft/9.png",
         "hash": "7238b22be1faf7ff74e83c7646580531"
+    },
+    {
+        "path": "images/bubble_tea/0.png",
+        "hash": "31c42e10985c1efa934d6b616b155c92"
     },
     {
         "path": "images/capoo_rub/0.png",
@@ -1522,6 +1538,18 @@
     {
         "path": "images/divorce/0.png",
         "hash": "2b142fc47a2cc1cc723a4edb33f7efcf"
+    },
+    {
+        "path": "images/do/0.png",
+        "hash": "c7f6e17a50eaf812557e420d83e1d89c"
+    },
+    {
+        "path": "images/do/1.png",
+        "hash": "cf668edd4d81b64dd92e134695db9b71"
+    },
+    {
+        "path": "images/do/2.png",
+        "hash": "577be3c18c1ebd81405579daf14aa5fd"
     },
     {
         "path": "images/dont_touch/0.png",
