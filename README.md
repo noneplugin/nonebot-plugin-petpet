@@ -23,7 +23,13 @@ _✨ [Nonebot2](https://github.com/nonebot/nonebot2) 插件，制作头像相关
 </div>
 
 
-文字类表情包制作：[nonebot-plugin-memes](https://github.com/noneplugin/nonebot-plugin-memes)
+> “头像表情包” 与 “文字表情包” 已合并！
+>
+> 表情包制作相关移至 [表情包生成器 meme-generator](https://github.com/MeetWq/meme-generator)
+>
+> Nonebot 插件端由 [nonebot-plugin-memes v0.4.x](https://github.com/noneplugin/nonebot-plugin-memes/tree/v0.4.x) 对接
+>
+> 本插件将继续维护一段时间，将不再添加新表情
 
 
 ### 安装
@@ -98,7 +104,7 @@ pip install nonebot_plugin_petpet
 发送“头像表情包”显示下图的列表：
 
 <div align="left">
-  <img src="https://s2.loli.net/2023/01/28/wWFVrQh2TmuR7dO.jpg" width="400" />
+  <img src="https://s2.loli.net/2023/03/10/6euhfEvRrNq2LPG.jpg" width="400" />
 </div>
 
 
@@ -260,7 +266,9 @@ pip install nonebot_plugin_petpet
 | 头像公式<br>等价无穷小 | <img src="https://s2.loli.net/2023/01/28/7CQWSZieyXm5THY.jpg" width="200" > |  |
 | 土豆 | <img src="https://s2.loli.net/2023/01/28/5PAfjsgwBdNzlbn.jpg" width="200" > |  |
 | 打印 | <img src="https://s2.loli.net/2023/01/28/s9F5Ar6QKOqLtBi.gif" width="200" > |  |
-
+| 亚文化取名机<br>亚名 | <img src="https://s2.loli.net/2023/03/10/MnQHlIA67fG243B.jpg" width="200" > |  |
+| 拍头<br>怎么说话的 | <img src="https://s2.loli.net/2023/03/10/3iTgNzhotWV8U1q.gif" width="200" > |  |
+| 奶茶 | <img src="https://s2.loli.net/2023/03/10/jTQAvhuiypsE8dS.jpg" width="200" > |  |
 </details>
 
 
